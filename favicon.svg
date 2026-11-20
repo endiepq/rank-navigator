@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Навигатор ранга">
+  <defs>
+    <radialGradient id="a" cx="32%" cy="28%" r="80%">
+      <stop offset="0" stop-color="#9af0fb"/>
+      <stop offset="55%" stop-color="#45d2e8"/>
+      <stop offset="100%" stop-color="#1b7f91"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#080d16"/>
+  <circle cx="32" cy="32" r="25" fill="url(#a)"/>
+  <text x="32" y="33" fill="#080d16" font-family="Segoe UI,Arial,Helvetica,sans-serif"
+        font-size="32" font-weight="700" text-anchor="middle" dominant-baseline="central">α</text>
+</svg>
