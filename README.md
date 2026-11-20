@@ -1,7 +1,9 @@
 # Навигатор ранга
 
-Калькулятор покупок для инкрементальной игры **Revolution Idle** (вкладка «Частицы»).
+Калькулятор частиц для инкрементальной игры **Revolution Idle** (вкладка «Частицы»).
 Отвечает на один вопрос: **купить улучшение сейчас или копить дальше**, чтобы следующий ранг α пришёл раньше.
+
+*Particle and rank calculator for the incremental game Revolution Idle — compares every alpha and beta upgrade and tells you whether buying one now reaches the next rank sooner than saving up.*
 
 **Открыть:** https://endiepq.github.io/rank-navigator/
 
@@ -56,3 +58,7 @@
 ## Запуск
 
 Один файл без зависимостей. Открой `index.html` в браузере или размести где угодно как статическую страницу.
+
+## Ключевые слова
+
+Revolution Idle, частицы, particles, альфа, бета, alpha, beta, ранг, rank, ступень, tier, генератор, множитель, усилитель, generator, multiplier, booster, калькулятор, calculator, дерево обработки, processing tree, incremental game, idle game.

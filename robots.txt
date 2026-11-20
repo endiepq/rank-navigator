@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://endiepq.github.io/rank-navigator/sitemap.xml

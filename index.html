@@ -3,14 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Калькулятор для Revolution Idle: считает, что выгоднее купить — улучшение или копить — чтобы следующий ранг пришёл раньше.">
+<meta name="description" content="Калькулятор частиц для Revolution Idle: что выгоднее купить — генератор, множитель или усилитель — чтобы следующий ранг альфа пришёл раньше. Particle and rank calculator for Revolution Idle.">
+<link rel="canonical" href="https://endiepq.github.io/rank-navigator/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://endiepq.github.io/rank-navigator/">
+<meta property="og:title" content="Навигатор ранга — Revolution Idle: частицы α и β">
+<meta property="og:description" content="Считает, что выгоднее купить и когда брать ранг. Particle calculator for Revolution Idle.">
+<meta name="twitter:card" content="summary">
 <style>
   :root{ padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
   html,body{margin:0}
   img{max-width:100%}
   [hidden]{display:none!important}
 </style>
-<title>Навигатор ранга</title>
+<title>Навигатор ранга — Revolution Idle: частицы α и β</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <style>
@@ -390,6 +396,24 @@
       </section>
     </div>
   </div>
+
+  <section class="panel" style="margin-top:18px">
+    <h2>Об инструменте</h2>
+    <div class="pad">
+      <p style="margin:0 0 12px;font-size:13.5px;color:var(--dim);max-width:70ch">
+        <b>Навигатор ранга</b> — калькулятор вкладки «Частицы» в игре <b>Revolution Idle</b>. Он сравнивает все доступные
+        покупки — генератор, множитель и усилитель для альфа- и бета-частиц — и показывает, какая из них приближает
+        следующий ранг, а какая его отодвигает. Учитывает узлы дерева обработки, награды за ранг, ступень и обратную
+        связь между α и β: бета-частицы усиливают добычу альфы, поэтому тратить их не всегда выгодно.
+      </p>
+      <p style="margin:0;font-size:13.5px;color:var(--dim);max-width:70ch" lang="en">
+        <b>Rank Navigator</b> is a particle calculator for the incremental game <b>Revolution Idle</b>. It compares every
+        available upgrade — generator, multiplier and booster, for both alpha and beta particles — and tells you whether
+        buying one now reaches the next rank sooner than simply saving up. It accounts for processing tree nodes, rank
+        rewards, tier bonuses and the beta-to-alpha feedback loop.
+      </p>
+    </div>
+  </section>
 
   <footer>
     <span class="dot" id="sync-dot"></span><span id="sync-text">локальное сохранение</span>
