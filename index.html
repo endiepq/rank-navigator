@@ -1,0 +1,1177 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Калькулятор для Revolution Idle: считает, что выгоднее купить — улучшение или копить — чтобы следующий ранг пришёл раньше.">
+<style>
+  :root{ padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  html,body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+<title>Навигатор ранга</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --ink:#080d16;
+    --panel:#101a2b;
+    --raise:#1d2e49;
+    --line:#273954;
+    --line-soft:#1c2a40;
+    --text:#e4ebf6;
+    --dim:#b3c3d9;
+    --muted:#8299b8;
+    --alpha:#45d2e8;
+    --beta:#5fd79b;
+    --warn:#f3b54a;
+    --bad:#f0806e;
+    --mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+    --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+    --disp:"Exo 2","IBM Plex Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 620px at 18% -12%, #16304a 0%, rgba(22,48,74,0) 62%),
+      radial-gradient(900px 500px at 92% 4%, #15344a 0%, rgba(21,52,74,0) 58%),
+      var(--ink);
+    color:var(--text);
+    font-family:var(--body);
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:22px 56px}
+
+  header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 22px;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .glyph{
+    width:42px;height:42px;flex:none;border-radius:50%;
+    display:grid;place-items:center;
+    font-family:var(--disp);font-size:22px;font-weight:700;color:var(--ink);
+    background:radial-gradient(circle at 32% 28%, #9af0fb, var(--alpha) 55%, #1b7f91);
+    box-shadow:0 0 0 1px #2b6d7d, 0 6px 22px -8px var(--alpha);
+  }
+  h1{font-family:var(--disp);font-size:24px;font-weight:700;letter-spacing:.2px;margin:0;line-height:1.1}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .readout{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+  .chip{background:var(--panel);border:1px solid var(--line-soft);border-radius:9px;padding:7px 12px;min-width:104px}
+  .chip b{display:block;font-family:var(--mono);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--alpha)}
+  .chip.b b{color:var(--beta)}
+  .chip span{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+  .cols{display:grid;grid-template-columns:1.02fr .98fr;gap:18px;align-items:start}
+  @media (max-width:880px){ .cols{grid-template-columns:1fr} }
+  .stack{display:flex;flex-direction:column;gap:18px}
+
+  .panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:14px;overflow:hidden}
+  .panel > h2{
+    font-family:var(--disp);font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--muted);margin:0;padding:13px 16px 11px;border-bottom:1px solid var(--line-soft);
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .panel.beta > h2{color:#86c6a8}
+  .panel > h2 .tag{margin-left:auto;font-size:10px;letter-spacing:.06em;color:var(--muted);text-transform:none;font-family:var(--body)}
+  .pad{padding:16px}
+
+  .verdict{border:1px solid #2d5f6d;border-radius:14px;overflow:hidden;background:linear-gradient(165deg,#13354044 0%, var(--panel) 46%)}
+  .verdict .lead{padding:18px 18px 16px;display:flex;gap:16px;align-items:flex-start}
+  .vmark{width:46px;height:46px;flex:none;border-radius:11px;display:grid;place-items:center;font-family:var(--disp);font-weight:700;font-size:20px;background:var(--raise);border:1px solid var(--line)}
+  .vmark.buy{color:var(--ink);background:linear-gradient(150deg,#8df0a8,var(--beta));border-color:#3f9c72}
+  .vmark.save{color:var(--ink);background:linear-gradient(150deg,#ffd789,var(--warn));border-color:#a97c27}
+  .vmark.now{color:var(--ink);background:linear-gradient(150deg,#9af0fb,var(--alpha));border-color:#2b6d7d}
+  .vmark.stop{color:var(--ink);background:linear-gradient(150deg,#ffa897,var(--bad));border-color:#a8574a}
+  .vtitle{font-family:var(--disp);font-size:21px;font-weight:700;line-height:1.2;text-wrap:balance}
+  .vwhy{color:var(--dim);font-size:13.5px;margin-top:5px}
+  .vwhy em{font-style:normal;color:var(--alpha);font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .vstats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line-soft)}
+  .vstats div{padding:11px 14px;border-left:1px solid var(--line-soft)}
+  .vstats div:first-child{border-left:0}
+  .vstats span{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .vstats b{display:block;font-family:var(--mono);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+  @media (max-width:430px){ .vstats{grid-template-columns:1fr 1fr} .vstats div:nth-child(3){border-left:0;border-top:1px solid var(--line-soft)} }
+
+  ol.plan{list-style:none;margin:0;padding:4px 0 0}
+  ol.plan li{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:baseline;padding:9px 0;border-top:1px dashed var(--line-soft)}
+  ol.plan li:first-child{border-top:0}
+  .tcode{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .step{font-size:14px}
+  .step .lvl{font-family:var(--mono);color:var(--alpha)}
+  .step .lvl.b{color:var(--beta)}
+  .price{font-family:var(--mono);font-size:12.5px;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .price.est{color:var(--warn)}
+  .finish{display:flex;gap:10px;align-items:baseline;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .finish .big{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--beta);font-variant-numeric:tabular-nums}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .scroll{overflow-x:auto}
+  th{text-align:left;font-weight:600;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 8px 7px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+  td{padding:7px 8px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+  tr.win td{background:#13303a}
+  tr.win td:first-child{box-shadow:inset 3px 0 0 var(--alpha)}
+  .delta{font-family:var(--mono);font-size:12.5px}
+  .delta.zero{color:var(--beta)} .delta.neg{color:var(--bad)}
+
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:520px){ .grid4,.grid3{grid-template-columns:1fr 1fr} }
+  label{display:block}
+  .lab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:block}
+  input[type=text]{width:100%;background:var(--ink);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
+  input[type=text]::placeholder{color:#5d7394}
+  input[type=text]:focus{outline:2px solid var(--alpha);outline-offset:-1px;border-color:var(--alpha)}
+  input.est{color:var(--warn)}
+  .chk{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;color:var(--muted)}
+  .chk input{accent-color:var(--alpha);width:16px;height:16px;flex:none;margin:0}
+  .chk input:checked + span{color:var(--text);font-weight:600}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px}
+  .hint code{font-family:var(--mono);color:var(--dim)}
+
+  button{font-family:var(--body);font-size:13.5px;font-weight:600;cursor:pointer;background:var(--raise);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 14px}
+  button:hover{border-color:var(--alpha);color:#fff}
+  button:focus-visible{outline:2px solid var(--alpha);outline-offset:2px}
+  button.primary{background:linear-gradient(150deg,#9af0fb,var(--alpha));color:#06222a;border-color:#2b6d7d}
+  button.primary:hover{filter:brightness(1.08)}
+  button.mini{padding:4px 10px;font-size:12.5px;border-radius:7px}
+  button.buy{background:var(--raise);border-color:#2f6f7e;color:var(--alpha)}
+  button.buy:hover{background:#1b3f4b;color:#bdf4fd}
+  button.undo{color:var(--muted);padding-inline:9px;font-family:var(--mono)}
+  button:disabled{opacity:.35;cursor:not-allowed}
+  button:disabled:hover{border-color:var(--line);color:var(--muted)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+  .track{border-top:1px solid var(--line-soft)}
+  .track:first-child{border-top:0}
+  .thead{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;padding:12px 16px 8px}
+  .thead h3{font-family:var(--disp);font-size:15px;font-weight:600;margin:0}
+  .thead .now{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .thead .flash{font-family:var(--mono);font-size:11.5px;color:var(--beta);flex-basis:100%;order:9}
+  .thead .flash:empty{display:none}
+  .lvls{max-height:196px;overflow-y:auto;padding:0 16px 14px}
+  .lvl-row{display:grid;grid-template-columns:58px 1fr 1fr;gap:8px;align-items:center;padding:4px 0}
+  .lvl-row + .lvl-row{border-top:1px solid #16233a}
+  .lvl-row.head .lab{margin:0}
+  .lvl-row.done{opacity:.42}
+  .lvl-row.next{background:#12303a;margin-inline:-8px;padding-inline:8px;border-radius:8px;box-shadow:inset 2px 0 0 var(--alpha)}
+  .lvl-tag{font-family:var(--mono);font-size:13px;color:var(--dim);display:flex;align-items:center;gap:6px}
+  .lvl-row.next .lvl-tag{color:var(--alpha);font-weight:700}
+  .lvl-row input{padding:6px 8px;font-size:13px}
+  .badge{font-family:var(--body);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:var(--alpha);border-radius:4px;padding:1px 5px;font-weight:700}
+
+  details{border-top:1px solid var(--line-soft)}
+  summary{cursor:pointer;padding:12px 16px;font-size:13px;color:var(--dim);font-family:var(--disp);font-weight:600}
+  summary:hover{color:var(--text)}
+  details .pad{padding-top:4px}
+
+  .note{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--dim);background:#13203450;border:1px solid var(--line-soft);border-radius:10px;padding:10px 12px;margin-top:14px}
+  .note .k{color:var(--warn);font-weight:700;font-family:var(--mono);flex:none}
+  .val{font-family:var(--mono);color:var(--alpha);font-weight:700}
+  .val.b{color:var(--beta)}
+  footer{margin-top:22px;font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block}
+  .dot.on{background:var(--beta)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="glyph" aria-hidden="true">α</div>
+      <div>
+        <h1>Навигатор ранга</h1>
+        <div class="sub">Что купить следующим — за α или за β — чтобы ранг пришёл раньше</div>
+      </div>
+    </div>
+    <div class="readout">
+      <div class="chip"><b id="ro-rate">—</b><span>α / сек</span></div>
+      <div class="chip b"><b id="ro-brate">—</b><span>β / сек</span></div>
+      <div class="chip b"><b id="ro-bonus">—</b><span>бонус β→α</span></div>
+      <div class="chip"><b id="ro-eta">—</b><span>до ранга</span></div>
+    </div>
+  </header>
+
+  <div class="cols">
+    <div class="stack">
+      <section class="verdict" id="verdict">
+        <div class="lead">
+          <div class="vmark" id="v-mark">?</div>
+          <div>
+            <div class="vtitle" id="v-title">Считаю…</div>
+            <div class="vwhy" id="v-why"></div>
+          </div>
+        </div>
+        <div class="vstats">
+          <div><span>Если копить в лоб</span><b id="v-naive">—</b></div>
+          <div><span>По плану</span><b id="v-best">—</b></div>
+          <div><span>Экономия</span><b id="v-save">—</b></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>План до ранга <span class="tag" id="plan-tag"></span></h2>
+        <div class="pad">
+          <ol class="plan" id="plan"></ol>
+          <div class="finish">
+            <span style="color:var(--muted);font-size:13px">Ранг в руках через</span>
+            <span class="big" id="plan-total">—</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Сравнение первого хода</h2>
+        <div class="pad">
+          <div class="scroll">
+            <table id="compare">
+              <thead><tr>
+                <th>Первый ход</th><th class="num">Цена</th><th class="num">Отобьётся</th><th class="num">До ранга</th><th class="num">Δ</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="hint">«Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.</div>
+        </div>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="panel">
+        <h2>Альфа — сейчас в игре</h2>
+        <div class="pad">
+          <div class="grid4">
+            <label><span class="lab">Ранг</span><input type="text" id="f-rank" inputmode="decimal"></label>
+            <label><span class="lab">α сейчас</span><input type="text" id="f-alpha" inputmode="decimal"></label>
+            <label><span class="lab">Нужно α на ранг</span><input type="text" id="f-rankcost" inputmode="decimal"></label>
+            <label><span class="lab">Ур. генератора</span><input type="text" id="f-gen" inputmode="decimal"></label>
+          </div>
+          <div class="grid4" style="margin-top:12px">
+            <label><span class="lab">Ур. множителя</span><input type="text" id="f-mult" inputmode="decimal"></label>
+            <label><span class="lab">Ур. усилителя</span><input type="text" id="f-boost" inputmode="decimal"></label>
+            <div style="grid-column:span 2;display:flex;align-items:flex-end">
+              <button id="btn-rankup" class="primary">Ранг взят ↻</button>
+            </div>
+          </div>
+          <div class="hint">«Ранг взят» поднимает ранг, обнуляет α и возвращает α-ветки на старт. Прайс-листы остаются — при сбросе цены идут теми же числами.</div>
+          <div class="note">
+            <span class="k">=</span>
+            <span>
+              Скорость α = <code>0.01 × ранг × узел139 × бонус5 × ступень(≥2) × реликвия × (β+1)^показатель × ген × множ</code>, всё в степени усилителя.
+              Сейчас <b class="val" id="check-rate">—</b>, бонус ранга 5 <b class="val" id="check-bonus">—</b>, множитель <b class="val" id="check-mult">—</b>. Сверь с игрой.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel beta">
+        <h2>Бета — сейчас в игре</h2>
+        <div class="pad">
+          <div class="grid4">
+            <label><span class="lab">β сейчас</span><input type="text" id="f-beta" inputmode="decimal"></label>
+            <label><span class="lab">Ур. генератора</span><input type="text" id="f-bgen" inputmode="decimal"></label>
+            <label><span class="lab">Ур. множителя</span><input type="text" id="f-bmult" inputmode="decimal"></label>
+            <label><span class="lab">Ур. усилителя</span><input type="text" id="f-bboost" inputmode="decimal"></label>
+          </div>
+          <div class="note" id="beta-locked" hidden>
+            <span class="k">!</span>
+            <span>
+              Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего.
+              Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.
+            </span>
+          </div>
+          <div class="note">
+            <span class="k">β</span>
+            <span>
+              Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>.
+              Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено.
+              Скорость β = <b class="val b" id="check-brate">—</b>, бонус ранга 12 = <b class="val b" id="check-bonus12">—</b>.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Узлы дерева и ступень</h2>
+        <div class="pad">
+          <div class="grid2">
+            <label><span class="lab">Узел 140: уровень из 9 → <b class="val" id="check-n140">—</b></span><input type="text" id="f-n140" inputmode="numeric"></label>
+            <div>
+              <span class="lab">Куплённые узлы</span>
+              <div class="row" style="gap:8px 18px;padding-top:7px">
+                <label class="chk"><input type="checkbox" id="f-n139"><span>139 — база ген. α ×2</span></label>
+                <label class="chk"><input type="checkbox" id="f-n141"><span>141 — награда ранга 5 ×3</span></label>
+                <label class="chk"><input type="checkbox" id="f-n142"><span>142 — база генераторов ×1.25 за 10 ур.</span></label>
+                <label class="chk"><input type="checkbox" id="f-n143"><span>143 — база множителей ×2 за 7 ур.</span></label>
+              </div>
+            </div>
+          </div>
+          <div class="grid4" style="margin-top:12px">
+            <label><span class="lab">Ступень</span><input type="text" id="f-stupen" inputmode="decimal"></label>
+            <label><span class="lab">Показатель β→α</span><input type="text" id="f-betaexp" inputmode="decimal"></label>
+            <label><span class="lab">Ступень требует ранг</span><input type="text" id="f-stupenrank" inputmode="numeric"></label>
+            <label><span class="lab">Ранг после сброса</span><input type="text" id="f-rankstart" inputmode="numeric"></label>
+          </div>
+          <div class="grid4" style="margin-top:12px">
+            <label><span class="lab">Реликвия: база ген. α и β ×</span><input type="text" id="f-relic" inputmode="decimal"></label>
+            <div style="grid-column:span 3;display:flex;align-items:flex-end;padding-bottom:9px">
+              <span class="hint" style="margin:0">
+                Множитель из реликвии — умножает базу обоих генераторов. Нет такой реликвии — оставь 1.
+                Бонус ступени 2: <b class="val" id="check-stupen2">—</b>.
+              </span>
+            </div>
+          </div>
+          <div class="row" style="margin-top:14px">
+            <button id="btn-stupen">Ступень взята ↻</button>
+            <span class="hint" style="margin:0">
+              Покупается за ранги α и сносит ранг, α, β и все шесть веток.
+              Узлы дерева, прайс-листы и сама ступень сохраняются. До ступени осталось <b class="val" id="check-togo">—</b>.
+            </span>
+          </div>
+          <div class="hint">
+            Узел 140 вводится уровнем, как в игре: 0/9 даёт ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. Множитель считается сам и показан рядом с полем.
+            Узлы 139 и 141 одноуровневые — просто ставь галочку, когда куплен: 139 удваивает базу генератора, 141 утраивает коэффициент награды ранга 5 (0.1 → 0.3).
+            Сверка: «бонус ранга 5» в блоке «Альфа» должен совпасть с тем, что игра пишет в награде за ранг 5.
+            Показатель 0.2 даёт «α Генератор ×<span id="hint-bonus">—</span>» при нынешних β; узел 147 его улучшает — тогда подними показатель, пока не сойдётся с игрой.
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Прайс-листы α <span class="tag">вводишь один раз — помнит навсегда</span></h2>
+        <div id="tracks-a"></div>
+      </section>
+
+      <section class="panel beta">
+        <h2>Прайс-листы β</h2>
+        <div id="tracks-b"></div>
+        <div class="pad" style="padding-top:0">
+          <div class="hint">
+            Купил улучшение в игре — жми <b style="color:var(--alpha)">«Купил ✓»</b>: уровень поднимется, цена спишется с нужной валюты,
+            а если на неё ещё надо было копить — заодно прокрутится время, и β подрастут на то, что накопилось за ожидание.
+            <b>−</b> возвращает ровно то состояние, что было до нажатия.
+            Жёлтым — цена, достроенная по шагу роста; впишешь настоящую — станет белой.
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <details>
+          <summary>Модель: коэффициенты и шаги</summary>
+          <div class="pad">
+            <div class="grid3">
+              <label><span class="lab">База за ранг</span><input type="text" id="m-base" inputmode="decimal"></label>
+              <label><span class="lab">Бонус ранга 5: коэф.</span><input type="text" id="m-rank5k" inputmode="decimal"></label>
+              <label><span class="lab">Бонус ранга 12: коэф.</span><input type="text" id="m-rank12k" inputmode="decimal"></label>
+            </div>
+            <div class="grid2" style="margin-top:12px">
+              <label><span class="lab">Покупок в плане</span><input type="text" id="m-depth" inputmode="numeric"></label>
+              <label><span class="lab">Ширина луча</span><input type="text" id="m-beam" inputmode="numeric"></label>
+            </div>
+            <div id="track-params"></div>
+            <div class="hint">
+              Эффект уровня: <code>1 + шаг × (ур − сдвиг)</code>. Генераторы — сдвиг 1 (ур. 1 даёт ×1), множители и усилители — сдвиг 0.
+              У множителя α шаг дополнительно умножается на узел 140. Рост цены работает только там, где настоящая цена ещё не введена.
+            </div>
+          </div>
+        </details>
+        <details>
+          <summary>Тетратор — добавим позже</summary>
+          <div class="pad">
+            <div class="hint">Тетрация стоит 1.00e25 — до неё разговор не про этот ранг. Как подберёшься, скажи, что даёт первый уровень, и добавлю седьмой веткой.</div>
+          </div>
+        </details>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <span class="dot" id="sync-dot"></span><span id="sync-text">локальное сохранение</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ ветки ============ */
+  var TRACKS = ["gen", "mult", "boost", "bgen", "bmult", "bboost"];
+
+  // Первый уровень генератора β даёт только первая ступень — до неё
+  // ветка не открыта вовсе, и β не капают (база β = 0.01 × ступень).
+  function betaOpen(){ return Math.round(S.stupen) >= 1; }
+  function startOf(track){
+    if (track === "bgen") return betaOpen() ? 1 : 0;
+    return S[track].start || 0;
+  }
+  // Ступень могли только что взять — подтягиваем генератор β к старту.
+  function normalize(){
+    TRACKS.forEach(function(t){
+      var lo = startOf(t);
+      if (!(S[t].level >= lo)) S[t].level = lo;
+    });
+  }
+  var META = {
+    gen:    { name: "Генератор", cur: "a", sign: "×", col: "Эффект ×" },
+    mult:   { name: "Множитель", cur: "a", sign: "×", col: "Эффект ×" },
+    boost:  { name: "Усилитель", cur: "a", sign: "^", col: "Степень ^" },
+    bgen:   { name: "Генератор", cur: "b", sign: "×", col: "Эффект ×" },
+    bmult:  { name: "Множитель", cur: "b", sign: "×", col: "Эффект ×" },
+    bboost: { name: "Усилитель", cur: "b", sign: "^", col: "Степень ^" }
+  };
+  function cur(track){ return META[track].cur; }
+  function fullName(track){ return META[track].name + " " + (cur(track) === "a" ? "α" : "β"); }
+
+  /* ============ состояние ============ */
+  var DEF = {
+    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 30, beam: 80,
+    node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, stupen: 0, betaExp: 0.2, beta: 0,
+    stupenRank: 13, rankStart: 1, relicGen: 1, n140lvl: 0,
+    rankCosts: { "5":160, "6":500, "7":1000, "8":2000, "9":13280, "10":267543,
+                 "11":7797571, "12":638133197, "13":1.91e11, "14":1.73e14 },
+    gen:    { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5,
+              costs: { "2":1, "5":3.38, "7":7.59, "12":57.67, "16":292, "20":1478, "35":647160, "45":37318497 }, eff: {} },
+    mult:   { level: 0, start: 0, free: 0, step: 0.1,  ratio: 5,   costs: { "1":10, "2":50, "3":250, "7":156250 }, eff: {} },
+    boost:  { level: 0, start: 0, free: 0, step: 0.01, ratio: 20,  costs: { "1":1000, "2":20000, "5":160000000 }, eff: {} },
+    bgen:   { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5, costs: { "1":1, "11":57.67, "19":1478, "30":127834 }, eff: {} },
+    bmult:  { level: 0, start: 0, free: 0, step: 0.1,  ratio: 5,   costs: { "1":10, "3":250, "8":781250 }, eff: {} },
+    bboost: { level: 0, start: 0, free: 0, step: 0.01, ratio: 20,  costs: { "1":1000, "2":20000, "3":400000 }, eff: {} }
+  };
+  var S = JSON.parse(JSON.stringify(DEF));
+  var LS = "rank-navigator-public-v1";
+  var dbDoc = null, saveTimer = null;
+
+  // Раньше у узла 140 хранился сам множитель, теперь — уровень.
+  // Пересчитываем один раз: множитель 4 означал уровень 3.
+  function migrate(){
+    if (S.n140lvl == null){
+      S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
+    }
+  }
+  function mergeInto(target, src){
+    if (!src || typeof src !== "object") return;
+    Object.keys(src).forEach(function(k){
+      var v = src[k];
+      if (v && typeof v === "object" && !Array.isArray(v) && target[k] && typeof target[k] === "object") mergeInto(target[k], v);
+      else target[k] = v;
+    });
+  }
+
+  /* ============ числа ============ */
+  function parseNum(raw){
+    if (raw == null) return null;
+    var s = String(raw).replace(/ /g, "").replace(/\s+/g, "");
+    if (!s) return null;
+    s = s.replace(/,(?=\d{3}(\D|$))/g, "").replace(",", ".");
+    var n = parseFloat(s);
+    return isFinite(n) ? n : null;
+  }
+  function fmt(x){
+    if (x == null || !isFinite(x)) return "—";
+    var a = Math.abs(x);
+    if (a === 0) return "0";
+    if (a >= 1e7 || a < 1e-4) return x.toExponential(2).replace("e+", "e");
+    var d = a < 1 ? 3 : a < 100 ? 2 : a < 10000 ? 1 : 0;
+    var r = Math.round(x * Math.pow(10, d)) / Math.pow(10, d);
+    return r.toLocaleString("ru-RU", { maximumFractionDigits: d });
+  }
+  function fmtTime(s){
+    if (s == null || !isFinite(s)) return "∞";
+    if (s < 0) s = 0;
+    if (s < 60) return (s < 10 ? s.toFixed(1) : Math.round(s)) + " с";
+    var m = Math.floor(s / 60), sec = Math.round(s % 60);
+    if (m < 60) return m + " м " + sec + " с";
+    var h = Math.floor(m / 60), mm = m % 60;
+    if (h < 48) return h + " ч " + mm + " м";
+    return Math.floor(h / 24) + " д " + (h % 24) + " ч";
+  }
+  function clock(s){
+    if (!isFinite(s)) return "—";
+    var t = Math.round(s), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), ss = t % 60;
+    var p = function(n){ return n < 10 ? "0" + n : "" + n; };
+    return (h ? h + ":" : "") + p(m) + ":" + p(ss);
+  }
+  function plural(n, one, few, many){
+    var m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+    return many;
+  }
+
+  /* ============ модель ============ */
+  // Узел 140 растёт по уровням: 0/9 даёт ×1, 1/9 → ×2, 3/9 → ×4.
+  function node140(){ return 1 + Math.max(0, Math.round(S.n140lvl)); }
+  // Узлы 142 и 143 работают одинаково: множат базу за каждые N уровней
+  // от общего уровня ветки (сверено с игрой: ген β ур. 30 даёт 1.25³).
+  function stepBonus(track, L, factor, per){
+    if (!(factor > 1)) return 1;
+    return Math.pow(factor, Math.floor(Math.max(0, L) / per));
+  }
+  // Узел 142: база генератора ×1.25 каждые 10 уровней.
+  function node142(track, L){ return stepBonus(track, L, S.node142, 10); }
+  // Узел 143: база множителя ×2 каждые 7 уровней.
+  function node143(track, L){ return stepBonus(track, L, S.node143, 7); }
+  function effectOf(track, L){
+    var t = S[track];
+    if (t.eff[L] != null) return t.eff[L];
+    var step = t.step;
+    // Узел 140 умножает базу множителя α — то есть его шаг за уровень.
+    if (track === "mult") step = step * node140();
+    // Узел 143 — базу любого множителя частиц.
+    if (track === "mult" || track === "bmult") step = step * node143(track, L);
+    var part = step * Math.max(0, L - t.free);
+    // Ступень 2: база множителя α ×ступень и ещё ×(1 + 0.5 × уровень множителя).
+    // Бонус множит именно наращённую часть, единица базы остаётся единицей:
+    // сверено с игрой — ур. 16 при ступени 2 даёт 1 + 64×18 = ×1153.
+    if (track === "mult") part = part * stupen2Mult(L);
+    return 1 + part;
+  }
+  // Бонусы второй ступени: ×ступень к базе множителя α и ×(1 + 0.5 × ур.)
+  // сверху. На ступени 0–1 бонуса нет вовсе.
+  function stupen2Mult(L){
+    var st = Math.round(S.stupen);
+    return st >= 2 ? st * (1 + 0.5 * Math.max(0, L)) : 1;
+  }
+  // И ×ступень к базе генератора α.
+  function stupen2Gen(){
+    var st = Math.round(S.stupen);
+    return st >= 2 ? st : 1;
+  }
+  // Бонус ранга 5: база генератора α ×(1 + 0.1 × уровень генератора).
+  // Узел 141 усиливает саму награду, то есть множит коэффициент 0.1.
+  function bonus5(G){ return S.rank < 5 ? 1 : 1 + S.rank5k * S.node141 * G; }
+  // Ранг 12 даёт бете то же самое, но круче: база генератора β
+  // ×(1 + 0.25 × уровень генератора β).
+  function bonus12(Gb){ return S.rank < 12 ? 1 : 1 + S.rank12k * Gb; }
+
+  // Скорость α имеет вид K × (β+1)^P: усилитель возводит всё выражение
+  // в степень, поэтому показатель при β тоже умножается на неё.
+  function kp(lv){
+    var C = S.basePerRank * S.rank * S.node139 * bonus5(lv.gen) * node142("gen", lv.gen)
+          * stupen2Gen() * S.relicGen
+          * effectOf("gen", lv.gen) * effectOf("mult", lv.mult);
+    var e = effectOf("boost", lv.boost);
+    // Бонус β→α выдаёт первая ступень вместе с генератором β. До неё
+    // показатель нулевой, даже если на руках остались β.
+    return { K: C > 0 ? Math.pow(C, e) : 0, P: betaOpen() ? S.betaExp * e : 0 };
+  }
+  function betaBonus(beta){
+    return betaOpen() ? Math.pow(Math.max(0, beta) + 1, S.betaExp) : 1;
+  }
+  function rateAlpha(lv, beta){
+    var k = kp(lv);
+    return k.K * Math.pow(Math.max(0, beta) + 1, k.P);
+  }
+  function rateBeta(lv){
+    var C = S.basePerRank * S.stupen * S.relicGen * node142("bgen", lv.bgen) * bonus12(lv.bgen)
+          * effectOf("bgen", lv.bgen) * effectOf("bmult", lv.bmult);
+    if (!(C > 0)) return 0;
+    var e = effectOf("bboost", lv.bboost);
+    return e === 1 ? C : Math.pow(C, e);
+  }
+  function curLv(){
+    var lv = {};
+    TRACKS.forEach(function(t){ lv[t] = S[t].level; });
+    return lv;
+  }
+  function withLevel(lv, track, L){
+    var n = {};
+    TRACKS.forEach(function(t){ n[t] = lv[t]; });
+    n[track] = L;
+    return n;
+  }
+
+  // β растут линейно, а добыча α зависит от запаса β — значит α копится
+  // по интегралу ∫K(b0+rb·t)^P dt. Он берётся в замкнутом виде, и обратная
+  // задача «сколько ждать до нужной суммы» тоже решается точно.
+  function alphaGained(K, b0, rb, P, t){
+    if (!(K > 0) || t <= 0) return 0;
+    if (!(rb > 0)) return K * Math.pow(b0, P) * t;
+    var e = P + 1;
+    return K * (Math.pow(b0 + rb * t, e) - Math.pow(b0, e)) / (e * rb);
+  }
+  function timeForAlpha(K, b0, rb, P, need){
+    if (need <= 0) return 0;
+    if (!(K > 0)) return Infinity;
+    if (!(rb > 0)){
+      var r = K * Math.pow(b0, P);
+      return r > 0 ? need / r : Infinity;
+    }
+    var e = P + 1;
+    var v = Math.pow(b0, e) + e * rb * need / K;
+    return (Math.pow(v, 1 / e) - b0) / rb;
+  }
+
+  /* ============ цены ============ */
+  function fitRatio(track){
+    var t = S[track], ls = Object.keys(t.costs).map(Number).filter(function(l){ return t.costs[l] > 0; }).sort(function(a,b){ return a-b; });
+    if (ls.length >= 2){
+      var lo = ls[0], hi = ls[ls.length - 1];
+      var r = Math.pow(t.costs[hi] / t.costs[lo], 1 / (hi - lo));
+      if (isFinite(r) && r > 1.0001) return r;
+    }
+    return t.ratio > 1 ? t.ratio : 1.5;
+  }
+  function costOf(track, L){
+    var t = S[track];
+    if (t.costs[L] != null && t.costs[L] > 0) return { v: t.costs[L], est: false };
+    var ls = Object.keys(t.costs).map(Number).filter(function(l){ return t.costs[l] > 0; });
+    if (!ls.length) return { v: null, est: true };
+    var near = ls.reduce(function(b, l){ return Math.abs(l - L) < Math.abs(b - L) ? l : b; }, ls[0]);
+    return { v: t.costs[near] * Math.pow(fitRatio(track), L - near), est: true };
+  }
+
+  /* ============ симуляция ============ */
+  function origin(){ return { A: S.alpha, B: S.beta, lv: curLv(), t: 0 }; }
+  function tailTime(st){
+    if (st.A >= S.rankCost) return 0;
+    var k = kp(st.lv);
+    return timeForAlpha(k.K, st.B + 1, rateBeta(st.lv), k.P, S.rankCost - st.A);
+  }
+  // Сколько ждать до покупки и каким станет мир сразу после неё.
+  function buyStep(st, track, costV){
+    var k = kp(st.lv), rb = rateBeta(st.lv), wait;
+    if (cur(track) === "a"){
+      wait = st.A >= costV ? 0 : timeForAlpha(k.K, st.B + 1, rb, k.P, costV - st.A);
+    } else {
+      if (st.B >= costV) wait = 0;
+      else if (!(rb > 0)) return null;
+      else wait = (costV - st.B) / rb;
+    }
+    if (!isFinite(wait)) return null;
+    var A = st.A + alphaGained(k.K, st.B + 1, rb, k.P, wait);
+    var B = st.B + rb * wait;
+    if (cur(track) === "a") A -= costV; else B -= costV;
+    // Ждали ровно до нужной суммы, поэтому остаток обязан быть нулевым
+    // или положительным. Заметный минус — настоящая невозможность,
+    // крошечный — след округления, его просто прижимаем к нулю.
+    var tol = 1e-6 * Math.max(1, costV);
+    if (A < -tol || B < -tol) return null;
+    if (A < 0) A = 0;
+    if (B < 0) B = 0;
+    return { A: A, B: B, lv: st.lv, t: st.t + wait, wait: wait };
+  }
+
+  // Шесть веток дают 6^глубина вариантов — полный перебор здесь не живёт.
+  // Поэтому лучевой поиск: на каждом шаге разворачиваем все состояния,
+  // оцениваем каждое по «сколько до ранга, если больше ничего не покупать»
+  // и оставляем лучшие. Набор уровней однозначно задаёт потраченное, так
+  // что одинаковые наборы схлопываем, оставляя тот, что пришёл раньше.
+  function beamFrom(st0, head, depth, width){
+    var best = { time: st0.t + tailTime(st0), path: head.slice(), end: st0 };
+    var beam = [{ st: st0, path: head }];
+    for (var d = 0; d < depth && beam.length; d++){
+      var next = [];
+      beam.forEach(function(node){
+        TRACKS.forEach(function(track){
+          var L = node.st.lv[track] + 1;
+          var c = costOf(track, L);
+          if (c.v == null) return;
+          var s = buyStep(node.st, track, c.v);
+          if (!s) return;
+          var nst = { A: s.A, B: s.B, lv: withLevel(node.st.lv, track, L), t: s.t };
+          var score = nst.t + tailTime(nst);
+          if (!isFinite(score)) return;
+          var npath = node.path.concat([{ track: track, level: L, cost: c.v, est: c.est, at: s.t, wait: s.wait }]);
+          if (score < best.time - 1e-9) best = { time: score, path: npath, end: nst };
+          next.push({ st: nst, path: npath, score: score });
+        });
+      });
+      next.sort(function(a, b){ return a.score - b.score; });
+      var seen = {}, keep = [];
+      for (var i = 0; i < next.length && keep.length < width; i++){
+        var key = TRACKS.map(function(t){ return next[i].st.lv[t]; }).join(",");
+        if (seen[key]) continue;
+        seen[key] = 1;
+        keep.push(next[i]);
+      }
+      beam = keep;
+    }
+    return best;
+  }
+  function rooted(first){
+    var depth = Math.max(1, Math.min(40, Math.round(S.depth)));
+    var st0 = origin();
+    var L0 = st0.lv[first] + 1;
+    var c0 = costOf(first, L0);
+    if (c0.v == null) return null;
+    var s0 = buyStep(st0, first, c0.v);
+    if (!s0) return null;
+    var st1 = { A: s0.A, B: s0.B, lv: withLevel(st0.lv, first, L0), t: s0.t };
+    var head = [{ track: first, level: L0, cost: c0.v, est: c0.est, at: s0.t, wait: s0.wait }];
+    return beamFrom(st1, head, depth - 1, S.beam > 0 ? Math.min(400, Math.round(S.beam)) : 80);
+  }
+  function analyze(){
+    var st0 = origin();
+    var out = { plain: { time: tailTime(st0), path: [], end: st0 } };
+    out.best = out.plain;
+    TRACKS.forEach(function(track){
+      out[track] = rooted(track);
+      if (out[track] && out[track].time < out.best.time - 1e-9) out.best = out[track];
+    });
+    return out;
+  }
+
+  // Момент, когда накопленная α с покупкой обгонит вариант без неё.
+  function breakEven(track){
+    var st0 = origin(), L = st0.lv[track] + 1, c = costOf(track, L);
+    if (c.v == null) return null;
+    var k0 = kp(st0.lv), rb0 = rateBeta(st0.lv);
+    function base(t){ return st0.A + alphaGained(k0.K, st0.B + 1, rb0, k0.P, t); }
+    var s = buyStep(st0, track, c.v);
+    if (!s) return Infinity;
+    var lv2 = withLevel(st0.lv, track, L), k2 = kp(lv2), rb2 = rateBeta(lv2);
+    function buy(t){
+      if (t <= s.wait) return st0.A + alphaGained(k0.K, st0.B + 1, rb0, k0.P, t);
+      return s.A + alphaGained(k2.K, s.B + 1, rb2, k2.P, t - s.wait);
+    }
+    var hi = Math.max(60, s.wait * 2 + 60), guard = 0;
+    while (hi < 1e12 && buy(hi) < base(hi) && guard++ < 60) hi *= 2;
+    if (!isFinite(buy(hi)) || !isFinite(base(hi)) || buy(hi) < base(hi)) return Infinity;
+    var lo = s.wait;
+    for (var i = 0; i < 60; i++){
+      var mid = (lo + hi) / 2;
+      if (buy(mid) >= base(mid)) hi = mid; else lo = mid;
+    }
+    return hi;
+  }
+
+  /* ============ отрисовка ============ */
+  function el(id){ return document.getElementById(id); }
+  var renderTimer = null;
+  function scheduleRender(){
+    if (renderTimer) clearTimeout(renderTimer);
+    renderTimer = setTimeout(function(){ renderTimer = null; render(); }, 160);
+  }
+
+  function render(){
+    normalize();
+    el("beta-locked").hidden = betaOpen();
+    var lv = curLv();
+    var rA = rateAlpha(lv, S.beta), rB = rateBeta(lv), bb = betaBonus(S.beta);
+    el("ro-rate").textContent = fmt(rA);
+    el("ro-brate").textContent = fmt(rB);
+    el("ro-bonus").textContent = "×" + fmt(bb);
+    el("check-rate").textContent = fmt(rA) + " α/с";
+    el("check-brate").textContent = fmt(rB) + " β/с";
+    el("check-bonus12").textContent = S.rank >= 12 ? "×" + fmt(bonus12(lv.bgen)) : "не активен (нужен ранг 12)";
+    el("check-bonus").textContent = S.rank >= 5 ? "×" + fmt(bonus5(lv.gen)) : "не активен";
+    el("check-mult").textContent = "×" + fmt(effectOf("mult", lv.mult));
+    el("hint-bonus").textContent = fmt(bb);
+    el("check-n140").textContent = "база множ. ×" + node140();
+    el("check-stupen2").textContent = Math.round(S.stupen) >= 2
+      ? "ген α ×" + fmt(stupen2Gen()) + " · множ α ×" + fmt(stupen2Mult(lv.mult)) + " (ур. " + lv.mult + ")"
+      : "не активен (нужна ступень 2)";
+    var togo = Math.max(0, Math.round(S.stupenRank) - Math.round(S.rank));
+    el("check-togo").textContent = togo > 0
+      ? togo + " ранг" + plural(togo, "", "а", "ов")
+      : "можно брать";
+
+    var a = analyze();
+    el("ro-eta").textContent = fmtTime(a.best.time);
+    renderVerdict(a, rA);
+    renderPlan(a.best);
+    renderCompare(a);
+
+    TRACKS.forEach(function(track){
+      var t = S[track];
+      updateRows(track);
+      el("now-" + track).textContent = "ур. " + t.level + " · " + META[track].sign + fmt(effectOf(track, t.level));
+      el("buy-" + track).textContent = "Купил ур. " + (t.level + 1) + " ✓";
+      el("undo-" + track).disabled = t.level <= startOf(track);
+    });
+  }
+
+  function renderVerdict(a, rA){
+    var mark = el("v-mark"), title = el("v-title"), why = el("v-why"), best = a.best;
+    mark.className = "vmark";
+    el("v-naive").textContent = fmtTime(a.plain.time);
+    el("v-best").textContent = fmtTime(best.time);
+    var saved = a.plain.time - best.time;
+    el("v-save").textContent = (isFinite(saved) && saved > 0.05) ? "−" + fmtTime(saved) : "0 с";
+
+    if (S.alpha >= S.rankCost){
+      mark.classList.add("now"); mark.textContent = "↑";
+      title.textContent = "Бери ранг прямо сейчас";
+      why.innerHTML = "На счету <em>" + fmt(S.alpha) + " α</em> при требовании <em>" + fmt(S.rankCost) + " α</em>.";
+      el("verdict").style.borderColor = "#2b6d7d";
+      return;
+    }
+    if (!(rA > 0)){
+      mark.classList.add("stop"); mark.textContent = "!";
+      title.textContent = "Скорость α равна нулю";
+      why.textContent = "Проверь уровни и коэффициенты модели — при таких значениях α не капает вовсе.";
+      el("verdict").style.borderColor = "#a8574a";
+      return;
+    }
+    if (!best.path.length){
+      mark.classList.add("save"); mark.textContent = "∅";
+      title.textContent = "Ничего не покупай — копи на ранг";
+      why.innerHTML = "Любая покупка отобьётся позже, чем придёт ранг. Остаток: <em>" + fmt(S.rankCost - S.alpha) + " α</em>.";
+      el("verdict").style.borderColor = "#a97c27";
+      return;
+    }
+    var f = best.path[0], sym = cur(f.track) === "a" ? "α" : "β";
+    mark.classList.add("buy"); mark.textContent = "✓";
+    title.textContent = "Бери " + fullName(f.track).toLowerCase() + " до ур. " + f.level;
+    why.innerHTML =
+      (f.wait > 0.5 ? "Накопится через <em>" + fmtTime(f.wait) + "</em>, " : "Хватает уже сейчас, ") +
+      "цена <em>" + fmt(f.cost) + " " + sym + "</em>" + (f.est ? " (прикидка)" : "") +
+      ". Экономит <em>" + fmtTime(saved) + "</em> против «копить в лоб»" +
+      (best.path.length > 1 ? ", дальше по плану ещё " + (best.path.length - 1) + " покупк" + plural(best.path.length - 1, "а", "и", "") : "") + ".";
+    el("verdict").style.borderColor = cur(f.track) === "a" ? "#2b6d7d" : "#3f9c72";
+  }
+
+  function renderPlan(best){
+    var ol = el("plan"); ol.innerHTML = "";
+    el("plan-tag").textContent = best.path.length ? best.path.length + " покупк" + plural(best.path.length, "а", "и", "") : "без покупок";
+    if (!best.path.length){
+      ol.innerHTML = '<li><span class="tcode">' + clock(0) + '</span><span class="step">Просто копим до <b>' + fmt(S.rankCost) + ' α</b>.</span><span class="price"></span></li>';
+    }
+    best.path.forEach(function(st){
+      var isB = cur(st.track) === "b";
+      var li = document.createElement("li");
+      li.innerHTML =
+        '<span class="tcode">' + clock(st.at) + '</span>' +
+        '<span class="step"><b>' + fullName(st.track) + '</b> → <span class="lvl' + (isB ? " b" : "") + '">ур. ' + st.level + '</span>' +
+        (st.wait > 0.5 ? ' <span style="color:var(--muted);font-size:12.5px">· ждём ' + fmtTime(st.wait) + '</span>'
+                       : ' <span style="color:var(--beta);font-size:12.5px">· сразу</span>') +
+        '</span>' +
+        '<span class="price' + (st.est ? " est" : "") + '">' + fmt(st.cost) + ' ' + (isB ? "β" : "α") + (st.est ? "*" : "") + '</span>';
+      ol.appendChild(li);
+    });
+    var fin = document.createElement("li");
+    fin.innerHTML = '<span class="tcode">' + clock(best.time) + '</span>' +
+      '<span class="step"><b style="color:var(--alpha)">Ранг ' + (S.rank + 1) + '</b> — на счету ' + fmt(S.rankCost) + ' α' +
+      ' <span style="color:var(--muted);font-size:12.5px">· скорость ' + fmt(rateAlpha(best.end.lv, best.end.B)) + ' α/с</span></span>' +
+      '<span class="price"></span>';
+    ol.appendChild(fin);
+    el("plan-total").textContent = fmtTime(best.time);
+  }
+
+  function renderCompare(a){
+    var tb = document.querySelector("#compare tbody"); tb.innerHTML = "";
+    var rows = [{ label: "Копить, ничего не брать", res: a.plain, cost: null, be: null, sym: "" }];
+    TRACKS.forEach(function(track){
+      var L = S[track].level + 1;
+      rows.push({
+        label: fullName(track) + " → ур. " + L,
+        res: a[track],
+        cost: costOf(track, L),
+        be: breakEven(track),
+        sym: cur(track) === "a" ? " α" : " β"
+      });
+    });
+    var bestTime = rows.reduce(function(m, r){ return (r.res && r.res.time < m) ? r.res.time : m; }, Infinity);
+    rows.forEach(function(r){
+      var t = r.res ? r.res.time : Infinity, tr = document.createElement("tr");
+      if (Math.abs(t - bestTime) < 1e-9) tr.className = "win";
+      var d = t - bestTime;
+      tr.innerHTML =
+        "<td>" + r.label + "</td>" +
+        '<td class="num">' + (r.cost && r.cost.v != null
+            ? '<span class="' + (r.cost.est ? "price est" : "") + '">' + fmt(r.cost.v) + r.sym + (r.cost.est ? "*" : "") + "</span>"
+            : "—") + "</td>" +
+        '<td class="num">' + (r.be == null ? "—" : fmtTime(r.be)) + "</td>" +
+        '<td class="num">' + fmtTime(t) + "</td>" +
+        '<td class="num"><span class="delta ' + (d < 1e-9 ? "zero" : "neg") + '">' + (d < 1e-9 ? "лучший" : "+" + fmtTime(d)) + "</span></td>";
+      tb.appendChild(tr);
+    });
+  }
+
+  /* ============ таблицы уровней ============ */
+  function firstBuyable(track){ return startOf(track) + 1; }
+  function maxShown(track){
+    var t = S[track], known = Object.keys(t.costs).map(Number);
+    var hi = known.length ? Math.max.apply(null, known) : 0;
+    return Math.max(t.level + 8, hi + 1, firstBuyable(track) + 7);
+  }
+  function rowCount(track){ return maxShown(track) - firstBuyable(track) + 1; }
+
+  function buildTrackBlocks(){
+    ["a", "b"].forEach(function(group){
+      var host = el("tracks-" + group);
+      host.innerHTML = "";
+      TRACKS.filter(function(t){ return cur(t) === group; }).forEach(function(track){
+        var div = document.createElement("div");
+        div.className = "track";
+        div.innerHTML =
+          '<div class="thead">' +
+            '<h3>' + META[track].name + '</h3><span class="now" id="now-' + track + '"></span>' +
+            '<span class="flash" id="flash-' + track + '"></span>' +
+            '<span class="row" style="margin-left:auto;gap:6px">' +
+              '<button class="mini undo" id="undo-' + track + '" title="Откатить уровень назад">−</button>' +
+              '<button class="mini buy" id="buy-' + track + '">Купил ✓</button>' +
+            '</span>' +
+          '</div>' +
+          '<div class="lvls">' +
+            '<div class="lvl-row head"><span class="lab">Ур.</span><span class="lab">Цена, ' + (group === "a" ? "α" : "β") + '</span><span class="lab">' + META[track].col + '</span></div>' +
+            '<div id="rows-' + track + '"></div>' +
+          '</div>';
+        host.appendChild(div);
+      });
+    });
+    TRACKS.forEach(buildRows);
+  }
+  function buildRows(track){
+    var host = el("rows-" + track), top = maxShown(track);
+    host.innerHTML = "";
+    for (var L = firstBuyable(track); L <= top; L++){
+      var row = document.createElement("div");
+      row.className = "lvl-row";
+      row.dataset.level = L;
+      row.innerHTML =
+        '<span class="lvl-tag"><span>' + L + '</span><span class="badge" hidden>след.</span></span>' +
+        '<input type="text" inputmode="decimal" id="' + track + '-c-' + L + '" data-kind="cost" data-level="' + L + '">' +
+        '<input type="text" inputmode="decimal" id="' + track + '-e-' + L + '" data-kind="eff" data-level="' + L + '">';
+      host.appendChild(row);
+    }
+  }
+  function updateRows(track){
+    var host = el("rows-" + track), t = S[track];
+    if (host.children.length !== rowCount(track)) buildRows(track);
+    Array.prototype.forEach.call(host.children, function(row){
+      var L = +row.dataset.level;
+      row.classList.toggle("done", L <= t.level);
+      row.classList.toggle("next", L === t.level + 1);
+      row.querySelector(".badge").hidden = L !== t.level + 1;
+      var ci = row.querySelector('[data-kind="cost"]'), c = costOf(track, L);
+      if (document.activeElement !== ci) ci.value = (t.costs[L] != null) ? String(t.costs[L]) : "";
+      ci.placeholder = c.v == null ? "?" : fmt(c.v);
+      ci.classList.toggle("est", t.costs[L] == null);
+      var ei = row.querySelector('[data-kind="eff"]');
+      if (document.activeElement !== ei) ei.value = (t.eff[L] != null) ? String(t.eff[L]) : "";
+      ei.placeholder = fmt(effectOf(track, L));
+      ei.classList.toggle("est", t.eff[L] == null);
+    });
+  }
+
+  function buildTrackParams(){
+    var host = el("track-params");
+    host.innerHTML = "";
+    TRACKS.forEach(function(track){
+      var div = document.createElement("div");
+      div.className = "grid3";
+      div.style.marginTop = "12px";
+      div.innerHTML =
+        '<label><span class="lab">' + fullName(track) + ': шаг</span><input type="text" inputmode="decimal" id="p-' + track + '-step"></label>' +
+        '<label><span class="lab">' + fullName(track) + ': сдвиг</span><input type="text" inputmode="decimal" id="p-' + track + '-free"></label>' +
+        '<label><span class="lab">' + fullName(track) + ': рост цены ×</span><input type="text" inputmode="decimal" id="p-' + track + '-ratio"></label>';
+      host.appendChild(div);
+    });
+  }
+
+  /* ============ хранение ============ */
+  function saveLocal(){ try { localStorage.setItem(LS, JSON.stringify(S)); } catch(e){} }
+  function save(){
+    saveLocal();
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      saveTimer = null;
+      if (!dbDoc) return;
+      dbDoc.set({ state: JSON.parse(JSON.stringify(S)), savedAt: new Date().toISOString() }).then(function(){
+        setSync(true, "синхронизируется между устройствами");
+      }, function(){ setSync(false, "сохранено в этом браузере"); });
+    }, 700);
+  }
+  function setSync(ok, text){
+    el("sync-dot").classList.toggle("on", !!ok);
+    el("sync-text").textContent = text;
+  }
+
+  /* ============ события ============ */
+  var FIELDS = [], snap = {}, flashTimers = {};
+  function flash(track, msg){
+    var box = el("flash-" + track);
+    if (!box) return;
+    box.textContent = msg || "";
+    if (flashTimers[track]) clearTimeout(flashTimers[track]);
+    if (msg) flashTimers[track] = setTimeout(function(){ box.textContent = ""; }, 9000);
+  }
+  function bindField(id, get, set){
+    var input = el(id);
+    if (!input) return;
+    input.value = get();
+    input.addEventListener("input", function(){
+      var n = parseNum(input.value);
+      if (n != null){ set(n); save(); scheduleRender(); }
+    });
+    input.addEventListener("blur", function(){ input.value = get(); });
+    FIELDS.push({ apply: function(){ input.value = get(); } });
+  }
+  // Одноуровневый узел: галочка стоит — коэффициент его, снята — единица.
+  function bindCheck(id, factor, get, set){
+    var input = el(id);
+    if (!input) return;
+    function apply(){ input.checked = get() > 1; }
+    apply();
+    input.addEventListener("change", function(){
+      set(input.checked ? factor : 1);
+      save(); render();
+    });
+    FIELDS.push({ apply: apply });
+  }
+  function refreshFields(){ FIELDS.forEach(function(f){ f.apply(); }); }
+
+  function wire(){
+    bindField("f-rank",     function(){ return S.rank; },      function(v){ S.rank = Math.max(1, Math.round(v)); });
+    bindField("f-alpha",    function(){ return S.alpha; },     function(v){ S.alpha = Math.max(0, v); });
+    bindField("f-rankcost", function(){ return S.rankCost; },  function(v){ S.rankCost = Math.max(0, v); S.rankCosts[S.rank + 1] = S.rankCost; });
+    bindField("f-beta",     function(){ return S.beta; },      function(v){ S.beta = Math.max(0, v); });
+    bindCheck("f-n139", 2,  function(){ return S.node139; },   function(v){ S.node139 = v; });
+    bindCheck("f-n141", 3,  function(){ return S.node141; },   function(v){ S.node141 = v; });
+    bindCheck("f-n142", 1.25, function(){ return S.node142; }, function(v){ S.node142 = v; });
+    bindCheck("f-n143", 2,    function(){ return S.node143; }, function(v){ S.node143 = v; });
+    bindField("f-n140",     function(){ return S.n140lvl; },   function(v){ S.n140lvl = Math.max(0, Math.min(9, Math.round(v))); });
+    bindField("f-stupen",   function(){ return S.stupen; },    function(v){ S.stupen = Math.max(0, Math.round(v)); });
+    bindField("f-betaexp",  function(){ return S.betaExp; },   function(v){ S.betaExp = Math.max(0, v); });
+    bindField("f-stupenrank", function(){ return S.stupenRank; }, function(v){ S.stupenRank = Math.max(1, Math.round(v)); });
+    bindField("f-rankstart",  function(){ return S.rankStart; },  function(v){ S.rankStart = Math.max(0, Math.round(v)); });
+    bindField("f-relic",      function(){ return S.relicGen; },   function(v){ S.relicGen = Math.max(0, v); });
+    bindField("m-base",     function(){ return S.basePerRank; }, function(v){ S.basePerRank = v; });
+    bindField("m-rank5k",   function(){ return S.rank5k; },    function(v){ S.rank5k = v; });
+    bindField("m-rank12k",  function(){ return S.rank12k; },   function(v){ S.rank12k = v; });
+    bindField("m-depth",    function(){ return S.depth; },     function(v){ S.depth = Math.max(1, Math.min(40, Math.round(v))); });
+    bindField("m-beam",     function(){ return S.beam; },      function(v){ S.beam = Math.max(4, Math.min(400, Math.round(v))); });
+
+    TRACKS.forEach(function(track){
+      bindField("f-" + track,         function(){ return S[track].level; }, function(v){ S[track].level = Math.max(startOf(track), Math.round(v)); });
+      bindField("p-" + track + "-step",  function(){ return S[track].step; },  function(v){ S[track].step = v; });
+      bindField("p-" + track + "-free",  function(){ return S[track].free; },  function(v){ S[track].free = Math.max(0, Math.round(v)); });
+      bindField("p-" + track + "-ratio", function(){ return S[track].ratio; }, function(v){ S[track].ratio = v; });
+
+      el("rows-" + track).addEventListener("input", function(ev){
+        var tgt = ev.target;
+        if (!tgt.dataset || !tgt.dataset.kind) return;
+        var L = +tgt.dataset.level, store = tgt.dataset.kind === "cost" ? S[track].costs : S[track].eff;
+        var raw = tgt.value.trim();
+        if (raw === "") delete store[L];
+        else {
+          var n = parseNum(raw);
+          if (n == null || n < 0) return;
+          store[L] = n;
+        }
+        save(); scheduleRender();
+      });
+
+      // Покупка почти всегда означает, что время шло: пока копилась α,
+      // росли и β. Поэтому прокручиваем мир тем же шагом, что и в плане,
+      // а не просто вычитаем цену — иначе β остаются в прошлом и весь
+      // дальнейший расчёт идёт по заниженному бонусу.
+      el("buy-" + track).addEventListener("click", function(){
+        var L = S[track].level + 1, c = costOf(track, L);
+        snap[track] = { alpha: S.alpha, beta: S.beta, level: S[track].level };
+        var msg = "";
+        if (c.v != null){
+          var s = buyStep(origin(), track, c.v);
+          if (s){
+            var dB = s.B - S.beta;
+            S.alpha = s.A;
+            S.beta = s.B;
+            if (s.wait > 0.5) msg = "учтено " + fmtTime(s.wait) + " ожидания · β +" + fmt(dB);
+          } else if (cur(track) === "a"){
+            S.alpha = Math.max(0, S.alpha - c.v);
+          } else {
+            S.beta = Math.max(0, S.beta - c.v);
+          }
+        }
+        S[track].level = L;
+        flash(track, msg);
+        refreshFields(); save(); render();
+      });
+      el("undo-" + track).addEventListener("click", function(){
+        var L = S[track].level;
+        if (L <= startOf(track)) return;
+        var s = snap[track];
+        if (s && s.level === L - 1){
+          // Откат ровно в то состояние, что было до нажатия «Купил».
+          S.alpha = s.alpha;
+          S.beta = s.beta;
+          S[track].level = s.level;
+          snap[track] = null;
+        } else {
+          var c = costOf(track, L);
+          S[track].level = L - 1;
+          if (c.v != null){
+            if (cur(track) === "a") S.alpha += c.v; else S.beta += c.v;
+          }
+        }
+        flash(track, "");
+        refreshFields(); save(); render();
+      });
+    });
+
+    // Сносит сторону частицы: запас и все три её ветки на стартовые уровни.
+    // Прайс-листы остаются — цены при сбросе идут теми же числами.
+    function resetSide(tracks, key){
+      tracks.forEach(function(t){ S[t].level = startOf(t); });
+      S[key] = 0;
+    }
+    function resetAlphaSide(){ resetSide(["gen", "mult", "boost"], "alpha"); }
+    function resetBetaSide(){ resetSide(["bgen", "bmult", "bboost"], "beta"); }
+    el("btn-rankup").addEventListener("click", function(){
+      S.rank = S.rank + 1;
+      resetAlphaSide();
+      if (S.rankCosts[S.rank + 1] != null) S.rankCost = S.rankCosts[S.rank + 1];
+      refreshFields(); save(); render();
+      el("f-rankcost").focus();
+      el("f-rankcost").select();
+    });
+    // Ступень покупается за ранги α и сносит вообще всё: ранг падает
+    // на старт, обе частицы обнуляются, все шесть веток на старт.
+    el("btn-stupen").addEventListener("click", function(){
+      S.stupen = Math.round(S.stupen) + 1;
+      S.rank = S.rankStart;
+      resetAlphaSide();
+      resetBetaSide();
+      if (S.rankCosts[S.rank + 1] != null) S.rankCost = S.rankCosts[S.rank + 1];
+      refreshFields(); save(); render();
+      el("f-rankcost").focus();
+      el("f-rankcost").select();
+    });
+  }
+
+  /* ============ старт ============ */
+  try {
+    var raw = localStorage.getItem(LS);
+    if (raw) mergeInto(S, JSON.parse(raw));
+  } catch(e){}
+  migrate();
+
+  buildTrackBlocks();
+  buildTrackParams();
+  wire();
+  refreshFields();
+  render();
+
+  if (window.claude && window.claude.use){
+    window.claude.use("db").then(function(d){
+      if (!d) return;
+      dbDoc = d.doc("state/main");
+      return dbDoc.get().then(function(snap){
+        if (snap && snap.exists){
+          var data = snap.data();
+          if (data && data.state){
+            // Если в облаке ещё старый формат — пересчитываем уровень
+            // от его же множителя, а не от локального.
+            if (data.state.n140lvl == null) S.n140lvl = null;
+            mergeInto(S, data.state);
+            migrate();
+            TRACKS.forEach(buildRows);
+            refreshFields(); render();
+          }
+        }
+        setSync(true, "синхронизируется между устройствами");
+      });
+    }).catch(function(){ setSync(false, "сохранено в этом браузере"); });
+  }
+})();
+</script>
+</body>
+</html>
