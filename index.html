@@ -633,7 +633,7 @@
 
   /* ============ состояние ============ */
   var DEF = {
-    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 80, beam: 50,
+    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 80, beam: 50, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, stupen: 0, betaExp: 0.2, beta: 0,
     stupenRank: 13, rankStart: 1, relicGen: 1, n140lvl: 0,
     rankCosts: { "5":160, "6":500, "7":1000, "8":2000, "9":13280, "10":267543,
@@ -653,6 +653,14 @@
   // Раньше у узла 140 хранился сам множитель, теперь — уровень.
   // Пересчитываем один раз: множитель 4 означал уровень 3.
   function migrate(){
+    // Глубина и ширина — не пользовательский выбор, а настройка поиска.
+    // Старое значение 30 обрезало план, поэтому один раз поднимаем его
+    // до нового умолчания; метка не даёт сделать это повторно.
+    if (!(S.tuned >= 2)){
+      if (!(S.depth > 30)) S.depth = 80;
+      if (!(S.beam >= 50)) S.beam = 50;
+      S.tuned = 2;
+    }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
     }
