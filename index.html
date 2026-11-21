@@ -1421,7 +1421,11 @@
     try { incoming = JSON.stringify(data.state); } catch(e){ incoming = null; }
     if (incoming && incoming === lastApplied) return false;
     lastApplied = incoming;
+    // Метки переноса сбрасываем, если в облаке их нет: иначе значение
+    // из умолчаний скажет «уже перенесено» и облачное состояние
+    // останется со старыми настройками.
     if (data.state.n140lvl == null) S.n140lvl = null;
+    if (data.state.tuned == null) S.tuned = null;
     mergeInto(S, data.state);
     migrate();
     TRACKS.forEach(buildRows);
