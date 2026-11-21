@@ -1110,18 +1110,19 @@
     });
     var bestTime = rows.reduce(function(m, r){ return (r.res && r.res.time < m) ? r.res.time : m; }, Infinity);
     rows.forEach(function(r){
-      var t = r.res ? r.res.time : Infinity, tr = document.createElement("tr");
-      if (Math.abs(t - bestTime) < 1e-9) tr.className = "win";
-      var d = t - bestTime;
-      tr.innerHTML =
+      // Имена t и tr заняты переводом — здесь используем свои.
+      var secs = r.res ? r.res.time : Infinity, row = document.createElement("tr");
+      if (Math.abs(secs - bestTime) < 1e-9) row.className = "win";
+      var d = secs - bestTime;
+      row.innerHTML =
         "<td>" + r.label + "</td>" +
         '<td class="num">' + (r.cost && r.cost.v != null
             ? '<span class="' + (r.cost.est ? "price est" : "") + '">' + fmt(r.cost.v) + r.sym + (r.cost.est ? "*" : "") + "</span>"
             : "—") + "</td>" +
         '<td class="num">' + (r.be == null ? "—" : fmtTime(r.be)) + "</td>" +
-        '<td class="num">' + fmtTime(t) + "</td>" +
+        '<td class="num">' + fmtTime(secs) + "</td>" +
         '<td class="num"><span class="delta ' + (d < 1e-9 ? "zero" : "neg") + '">' + (d < 1e-9 ? t("cmp.best") : "+" + fmtTime(d)) + "</span></td>";
-      tb.appendChild(tr);
+      tb.appendChild(row);
     });
   }
 
@@ -1138,7 +1139,7 @@
     ["a", "b"].forEach(function(group){
       var host = el("tracks-" + group);
       host.innerHTML = "";
-      TRACKS.filter(function(t){ return cur(t) === group; }).forEach(function(track){
+      TRACKS.filter(function(tk){ return cur(tk) === group; }).forEach(function(track){
         var div = document.createElement("div");
         div.className = "track";
         div.innerHTML =
