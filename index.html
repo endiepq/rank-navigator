@@ -77,6 +77,11 @@
   .chip b{display:block;font-family:var(--mono);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--alpha)}
   .chip.b b{color:var(--beta)}
   .chip span{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .langsw{display:flex;align-self:center;border:1px solid var(--line-soft);border-radius:9px;overflow:hidden}
+  .langsw button{background:var(--panel);border:0;border-radius:0;padding:9px 11px;font-size:11.5px;letter-spacing:.06em;color:var(--muted);font-weight:700}
+  .langsw button + button{border-left:1px solid var(--line-soft)}
+  .langsw button:hover{color:var(--text)}
+  .langsw button.on{background:var(--raise);color:var(--alpha)}
 
   .cols{display:grid;grid-template-columns:1.02fr .98fr;gap:18px;align-items:start}
   @media (max-width:880px){ .cols{grid-template-columns:1fr} }
@@ -200,15 +205,18 @@
     <div class="brand">
       <div class="glyph" aria-hidden="true">α</div>
       <div>
-        <h1>Навигатор ранга</h1>
-        <div class="sub">Что купить следующим — за α или за β — чтобы ранг пришёл раньше</div>
+        <h1 data-i18n="h.title">Навигатор ранга</h1>
+        <div class="sub" data-i18n="h.sub">Что купить следующим — за α или за β — чтобы ранг пришёл раньше</div>
       </div>
     </div>
     <div class="readout">
-      <div class="chip"><b id="ro-rate">—</b><span>α / сек</span></div>
-      <div class="chip b"><b id="ro-brate">—</b><span>β / сек</span></div>
-      <div class="chip b"><b id="ro-bonus">—</b><span>бонус β→α</span></div>
-      <div class="chip"><b id="ro-eta">—</b><span>до ранга</span></div>
+      <div class="chip"><b id="ro-rate">—</b><span data-i18n="chip.arate">α / сек</span></div>
+      <div class="chip b"><b id="ro-brate">—</b><span data-i18n="chip.brate">β / сек</span></div>
+      <div class="chip b"><b id="ro-bonus">—</b><span data-i18n="chip.bonus">бонус β→α</span></div>
+      <div class="chip"><b id="ro-eta">—</b><span data-i18n="chip.eta">до ранга</span></div>
+      <div class="langsw" role="group" aria-label="Language">
+        <button type="button" id="lang-ru">RU</button><button type="button" id="lang-en">EN</button>
+      </div>
     </div>
   </header>
 
@@ -218,187 +226,162 @@
         <div class="lead">
           <div class="vmark" id="v-mark">?</div>
           <div>
-            <div class="vtitle" id="v-title">Считаю…</div>
+            <div class="vtitle" id="v-title">—</div>
             <div class="vwhy" id="v-why"></div>
           </div>
         </div>
         <div class="vstats">
-          <div><span>Если копить в лоб</span><b id="v-naive">—</b></div>
-          <div><span>По плану</span><b id="v-best">—</b></div>
-          <div><span>Экономия</span><b id="v-save">—</b></div>
+          <div><span data-i18n="v.naive">Если копить в лоб</span><b id="v-naive">—</b></div>
+          <div><span data-i18n="v.best">По плану</span><b id="v-best">—</b></div>
+          <div><span data-i18n="v.save">Экономия</span><b id="v-save">—</b></div>
         </div>
       </section>
 
       <section class="panel">
-        <h2>План до ранга <span class="tag" id="plan-tag"></span></h2>
+        <h2><span data-i18n="plan.h">План до ранга</span> <span class="tag" id="plan-tag"></span></h2>
         <div class="pad">
           <ol class="plan" id="plan"></ol>
           <div class="finish">
-            <span style="color:var(--muted);font-size:13px">Ранг в руках через</span>
+            <span style="color:var(--muted);font-size:13px" data-i18n="plan.total">Ранг в руках через</span>
             <span class="big" id="plan-total">—</span>
           </div>
         </div>
       </section>
 
       <section class="panel">
-        <h2>Сравнение первого хода</h2>
+        <h2 data-i18n="cmp.h">Сравнение первого хода</h2>
         <div class="pad">
           <div class="scroll">
             <table id="compare">
               <thead><tr>
-                <th>Первый ход</th><th class="num">Цена</th><th class="num">Отобьётся</th><th class="num">До ранга</th><th class="num">Δ</th>
+                <th data-i18n="cmp.move">Первый ход</th>
+                <th class="num" data-i18n="cmp.cost">Цена</th>
+                <th class="num" data-i18n="cmp.pay">Отобьётся</th>
+                <th class="num" data-i18n="cmp.eta">До ранга</th>
+                <th class="num">Δ</th>
               </tr></thead>
               <tbody></tbody>
             </table>
           </div>
-          <div class="hint">«Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.</div>
+          <div class="hint" data-i18n="cmp.hint">«Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.</div>
         </div>
       </section>
     </div>
 
     <div class="stack">
       <section class="panel">
-        <h2>Альфа — сейчас в игре</h2>
+        <h2 data-i18n="a.h">Альфа — сейчас в игре</h2>
         <div class="pad">
           <div class="grid4">
-            <label><span class="lab">Ранг</span><input type="text" id="f-rank" inputmode="decimal"></label>
-            <label><span class="lab">α сейчас</span><input type="text" id="f-alpha" inputmode="decimal"></label>
-            <label><span class="lab">Нужно α на ранг</span><input type="text" id="f-rankcost" inputmode="decimal"></label>
-            <label><span class="lab">Ур. генератора</span><input type="text" id="f-gen" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="a.rank">Ранг</span><input type="text" id="f-rank" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="a.alpha">α сейчас</span><input type="text" id="f-alpha" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="a.req">Нужно α на ранг</span><input type="text" id="f-rankcost" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="lv.gen">Ур. генератора</span><input type="text" id="f-gen" inputmode="decimal"></label>
           </div>
           <div class="grid4" style="margin-top:12px">
-            <label><span class="lab">Ур. множителя</span><input type="text" id="f-mult" inputmode="decimal"></label>
-            <label><span class="lab">Ур. усилителя</span><input type="text" id="f-boost" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="lv.mult">Ур. множителя</span><input type="text" id="f-mult" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="lv.boost">Ур. усилителя</span><input type="text" id="f-boost" inputmode="decimal"></label>
             <div style="grid-column:span 2;display:flex;align-items:flex-end">
-              <button id="btn-rankup" class="primary">Ранг взят ↻</button>
+              <button id="btn-rankup" class="primary" data-i18n="btn.rankup">Ранг взят ↻</button>
             </div>
           </div>
-          <div class="hint">«Ранг взят» поднимает ранг, обнуляет α и возвращает α-ветки на старт. Прайс-листы остаются — при сбросе цены идут теми же числами.</div>
+          <div class="hint" data-i18n="a.rankuphint">«Ранг взят» поднимает ранг, обнуляет α и возвращает α-ветки на старт. Прайс-листы остаются — при сбросе цены идут теми же числами.</div>
           <div class="note">
             <span class="k">=</span>
-            <span>
-              Скорость α = <code>0.01 × ранг × узел139 × бонус5 × ступень(≥2) × реликвия × (β+1)^показатель × ген × множ</code>, всё в степени усилителя.
-              Сейчас <b class="val" id="check-rate">—</b>, бонус ранга 5 <b class="val" id="check-bonus">—</b>, множитель <b class="val" id="check-mult">—</b>. Сверь с игрой.
-            </span>
+            <span data-i18n-html="a.formula"></span>
           </div>
         </div>
       </section>
 
       <section class="panel beta">
-        <h2>Бета — сейчас в игре</h2>
+        <h2 data-i18n="b.h">Бета — сейчас в игре</h2>
         <div class="pad">
           <div class="grid4">
-            <label><span class="lab">β сейчас</span><input type="text" id="f-beta" inputmode="decimal"></label>
-            <label><span class="lab">Ур. генератора</span><input type="text" id="f-bgen" inputmode="decimal"></label>
-            <label><span class="lab">Ур. множителя</span><input type="text" id="f-bmult" inputmode="decimal"></label>
-            <label><span class="lab">Ур. усилителя</span><input type="text" id="f-bboost" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="b.beta">β сейчас</span><input type="text" id="f-beta" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="lv.gen">Ур. генератора</span><input type="text" id="f-bgen" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="lv.mult">Ур. множителя</span><input type="text" id="f-bmult" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="lv.boost">Ур. усилителя</span><input type="text" id="f-bboost" inputmode="decimal"></label>
           </div>
           <div class="note" id="beta-locked" hidden>
             <span class="k">!</span>
-            <span>
-              Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего.
-              Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.
-            </span>
+            <span data-i18n="b.locked">Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего. Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.</span>
           </div>
           <div class="note">
             <span class="k">β</span>
-            <span>
-              Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>.
-              Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено.
-              Скорость β = <b class="val b" id="check-brate">—</b>, бонус ранга 12 = <b class="val b" id="check-bonus12">—</b>.
-            </span>
+            <span data-i18n-html="b.note"></span>
           </div>
         </div>
       </section>
 
       <section class="panel">
-        <h2>Узлы дерева и ступень</h2>
+        <h2 data-i18n="n.h">Узлы дерева и ступень</h2>
         <div class="pad">
           <div class="grid2">
-            <label><span class="lab">Узел 140: уровень из 9 → <b class="val" id="check-n140">—</b></span><input type="text" id="f-n140" inputmode="numeric"></label>
+            <label><span class="lab"><span data-i18n="n.140">Узел 140: уровень из 9 →</span> <b class="val" id="check-n140">—</b></span><input type="text" id="f-n140" inputmode="numeric"></label>
             <div>
-              <span class="lab">Куплённые узлы</span>
+              <span class="lab" data-i18n="n.bought">Куплённые узлы</span>
               <div class="row" style="gap:8px 18px;padding-top:7px">
-                <label class="chk"><input type="checkbox" id="f-n139"><span>139 — база ген. α ×2</span></label>
-                <label class="chk"><input type="checkbox" id="f-n141"><span>141 — награда ранга 5 ×3</span></label>
-                <label class="chk"><input type="checkbox" id="f-n142"><span>142 — база генераторов ×1.25 за 10 ур.</span></label>
-                <label class="chk"><input type="checkbox" id="f-n143"><span>143 — база множителей ×2 за 7 ур.</span></label>
+                <label class="chk"><input type="checkbox" id="f-n139"><span data-i18n="n.139">139 — база ген. α ×2</span></label>
+                <label class="chk"><input type="checkbox" id="f-n141"><span data-i18n="n.141">141 — награда ранга 5 ×3</span></label>
+                <label class="chk"><input type="checkbox" id="f-n142"><span data-i18n="n.142">142 — база генераторов ×1.25 за 10 ур.</span></label>
+                <label class="chk"><input type="checkbox" id="f-n143"><span data-i18n="n.143">143 — база множителей ×2 за 7 ур.</span></label>
               </div>
             </div>
           </div>
           <div class="grid4" style="margin-top:12px">
-            <label><span class="lab">Ступень</span><input type="text" id="f-stupen" inputmode="decimal"></label>
-            <label><span class="lab">Показатель β→α</span><input type="text" id="f-betaexp" inputmode="decimal"></label>
-            <label><span class="lab">Ступень требует ранг</span><input type="text" id="f-stupenrank" inputmode="numeric"></label>
-            <label><span class="lab">Ранг после сброса</span><input type="text" id="f-rankstart" inputmode="numeric"></label>
+            <label><span class="lab" data-i18n="n.tier">Ступень</span><input type="text" id="f-stupen" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="n.exp">Показатель β→α</span><input type="text" id="f-betaexp" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="n.tierreq">Ступень требует ранг</span><input type="text" id="f-stupenrank" inputmode="numeric"></label>
+            <label><span class="lab" data-i18n="n.rankstart">Ранг после сброса</span><input type="text" id="f-rankstart" inputmode="numeric"></label>
           </div>
           <div class="grid4" style="margin-top:12px">
-            <label><span class="lab">Реликвия: база ген. α и β ×</span><input type="text" id="f-relic" inputmode="decimal"></label>
+            <label><span class="lab" data-i18n="n.relic">Реликвия: база ген. α и β ×</span><input type="text" id="f-relic" inputmode="decimal"></label>
             <div style="grid-column:span 3;display:flex;align-items:flex-end;padding-bottom:9px">
-              <span class="hint" style="margin:0">
-                Множитель из реликвии — умножает базу обоих генераторов. Нет такой реликвии — оставь 1.
-                Бонус ступени 2: <b class="val" id="check-stupen2">—</b>.
-              </span>
+              <span class="hint" style="margin:0" data-i18n-html="n.relichint"></span>
             </div>
           </div>
           <div class="row" style="margin-top:14px">
-            <button id="btn-stupen">Ступень взята ↻</button>
-            <span class="hint" style="margin:0">
-              Покупается за ранги α и сносит ранг, α, β и все шесть веток.
-              Узлы дерева, прайс-листы и сама ступень сохраняются. До ступени осталось <b class="val" id="check-togo">—</b>.
-            </span>
+            <button id="btn-stupen" data-i18n="btn.tierup">Ступень взята ↻</button>
+            <span class="hint" style="margin:0" data-i18n-html="n.tierhint"></span>
           </div>
-          <div class="hint">
-            Узел 140 вводится уровнем, как в игре: 0/9 даёт ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. Множитель считается сам и показан рядом с полем.
-            Узлы 139 и 141 одноуровневые — просто ставь галочку, когда куплен: 139 удваивает базу генератора, 141 утраивает коэффициент награды ранга 5 (0.1 → 0.3).
-            Сверка: «бонус ранга 5» в блоке «Альфа» должен совпасть с тем, что игра пишет в награде за ранг 5.
-            Показатель 0.2 даёт «α Генератор ×<span id="hint-bonus">—</span>» при нынешних β; узел 147 его улучшает — тогда подними показатель, пока не сойдётся с игрой.
-          </div>
+          <div class="hint" data-i18n-html="n.hint"></div>
         </div>
       </section>
 
       <section class="panel">
-        <h2>Прайс-листы α <span class="tag">вводишь один раз — помнит навсегда</span></h2>
+        <h2><span data-i18n="pr.a">Прайс-листы α</span> <span class="tag" data-i18n="pr.tag">вводишь один раз — помнит навсегда</span></h2>
         <div id="tracks-a"></div>
       </section>
 
       <section class="panel beta">
-        <h2>Прайс-листы β</h2>
+        <h2 data-i18n="pr.b">Прайс-листы β</h2>
         <div id="tracks-b"></div>
         <div class="pad" style="padding-top:0">
-          <div class="hint">
-            Купил улучшение в игре — жми <b style="color:var(--alpha)">«Купил ✓»</b>: уровень поднимется, цена спишется с нужной валюты,
-            а если на неё ещё надо было копить — заодно прокрутится время, и β подрастут на то, что накопилось за ожидание.
-            <b>−</b> возвращает ровно то состояние, что было до нажатия.
-            Жёлтым — цена, достроенная по шагу роста; впишешь настоящую — станет белой.
-          </div>
+          <div class="hint" data-i18n-html="pr.hint"></div>
         </div>
       </section>
 
       <section class="panel">
         <details>
-          <summary>Модель: коэффициенты и шаги</summary>
+          <summary data-i18n="m.h">Модель: коэффициенты и шаги</summary>
           <div class="pad">
             <div class="grid3">
-              <label><span class="lab">База за ранг</span><input type="text" id="m-base" inputmode="decimal"></label>
-              <label><span class="lab">Бонус ранга 5: коэф.</span><input type="text" id="m-rank5k" inputmode="decimal"></label>
-              <label><span class="lab">Бонус ранга 12: коэф.</span><input type="text" id="m-rank12k" inputmode="decimal"></label>
+              <label><span class="lab" data-i18n="m.base">База за ранг</span><input type="text" id="m-base" inputmode="decimal"></label>
+              <label><span class="lab" data-i18n="m.r5">Бонус ранга 5: коэф.</span><input type="text" id="m-rank5k" inputmode="decimal"></label>
+              <label><span class="lab" data-i18n="m.r12">Бонус ранга 12: коэф.</span><input type="text" id="m-rank12k" inputmode="decimal"></label>
             </div>
             <div class="grid2" style="margin-top:12px">
-              <label><span class="lab">Покупок в плане</span><input type="text" id="m-depth" inputmode="numeric"></label>
-              <label><span class="lab">Ширина луча</span><input type="text" id="m-beam" inputmode="numeric"></label>
+              <label><span class="lab" data-i18n="m.depth">Покупок в плане</span><input type="text" id="m-depth" inputmode="numeric"></label>
+              <label><span class="lab" data-i18n="m.beam">Ширина луча</span><input type="text" id="m-beam" inputmode="numeric"></label>
             </div>
             <div id="track-params"></div>
-            <div class="hint">
-              Эффект уровня: <code>1 + шаг × (ур − сдвиг)</code>. Генераторы — сдвиг 1 (ур. 1 даёт ×1), множители и усилители — сдвиг 0.
-              У множителя α шаг дополнительно умножается на узел 140. Рост цены работает только там, где настоящая цена ещё не введена.
-            </div>
+            <div class="hint" data-i18n-html="m.hint"></div>
           </div>
         </details>
         <details>
-          <summary>Тетратор — добавим позже</summary>
+          <summary data-i18n="t.h">Тетратор — добавим позже</summary>
           <div class="pad">
-            <div class="hint">Тетрация стоит 1.00e25 — до неё разговор не про этот ранг. Как подберёшься, скажи, что даёт первый уровень, и добавлю седьмой веткой.</div>
+            <div class="hint" data-i18n="t.hint">Тетрация стоит 1.00e25 — до неё разговор не про этот ранг. Как подберёшься, скажи, что даёт первый уровень, и добавлю седьмой веткой.</div>
           </div>
         </details>
       </section>
@@ -406,9 +389,9 @@
   </div>
 
   <section class="panel" style="margin-top:18px">
-    <h2>Об инструменте</h2>
+    <h2 data-i18n="about.h">Об инструменте</h2>
     <div class="pad">
-      <p style="margin:0 0 12px;font-size:13.5px;color:var(--dim);max-width:70ch">
+      <p style="margin:0 0 12px;font-size:13.5px;color:var(--dim);max-width:70ch" lang="ru">
         <b>Навигатор ранга</b> — калькулятор вкладки «Частицы» в игре <b>Revolution Idle</b>. Он сравнивает все доступные
         покупки — генератор, множитель и усилитель для альфа- и бета-частиц — и показывает, какая из них приближает
         следующий ранг, а какая его отодвигает. Учитывает узлы дерева обработки, награды за ранг, ступень и обратную
@@ -416,21 +399,205 @@
       </p>
       <p style="margin:0;font-size:13.5px;color:var(--dim);max-width:70ch" lang="en">
         <b>Rank Navigator</b> is a particle calculator for the incremental game <b>Revolution Idle</b>. It compares every
-        available upgrade — generator, multiplier and booster, for both alpha and beta particles — and tells you whether
-        buying one now reaches the next rank sooner than simply saving up. It accounts for processing tree nodes, rank
-        rewards, tier bonuses and the beta-to-alpha feedback loop.
+        available upgrade — Generator, Multiplier and Empowerer, for both Alpha and Beta particles — and tells you whether
+        buying one now reaches the next rank sooner than simply saving up. It accounts for Refine Tree nodes, rank
+        bonuses, tier bonuses and the beta-to-alpha feedback loop.
       </p>
     </div>
   </section>
 
   <footer>
-    <span class="dot" id="sync-dot"></span><span id="sync-text">локальное сохранение</span>
+    <span class="dot" id="sync-dot"></span><span id="sync-text">—</span>
   </footer>
 </div>
 
 <script>
 (function(){
   "use strict";
+
+  /* ============ языки ============ */
+  var DICT = {
+    ru: {
+      "h.title":"Навигатор ранга",
+      "h.sub":"Что купить следующим — за α или за β — чтобы ранг пришёл раньше",
+      "chip.arate":"α / сек", "chip.brate":"β / сек", "chip.bonus":"бонус β→α", "chip.eta":"до ранга",
+      "v.naive":"Если копить в лоб", "v.best":"По плану", "v.save":"Экономия",
+      "plan.h":"План до ранга", "plan.total":"Ранг в руках через",
+      "cmp.h":"Сравнение первого хода", "cmp.move":"Первый ход", "cmp.cost":"Цена",
+      "cmp.pay":"Отобьётся", "cmp.eta":"До ранга",
+      "cmp.hint":"«Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.",
+      "a.h":"Альфа — сейчас в игре", "a.rank":"Ранг", "a.alpha":"α сейчас", "a.req":"Нужно α на ранг",
+      "lv.gen":"Ур. генератора", "lv.mult":"Ур. множителя", "lv.boost":"Ур. усилителя",
+      "btn.rankup":"Ранг взят ↻",
+      "a.rankuphint":"«Ранг взят» поднимает ранг, обнуляет α и возвращает α-ветки на старт. Прайс-листы остаются — при сбросе цены идут теми же числами.",
+      "a.formula":"Скорость α = <code>0.01 × ранг × узел139 × бонус5 × ступень(≥2) × реликвия × (β+1)^показатель × ген × множ</code>, всё в степени усилителя. Сейчас <b class=\"val\" id=\"check-rate\">—</b>, бонус ранга 5 <b class=\"val\" id=\"check-bonus\">—</b>, множитель <b class=\"val\" id=\"check-mult\">—</b>. Сверь с игрой.",
+      "b.h":"Бета — сейчас в игре", "b.beta":"β сейчас",
+      "b.locked":"Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего. Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.",
+      "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
+      "n.h":"Узлы дерева и ступень", "n.140":"Узел 140: уровень из 9 →", "n.bought":"Куплённые узлы",
+      "n.139":"139 — база ген. α ×2", "n.141":"141 — награда ранга 5 ×3",
+      "n.142":"142 — база генераторов ×1.25 за 10 ур.", "n.143":"143 — база множителей ×2 за 7 ур.",
+      "n.tier":"Ступень", "n.exp":"Показатель β→α", "n.tierreq":"Ступень требует ранг", "n.rankstart":"Ранг после сброса",
+      "n.relic":"Реликвия: база ген. α и β ×",
+      "n.relichint":"Множитель из реликвии — умножает базу обоих генераторов. Нет такой реликвии — оставь 1. Бонус ступени 2: <b class=\"val\" id=\"check-stupen2\">—</b>.",
+      "btn.tierup":"Ступень взята ↻",
+      "n.tierhint":"Покупается за ранги α и сносит ранг, α, β и все шесть веток. Узлы дерева, прайс-листы и сама ступень сохраняются. До ступени осталось <b class=\"val\" id=\"check-togo\">—</b>.",
+      "n.hint":"Узел 140 вводится уровнем, как в игре: 0/9 даёт ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. Множитель считается сам и показан рядом с полем. Узлы 139 и 141 одноуровневые — просто ставь галочку, когда куплен. Сверка: «бонус ранга 5» в блоке «Альфа» должен совпасть с наградой за ранг 5 в игре. Показатель 0.2 даёт «α Генератор ×<span id=\"hint-bonus\">—</span>» при нынешних β; узел 147 его улучшает — тогда подними показатель, пока не сойдётся.",
+      "pr.a":"Прайс-листы α", "pr.b":"Прайс-листы β", "pr.tag":"вводишь один раз — помнит навсегда",
+      "pr.hint":"Купил улучшение в игре — жми <b style=\"color:var(--alpha)\">«Купил ✓»</b>: уровень поднимется, цена спишется с нужной валюты, а если на неё ещё надо было копить — заодно прокрутится время, и β подрастут на то, что накопилось за ожидание. <b>−</b> возвращает ровно то состояние, что было до нажатия. Жёлтым — цена, достроенная по шагу роста; впишешь настоящую — станет белой.",
+      "m.h":"Модель: коэффициенты и шаги", "m.base":"База за ранг", "m.r5":"Бонус ранга 5: коэф.",
+      "m.r12":"Бонус ранга 12: коэф.", "m.depth":"Покупок в плане", "m.beam":"Ширина луча",
+      "m.hint":"Эффект уровня: <code>1 + шаг × (ур − сдвиг)</code>. Генераторы — сдвиг 1 (ур. 1 даёт ×1), множители и усилители — сдвиг 0. У множителя α шаг дополнительно умножается на узел 140. Рост цены работает только там, где настоящая цена ещё не введена.",
+      "t.h":"Тетратор — добавим позже",
+      "t.hint":"Тетрация стоит 1.00e25 — до неё разговор не про этот ранг. Как подберёшься, скажи, что даёт первый уровень, и добавлю седьмой веткой.",
+      "about.h":"Об инструменте",
+      "tr.gen":"Генератор", "tr.mult":"Множитель", "tr.boost":"Усилитель",
+      "col.lv":"Ур.", "col.cost":"Цена", "col.eff":"Эффект ×", "col.exp":"Степень ^",
+      "row.next":"след.", "btn.buy":"Купил ур. {l} ✓", "btn.undo":"Откатить уровень назад",
+      "flash.wait":"учтено {t} ожидания · β +{b}",
+      "v.now.t":"Бери ранг прямо сейчас",
+      "v.now.w":"На счету <em>{a} α</em> при требовании <em>{r} α</em>.",
+      "v.zero.t":"Скорость α равна нулю",
+      "v.zero.w":"Проверь уровни и коэффициенты модели — при таких значениях α не капает вовсе.",
+      "v.save.t":"Ничего не покупай — копи на ранг",
+      "v.save.w":"Любая покупка отобьётся позже, чем придёт ранг. Остаток: <em>{a} α</em>.",
+      "v.buy.t":"Бери {n} до ур. {l}",
+      "v.wait":"Накопится через <em>{t}</em>, ", "v.enough":"Хватает уже сейчас, ",
+      "v.price":"цена <em>{c} {s}</em>", "v.est":" (прикидка)",
+      "v.saves":". Экономит <em>{t}</em> против «копить в лоб»", "v.more":", дальше по плану ещё {n}",
+      "plan.none":"Просто копим до <b>{a} α</b>.", "plan.wait":"· ждём {t}", "plan.now":"· сразу",
+      "plan.rank":"Ранг {r}", "plan.onhand":"— на счету {a} α", "plan.rate":"· скорость {v} α/с",
+      "plan.nobuys":"без покупок",
+      "cmp.save":"Копить, ничего не брать", "cmp.best":"лучший", "cmp.to":"→ ур. {l}",
+      "sync.local":"локальное сохранение", "sync.cloud":"синхронизируется между устройствами",
+      "sync.browser":"сохранено в этом браузере",
+      "x.off":"не активен", "x.off12":"не активен (нужен ранг 12)", "x.off2":"не активен (нужна ступень 2)",
+      "x.multbase":"база множ. ×{v}", "x.ready":"можно брать",
+      "x.gen":"ген α ×{g} · множ α ×{m} (ур. {l})",
+      "u.s":" с", "u.m":" м", "u.h":" ч", "u.d":" д",
+      "m.p.step":": шаг", "m.p.free":": сдвиг", "m.p.ratio":": рост цены ×"
+    },
+    en: {
+      "h.title":"Rank Navigator",
+      "h.sub":"What to buy next — with α or β — so the rank arrives sooner",
+      "chip.arate":"α / sec", "chip.brate":"β / sec", "chip.bonus":"β→α bonus", "chip.eta":"to rank",
+      "v.naive":"Saving up plainly", "v.best":"Following the plan", "v.save":"Saved",
+      "plan.h":"Plan to the rank", "plan.total":"Rank in hand after",
+      "cmp.h":"First move compared", "cmp.move":"First move", "cmp.cost":"Cost",
+      "cmp.pay":"Pays off", "cmp.eta":"To rank",
+      "cmp.hint":"“Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly.",
+      "a.h":"Alpha — current in game", "a.rank":"Rank", "a.alpha":"α now", "a.req":"α required for rank",
+      "lv.gen":"Generator Lv", "lv.mult":"Multiplier Lv", "lv.boost":"Empowerer Lv",
+      "btn.rankup":"Ranked up ↻",
+      "a.rankuphint":"“Ranked up” raises the rank, zeroes α and returns the α branches to their start. Price lists stay — after a reset the costs repeat the same numbers.",
+      "a.formula":"α rate = <code>0.01 × rank × node139 × rank5 bonus × tier(≥2) × relic × (β+1)^exponent × gen × mult</code>, all raised to the Empowerer exponent. Now <b class=\"val\" id=\"check-rate\">—</b>, rank 5 bonus <b class=\"val\" id=\"check-bonus\">—</b>, multiplier <b class=\"val\" id=\"check-mult\">—</b>. Check against the game.",
+      "b.h":"Beta — current in game", "b.beta":"β now",
+      "b.locked":"Tier 0 — the β Generator is not unlocked yet. β does not accumulate and gives no α bonus, so there is nothing to buy on this side. Tier 1 grants the first β Generator level for free, and only then does β start flowing.",
+      "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
+      "n.h":"Refine Tree nodes and tier", "n.140":"Node 140: level out of 9 →", "n.bought":"Nodes purchased",
+      "n.139":"139 — α Generator base ×2", "n.141":"141 — rank 5 bonus ×3",
+      "n.142":"142 — Generator bases ×1.25 per 10 lv", "n.143":"143 — Multiplier bases ×2 per 7 lv",
+      "n.tier":"Tier", "n.exp":"β→α exponent", "n.tierreq":"Tier requires rank", "n.rankstart":"Rank after reset",
+      "n.relic":"Relic: α and β Generator base ×",
+      "n.relichint":"The relic multiplier — it multiplies the base of both Generators. No such relic — leave it at 1. Tier 2 bonus: <b class=\"val\" id=\"check-stupen2\">—</b>.",
+      "btn.tierup":"Tiered up ↻",
+      "n.tierhint":"Bought with α ranks; it wipes the rank, α, β and all six branches. Refine Tree nodes, price lists and the tier itself are kept. Ranks left to the tier: <b class=\"val\" id=\"check-togo\">—</b>.",
+      "n.hint":"Node 140 is entered as a level, like in the game: 0/9 gives ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. The multiplier is computed and shown beside the field. Nodes 139 and 141 are single-level — just tick them once bought. Cross-check: the “rank 5 bonus” in the Alpha block must match the rank 5 bonus in the game. The 0.2 exponent yields “α Generator ×<span id=\"hint-bonus\">—</span>” at your current β; refinement node 147 improves it — then raise the exponent until it matches.",
+      "pr.a":"α price lists", "pr.b":"β price lists", "pr.tag":"enter once — remembered for good",
+      "pr.hint":"Bought an upgrade in the game — press <b style=\"color:var(--alpha)\">“Bought ✓”</b>: the level goes up, the cost is deducted from the right currency, and if you still had to save for it, time is wound forward too, so β grows by whatever accumulated during the wait. <b>−</b> restores exactly the state before the press. Amber means a cost extrapolated from the growth step; type the real one and it turns white.",
+      "m.h":"Model: coefficients and steps", "m.base":"Base per rank", "m.r5":"Rank 5 bonus: coef.",
+      "m.r12":"Rank 12 bonus: coef.", "m.depth":"Buys in a plan", "m.beam":"Beam width",
+      "m.hint":"Level effect: <code>1 + step × (lv − offset)</code>. Generators use offset 1 (Lv 1 gives ×1), Multipliers and Empowerers use 0. The α Multiplier step is additionally multiplied by node 140. Cost growth is used only where a real price has not been entered yet.",
+      "t.h":"Tetrator — to be added later",
+      "t.hint":"Tetration costs 1.00e25 — far beyond this rank. Once you get close, tell me what the first level gives and I will add it as a seventh branch.",
+      "about.h":"About",
+      "tr.gen":"Generator", "tr.mult":"Multiplier", "tr.boost":"Empowerer",
+      "col.lv":"Lv", "col.cost":"Cost", "col.eff":"Effect ×", "col.exp":"Exponent ^",
+      "row.next":"next", "btn.buy":"Bought Lv {l} ✓", "btn.undo":"Undo one level",
+      "flash.wait":"counted {t} of waiting · β +{b}",
+      "v.now.t":"Take the rank right now",
+      "v.now.w":"You hold <em>{a} α</em> against a requirement of <em>{r} α</em>.",
+      "v.zero.t":"The α rate is zero",
+      "v.zero.w":"Check the levels and model coefficients — at these values α does not accumulate at all.",
+      "v.save.t":"Buy nothing — save for the rank",
+      "v.save.w":"Every purchase pays off later than the rank arrives. Remaining: <em>{a} α</em>.",
+      "v.buy.t":"Buy {n} up to Lv {l}",
+      "v.wait":"It accumulates in <em>{t}</em>, ", "v.enough":"You can afford it already, ",
+      "v.price":"cost <em>{c} {s}</em>", "v.est":" (estimate)",
+      "v.saves":". Saves <em>{t}</em> against plain saving", "v.more":", with {n} more ahead in the plan",
+      "plan.none":"Just save up to <b>{a} α</b>.", "plan.wait":"· wait {t}", "plan.now":"· right away",
+      "plan.rank":"Rank {r}", "plan.onhand":"— {a} α on hand", "plan.rate":"· rate {v} α/s",
+      "plan.nobuys":"no buys",
+      "cmp.save":"Save, buy nothing", "cmp.best":"best", "cmp.to":"→ Lv {l}",
+      "sync.local":"saved in this browser", "sync.cloud":"synced across devices",
+      "sync.browser":"saved in this browser",
+      "x.off":"not active", "x.off12":"not active (needs rank 12)", "x.off2":"not active (needs tier 2)",
+      "x.multbase":"multiplier base ×{v}", "x.ready":"available now",
+      "x.gen":"α Gen ×{g} · α Mult ×{m} (Lv {l})",
+      "u.s":" s", "u.m":" m", "u.h":" h", "u.d":" d",
+      "m.p.step":" step", "m.p.free":" offset", "m.p.ratio":" cost growth ×"
+    }
+  };
+  var LANG = "ru";
+  try {
+    var saved = localStorage.getItem("rank-nav-lang");
+    if (saved === "ru" || saved === "en") LANG = saved;
+    else LANG = /^ru\b/i.test(navigator.language || "") ? "ru" : "en";
+  } catch(e){ LANG = /^ru\b/i.test(navigator.language || "") ? "ru" : "en"; }
+
+  var tr = null;
+  function t(key, vars){
+    var s = (DICT[LANG] && DICT[LANG][key]) || DICT.ru[key] || key;
+    if (vars) Object.keys(vars).forEach(function(k){ s = s.split("{" + k + "}").join(vars[k]); });
+    return s;
+  }
+  tr = t;
+  // Склонения: в русском три формы, в английском хватает одной буквы.
+  function nBuys(n){
+    if (LANG === "en") return n + (n === 1 ? " buy" : " buys");
+    var m10 = n % 10, m100 = n % 100, f = "ок";
+    if (m10 === 1 && m100 !== 11) f = "ка";
+    else if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) f = "ки";
+    return n + " покуп" + f;
+  }
+  function nRanks(n){
+    if (LANG === "en") return n + (n === 1 ? " rank" : " ranks");
+    var m10 = n % 10, m100 = n % 100, f = "ов";
+    if (m10 === 1 && m100 !== 11) f = "";
+    else if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) f = "а";
+    return n + " ранг" + f;
+  }
+  function relabelParams(){
+    TRACKS.forEach(function(track){
+      var n = fullName(track);
+      [["step", "m.p.step"], ["free", "m.p.free"], ["ratio", "m.p.ratio"]].forEach(function(pair){
+        var node = document.getElementById("plab-" + track + "-" + pair[0]);
+        if (node) node.textContent = n + t(pair[1]);
+      });
+    });
+  }
+  function applyLang(){
+    document.documentElement.setAttribute("lang", LANG);
+    var nodes = document.querySelectorAll("[data-i18n]");
+    for (var i = 0; i < nodes.length; i++) nodes[i].textContent = t(nodes[i].getAttribute("data-i18n"));
+    var html = document.querySelectorAll("[data-i18n-html]");
+    for (var j = 0; j < html.length; j++) html[j].innerHTML = t(html[j].getAttribute("data-i18n-html"));
+    var tit = document.querySelectorAll("[data-i18n-title]");
+    for (var k = 0; k < tit.length; k++) tit[k].title = t(tit[k].getAttribute("data-i18n-title"));
+    relabelParams();
+    var sn = document.getElementById("sync-text");
+    if (sn) sn.textContent = t(syncKey);
+    var ru = document.getElementById("lang-ru"), en = document.getElementById("lang-en");
+    if (ru) ru.classList.toggle("on", LANG === "ru");
+    if (en) en.classList.toggle("on", LANG === "en");
+  }
+  function setLang(v){
+    if (v === LANG) return;
+    LANG = v;
+    try { localStorage.setItem("rank-nav-lang", v); } catch(e){}
+    applyLang();
+    render();
+  }
 
   /* ============ ветки ============ */
   var TRACKS = ["gen", "mult", "boost", "bgen", "bmult", "bboost"];
@@ -450,15 +617,19 @@
     });
   }
   var META = {
-    gen:    { name: "Генератор", cur: "a", sign: "×", col: "Эффект ×" },
-    mult:   { name: "Множитель", cur: "a", sign: "×", col: "Эффект ×" },
-    boost:  { name: "Усилитель", cur: "a", sign: "^", col: "Степень ^" },
-    bgen:   { name: "Генератор", cur: "b", sign: "×", col: "Эффект ×" },
-    bmult:  { name: "Множитель", cur: "b", sign: "×", col: "Эффект ×" },
-    bboost: { name: "Усилитель", cur: "b", sign: "^", col: "Степень ^" }
+    gen:    { kind: "gen",   cur: "a", sign: "×", col: "col.eff" },
+    mult:   { kind: "mult",  cur: "a", sign: "×", col: "col.eff" },
+    boost:  { kind: "boost", cur: "a", sign: "^", col: "col.exp" },
+    bgen:   { kind: "gen",   cur: "b", sign: "×", col: "col.eff" },
+    bmult:  { kind: "mult",  cur: "b", sign: "×", col: "col.eff" },
+    bboost: { kind: "boost", cur: "b", sign: "^", col: "col.exp" }
   };
   function cur(track){ return META[track].cur; }
-  function fullName(track){ return META[track].name + " " + (cur(track) === "a" ? "α" : "β"); }
+  // По-русски «Генератор α», по-английски «α Generator» — порядок разный.
+  function fullName(track){
+    var n = t("tr." + META[track].kind), sym = cur(track) === "a" ? "α" : "β";
+    return LANG === "en" ? sym + " " + n : n + " " + sym;
+  }
 
   /* ============ состояние ============ */
   var DEF = {
@@ -516,12 +687,12 @@
   function fmtTime(s){
     if (s == null || !isFinite(s)) return "∞";
     if (s < 0) s = 0;
-    if (s < 60) return (s < 10 ? s.toFixed(1) : Math.round(s)) + " с";
+    if (s < 60) return (s < 10 ? s.toFixed(1) : Math.round(s)) + t("u.s");
     var m = Math.floor(s / 60), sec = Math.round(s % 60);
-    if (m < 60) return m + " м " + sec + " с";
+    if (m < 60) return m + t("u.m") + " " + sec + t("u.s");
     var h = Math.floor(m / 60), mm = m % 60;
-    if (h < 48) return h + " ч " + mm + " м";
-    return Math.floor(h / 24) + " д " + (h % 24) + " ч";
+    if (h < 48) return h + t("u.h") + " " + mm + t("u.m");
+    return Math.floor(h / 24) + t("u.d") + " " + (h % 24) + t("u.h");
   }
   function clock(s){
     if (!isFinite(s)) return "—";
@@ -792,18 +963,16 @@
     el("ro-bonus").textContent = "×" + fmt(bb);
     el("check-rate").textContent = fmt(rA) + " α/с";
     el("check-brate").textContent = fmt(rB) + " β/с";
-    el("check-bonus12").textContent = S.rank >= 12 ? "×" + fmt(bonus12(lv.bgen)) : "не активен (нужен ранг 12)";
-    el("check-bonus").textContent = S.rank >= 5 ? "×" + fmt(bonus5(lv.gen)) : "не активен";
+    el("check-bonus12").textContent = S.rank >= 12 ? "×" + fmt(bonus12(lv.bgen)) : t("x.off12");
+    el("check-bonus").textContent = S.rank >= 5 ? "×" + fmt(bonus5(lv.gen)) : t("x.off");
     el("check-mult").textContent = "×" + fmt(effectOf("mult", lv.mult));
     el("hint-bonus").textContent = fmt(bb);
-    el("check-n140").textContent = "база множ. ×" + node140();
+    el("check-n140").textContent = t("x.multbase", { v: node140() });
     el("check-stupen2").textContent = Math.round(S.stupen) >= 2
-      ? "ген α ×" + fmt(stupen2Gen()) + " · множ α ×" + fmt(stupen2Mult(lv.mult)) + " (ур. " + lv.mult + ")"
-      : "не активен (нужна ступень 2)";
+      ? t("x.gen", { g: fmt(stupen2Gen()), m: fmt(stupen2Mult(lv.mult)), l: lv.mult })
+      : t("x.off2");
     var togo = Math.max(0, Math.round(S.stupenRank) - Math.round(S.rank));
-    el("check-togo").textContent = togo > 0
-      ? togo + " ранг" + plural(togo, "", "а", "ов")
-      : "можно брать";
+    el("check-togo").textContent = togo > 0 ? nRanks(togo) : t("x.ready");
 
     var a = analyze();
     el("ro-eta").textContent = fmtTime(a.best.time);
@@ -815,7 +984,7 @@
       var t = S[track];
       updateRows(track);
       el("now-" + track).textContent = "ур. " + t.level + " · " + META[track].sign + fmt(effectOf(track, t.level));
-      el("buy-" + track).textContent = "Купил ур. " + (t.level + 1) + " ✓";
+      el("buy-" + track).textContent = tr("btn.buy", { l: t.level + 1 });
       el("undo-" + track).disabled = t.level <= startOf(track);
     });
   }
@@ -826,62 +995,62 @@
     el("v-naive").textContent = fmtTime(a.plain.time);
     el("v-best").textContent = fmtTime(best.time);
     var saved = a.plain.time - best.time;
-    el("v-save").textContent = (isFinite(saved) && saved > 0.05) ? "−" + fmtTime(saved) : "0 с";
+    el("v-save").textContent = (isFinite(saved) && saved > 0.05) ? "−" + fmtTime(saved) : "0" + t("u.s");
 
     if (S.alpha >= S.rankCost){
       mark.classList.add("now"); mark.textContent = "↑";
-      title.textContent = "Бери ранг прямо сейчас";
-      why.innerHTML = "На счету <em>" + fmt(S.alpha) + " α</em> при требовании <em>" + fmt(S.rankCost) + " α</em>.";
+      title.textContent = t("v.now.t");
+      why.innerHTML = t("v.now.w", { a: fmt(S.alpha), r: fmt(S.rankCost) });
       el("verdict").style.borderColor = "#2b6d7d";
       return;
     }
     if (!(rA > 0)){
       mark.classList.add("stop"); mark.textContent = "!";
-      title.textContent = "Скорость α равна нулю";
-      why.textContent = "Проверь уровни и коэффициенты модели — при таких значениях α не капает вовсе.";
+      title.textContent = t("v.zero.t");
+      why.textContent = t("v.zero.w");
       el("verdict").style.borderColor = "#a8574a";
       return;
     }
     if (!best.path.length){
       mark.classList.add("save"); mark.textContent = "∅";
-      title.textContent = "Ничего не покупай — копи на ранг";
-      why.innerHTML = "Любая покупка отобьётся позже, чем придёт ранг. Остаток: <em>" + fmt(S.rankCost - S.alpha) + " α</em>.";
+      title.textContent = t("v.save.t");
+      why.innerHTML = t("v.save.w", { a: fmt(S.rankCost - S.alpha) });
       el("verdict").style.borderColor = "#a97c27";
       return;
     }
     var f = best.path[0], sym = cur(f.track) === "a" ? "α" : "β";
     mark.classList.add("buy"); mark.textContent = "✓";
-    title.textContent = "Бери " + fullName(f.track).toLowerCase() + " до ур. " + f.level;
+    title.textContent = t("v.buy.t", { n: fullName(f.track), l: f.level });
     why.innerHTML =
-      (f.wait > 0.5 ? "Накопится через <em>" + fmtTime(f.wait) + "</em>, " : "Хватает уже сейчас, ") +
-      "цена <em>" + fmt(f.cost) + " " + sym + "</em>" + (f.est ? " (прикидка)" : "") +
-      ". Экономит <em>" + fmtTime(saved) + "</em> против «копить в лоб»" +
-      (best.path.length > 1 ? ", дальше по плану ещё " + (best.path.length - 1) + " покупк" + plural(best.path.length - 1, "а", "и", "") : "") + ".";
+      (f.wait > 0.5 ? t("v.wait", { t: fmtTime(f.wait) }) : t("v.enough")) +
+      t("v.price", { c: fmt(f.cost), s: sym }) + (f.est ? t("v.est") : "") +
+      t("v.saves", { t: fmtTime(saved) }) +
+      (best.path.length > 1 ? t("v.more", { n: nBuys(best.path.length - 1) }) : "") + ".";
     el("verdict").style.borderColor = cur(f.track) === "a" ? "#2b6d7d" : "#3f9c72";
   }
 
   function renderPlan(best){
     var ol = el("plan"); ol.innerHTML = "";
-    el("plan-tag").textContent = best.path.length ? best.path.length + " покупк" + plural(best.path.length, "а", "и", "") : "без покупок";
+    el("plan-tag").textContent = best.path.length ? nBuys(best.path.length) : t("plan.nobuys");
     if (!best.path.length){
-      ol.innerHTML = '<li><span class="tcode">' + clock(0) + '</span><span class="step">Просто копим до <b>' + fmt(S.rankCost) + ' α</b>.</span><span class="price"></span></li>';
+      ol.innerHTML = '<li><span class="tcode">' + clock(0) + '</span><span class="step">' + t("plan.none", { a: fmt(S.rankCost) }) + '</span><span class="price"></span></li>';
     }
     best.path.forEach(function(st){
       var isB = cur(st.track) === "b";
       var li = document.createElement("li");
       li.innerHTML =
         '<span class="tcode">' + clock(st.at) + '</span>' +
-        '<span class="step"><b>' + fullName(st.track) + '</b> → <span class="lvl' + (isB ? " b" : "") + '">ур. ' + st.level + '</span>' +
-        (st.wait > 0.5 ? ' <span style="color:var(--muted);font-size:12.5px">· ждём ' + fmtTime(st.wait) + '</span>'
-                       : ' <span style="color:var(--beta);font-size:12.5px">· сразу</span>') +
+        '<span class="step"><b>' + fullName(st.track) + '</b> → <span class="lvl' + (isB ? " b" : "") + '">' + t("col.lv") + ' ' + st.level + '</span>' +
+        (st.wait > 0.5 ? ' <span style="color:var(--muted);font-size:12.5px">' + t("plan.wait", { t: fmtTime(st.wait) }) + '</span>'
+                       : ' <span style="color:var(--beta);font-size:12.5px">' + t("plan.now") + '</span>') +
         '</span>' +
         '<span class="price' + (st.est ? " est" : "") + '">' + fmt(st.cost) + ' ' + (isB ? "β" : "α") + (st.est ? "*" : "") + '</span>';
       ol.appendChild(li);
     });
     var fin = document.createElement("li");
     fin.innerHTML = '<span class="tcode">' + clock(best.time) + '</span>' +
-      '<span class="step"><b style="color:var(--alpha)">Ранг ' + (S.rank + 1) + '</b> — на счету ' + fmt(S.rankCost) + ' α' +
-      ' <span style="color:var(--muted);font-size:12.5px">· скорость ' + fmt(rateAlpha(best.end.lv, best.end.B)) + ' α/с</span></span>' +
+      '<span class="step"><b style="color:var(--alpha)">' + t("plan.rank", { r: S.rank + 1 }) + '</b> ' + t("plan.onhand", { a: fmt(S.rankCost) }) +
+      ' <span style="color:var(--muted);font-size:12.5px">' + t("plan.rate", { v: fmt(rateAlpha(best.end.lv, best.end.B)) }) + '</span></span>' +
       '<span class="price"></span>';
     ol.appendChild(fin);
     el("plan-total").textContent = fmtTime(best.time);
@@ -889,11 +1058,11 @@
 
   function renderCompare(a){
     var tb = document.querySelector("#compare tbody"); tb.innerHTML = "";
-    var rows = [{ label: "Копить, ничего не брать", res: a.plain, cost: null, be: null, sym: "" }];
+    var rows = [{ label: t("cmp.save"), res: a.plain, cost: null, be: null, sym: "" }];
     TRACKS.forEach(function(track){
       var L = S[track].level + 1;
       rows.push({
-        label: fullName(track) + " → ур. " + L,
+        label: fullName(track) + " " + t("cmp.to", { l: L }),
         res: a[track],
         cost: costOf(track, L),
         be: breakEven(track),
@@ -912,7 +1081,7 @@
             : "—") + "</td>" +
         '<td class="num">' + (r.be == null ? "—" : fmtTime(r.be)) + "</td>" +
         '<td class="num">' + fmtTime(t) + "</td>" +
-        '<td class="num"><span class="delta ' + (d < 1e-9 ? "zero" : "neg") + '">' + (d < 1e-9 ? "лучший" : "+" + fmtTime(d)) + "</span></td>";
+        '<td class="num"><span class="delta ' + (d < 1e-9 ? "zero" : "neg") + '">' + (d < 1e-9 ? t("cmp.best") : "+" + fmtTime(d)) + "</span></td>";
       tb.appendChild(tr);
     });
   }
@@ -935,15 +1104,17 @@
         div.className = "track";
         div.innerHTML =
           '<div class="thead">' +
-            '<h3>' + META[track].name + '</h3><span class="now" id="now-' + track + '"></span>' +
+            '<h3 data-i18n="tr.' + META[track].kind + '">' + t("tr." + META[track].kind) + '</h3><span class="now" id="now-' + track + '"></span>' +
             '<span class="flash" id="flash-' + track + '"></span>' +
             '<span class="row" style="margin-left:auto;gap:6px">' +
-              '<button class="mini undo" id="undo-' + track + '" title="Откатить уровень назад">−</button>' +
-              '<button class="mini buy" id="buy-' + track + '">Купил ✓</button>' +
+              '<button class="mini undo" id="undo-' + track + '" data-i18n-title="btn.undo" title="' + t("btn.undo") + '">−</button>' +
+              '<button class="mini buy" id="buy-' + track + '"></button>' +
             '</span>' +
           '</div>' +
           '<div class="lvls">' +
-            '<div class="lvl-row head"><span class="lab">Ур.</span><span class="lab">Цена, ' + (group === "a" ? "α" : "β") + '</span><span class="lab">' + META[track].col + '</span></div>' +
+            '<div class="lvl-row head"><span class="lab" data-i18n="col.lv">' + t("col.lv") + '</span>' +
+            '<span class="lab"><span data-i18n="col.cost">' + t("col.cost") + '</span>, ' + (group === "a" ? "α" : "β") + '</span>' +
+            '<span class="lab" data-i18n="' + META[track].col + '">' + t(META[track].col) + '</span></div>' +
             '<div id="rows-' + track + '"></div>' +
           '</div>';
         host.appendChild(div);
@@ -959,7 +1130,7 @@
       row.className = "lvl-row";
       row.dataset.level = L;
       row.innerHTML =
-        '<span class="lvl-tag"><span>' + L + '</span><span class="badge" hidden>след.</span></span>' +
+        '<span class="lvl-tag"><span>' + L + '</span><span class="badge" data-i18n="row.next" hidden>' + t("row.next") + '</span></span>' +
         '<input type="text" inputmode="decimal" id="' + track + '-c-' + L + '" data-kind="cost" data-level="' + L + '">' +
         '<input type="text" inputmode="decimal" id="' + track + '-e-' + L + '" data-kind="eff" data-level="' + L + '">';
       host.appendChild(row);
@@ -992,9 +1163,9 @@
       div.className = "grid3";
       div.style.marginTop = "12px";
       div.innerHTML =
-        '<label><span class="lab">' + fullName(track) + ': шаг</span><input type="text" inputmode="decimal" id="p-' + track + '-step"></label>' +
-        '<label><span class="lab">' + fullName(track) + ': сдвиг</span><input type="text" inputmode="decimal" id="p-' + track + '-free"></label>' +
-        '<label><span class="lab">' + fullName(track) + ': рост цены ×</span><input type="text" inputmode="decimal" id="p-' + track + '-ratio"></label>';
+        '<label><span class="lab" id="plab-' + track + '-step"></span><input type="text" inputmode="decimal" id="p-' + track + '-step"></label>' +
+        '<label><span class="lab" id="plab-' + track + '-free"></span><input type="text" inputmode="decimal" id="p-' + track + '-free"></label>' +
+        '<label><span class="lab" id="plab-' + track + '-ratio"></span><input type="text" inputmode="decimal" id="p-' + track + '-ratio"></label>';
       host.appendChild(div);
     });
   }
@@ -1008,13 +1179,17 @@
       saveTimer = null;
       if (!dbDoc) return;
       dbDoc.set({ state: JSON.parse(JSON.stringify(S)), savedAt: new Date().toISOString() }).then(function(){
-        setSync(true, "синхронизируется между устройствами");
-      }, function(){ setSync(false, "сохранено в этом браузере"); });
+        setSync(true, "sync.cloud");
+      }, function(){ setSync(false, "sync.browser"); });
     }, 700);
   }
-  function setSync(ok, text){
+  // Запоминаем ключ, а не готовую строку, — иначе при смене языка
+  // подпись осталась бы на прежнем.
+  var syncKey = "sync.local";
+  function setSync(ok, key){
+    syncKey = key;
     el("sync-dot").classList.toggle("on", !!ok);
-    el("sync-text").textContent = text;
+    el("sync-text").textContent = t(key);
   }
 
   /* ============ события ============ */
@@ -1106,7 +1281,7 @@
             var dB = s.B - S.beta;
             S.alpha = s.A;
             S.beta = s.B;
-            if (s.wait > 0.5) msg = "учтено " + fmtTime(s.wait) + " ожидания · β +" + fmt(dB);
+            if (s.wait > 0.5) msg = t("flash.wait", { t: fmtTime(s.wait), b: fmt(dB) });
           } else if (cur(track) === "a"){
             S.alpha = Math.max(0, S.alpha - c.v);
           } else {
@@ -1157,6 +1332,9 @@
     });
     // Ступень покупается за ранги α и сносит вообще всё: ранг падает
     // на старт, обе частицы обнуляются, все шесть веток на старт.
+    el("lang-ru").addEventListener("click", function(){ setLang("ru"); });
+    el("lang-en").addEventListener("click", function(){ setLang("en"); });
+
     el("btn-stupen").addEventListener("click", function(){
       S.stupen = Math.round(S.stupen) + 1;
       S.rank = S.rankStart;
@@ -1179,6 +1357,8 @@
   buildTrackBlocks();
   buildTrackParams();
   wire();
+  setSync(false, "sync.local");
+  applyLang();
   refreshFields();
   render();
 
@@ -1199,9 +1379,9 @@
             refreshFields(); render();
           }
         }
-        setSync(true, "синхронизируется между устройствами");
+        setSync(true, "sync.cloud");
       });
-    }).catch(function(){ setSync(false, "сохранено в этом браузере"); });
+    }).catch(function(){ setSync(false, "sync.browser"); });
   }
 })();
 </script>
