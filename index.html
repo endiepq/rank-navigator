@@ -467,7 +467,7 @@
       "v.saves":". Экономит <em>{t}</em> против «копить в лоб»", "v.more":", дальше по плану ещё {n}",
       "plan.none":"Просто копим до <b>{a} α</b>.", "plan.wait":"· ждём {t}", "plan.now":"· сразу",
       "plan.rank":"Ранг {r}", "plan.onhand":"— на счету {a} α", "plan.rate":"· скорость {v} α/с",
-      "plan.nobuys":"без покупок",
+      "plan.nobuys":"без покупок", "plan.range":"ур. {a}–{b}", "plan.steps":"{n} шагов",
       "cmp.save":"Копить, ничего не брать", "cmp.best":"лучший", "cmp.to":"→ ур. {l}",
       "sync.local":"локальное сохранение", "sync.cloud":"синхронизируется между устройствами",
       "sync.browser":"сохранено в этом браузере",
@@ -527,7 +527,7 @@
       "v.saves":". Saves <em>{t}</em> against plain saving", "v.more":", with {n} more ahead in the plan",
       "plan.none":"Just save up to <b>{a} α</b>.", "plan.wait":"· wait {t}", "plan.now":"· right away",
       "plan.rank":"Rank {r}", "plan.onhand":"— {a} α on hand", "plan.rate":"· rate {v} α/s",
-      "plan.nobuys":"no buys",
+      "plan.nobuys":"no buys", "plan.range":"Lv {a}–{b}", "plan.steps":"{n} steps",
       "cmp.save":"Save, buy nothing", "cmp.best":"best", "cmp.to":"→ Lv {l}",
       "sync.local":"saved in this browser", "sync.cloud":"synced across devices",
       "sync.browser":"saved in this browser",
@@ -939,13 +939,16 @@
   // после её исполнения план «передумывает». Двигаем каждый шаг вперёд,
   // пока это сокращает время: внутри своей ветки порядок трогать нельзя,
   // уровни там идут подряд.
-  function polish(best, rounds){
+  // keepFirst оставляет первый ход на месте: строка сравнения обещает
+  // «если купить это первым», и перестановка не должна её опровергать.
+  function polish(best, rounds, keepFirst){
     if (!best || best.path.length < 2) return best;
+    var floor = keepFirst ? 1 : 0;
     var cur = best, improved = true, passes = 0;
     while (improved && passes < rounds){
       improved = false; passes++;
-      for (var i = 1; i < cur.path.length && !improved; i++){
-        for (var j = i - 1; j >= 0; j--){
+      for (var i = floor + 1; i < cur.path.length && !improved; i++){
+        for (var j = i - 1; j >= floor; j--){
           if (cur.path[j].track === cur.path[i].track) break;
           var p = cur.path.slice();
           p.splice(j, 0, p.splice(i, 1)[0]);
@@ -962,7 +965,7 @@
     var out = { plain: { time: tailTime(st0), path: [], end: st0 } };
     out.best = out.plain;
     TRACKS.forEach(function(track){
-      out[track] = polish(rooted(track), 12);
+      out[track] = polish(rooted(track), 12, true);
       if (out[track] && out[track].time < out.best.time - 1e-9) out.best = out[track];
     });
     return out;
@@ -1076,22 +1079,48 @@
     el("verdict").style.borderColor = cur(f.track) === "a" ? "#2b6d7d" : "#3f9c72";
   }
 
+  // Подряд идущие покупки одной ветки — это всегда соседние уровни,
+  // поэтому показываем их одной строкой: диапазон, суммарная цена и
+  // время, когда вся пачка будет куплена.
+  function groupPlan(path){
+    var out = [];
+    for (var i = 0; i < path.length; i++){
+      var g = { track: path[i].track, from: path[i].level, to: path[i].level,
+                cost: path[i].cost, est: path[i].est, wait: path[i].wait,
+                at: path[i].at, n: 1 };
+      while (i + 1 < path.length && path[i + 1].track === g.track){
+        i++;
+        g.to = path[i].level;
+        g.cost += path[i].cost;
+        g.est = g.est || path[i].est;
+        g.at = path[i].at;
+        g.n++;
+      }
+      out.push(g);
+    }
+    return out;
+  }
+
   function renderPlan(best){
     var ol = el("plan"); ol.innerHTML = "";
-    el("plan-tag").textContent = best.path.length ? nBuys(best.path.length) : t("plan.nobuys");
+    var groups = best.path.length ? groupPlan(best.path).length : 0;
+    el("plan-tag").textContent = best.path.length
+      ? nBuys(best.path.length) + (groups < best.path.length ? " · " + t("plan.steps", { n: groups }) : "")
+      : t("plan.nobuys");
     if (!best.path.length){
       ol.innerHTML = '<li><span class="tcode">' + clock(0) + '</span><span class="step">' + t("plan.none", { a: fmt(S.rankCost) }) + '</span><span class="price"></span></li>';
     }
-    best.path.forEach(function(st){
-      var isB = cur(st.track) === "b";
+    groupPlan(best.path).forEach(function(g){
+      var isB = cur(g.track) === "b";
+      var lvl = g.n > 1 ? t("plan.range", { a: g.from, b: g.to }) : t("col.lv") + " " + g.to;
       var li = document.createElement("li");
       li.innerHTML =
-        '<span class="tcode">' + clock(st.at) + '</span>' +
-        '<span class="step"><b>' + fullName(st.track) + '</b> → <span class="lvl' + (isB ? " b" : "") + '">' + t("col.lv") + ' ' + st.level + '</span>' +
-        (st.wait > 0.5 ? ' <span style="color:var(--muted);font-size:12.5px">' + t("plan.wait", { t: fmtTime(st.wait) }) + '</span>'
-                       : ' <span style="color:var(--beta);font-size:12.5px">' + t("plan.now") + '</span>') +
+        '<span class="tcode">' + clock(g.at) + '</span>' +
+        '<span class="step"><b>' + fullName(g.track) + '</b> → <span class="lvl' + (isB ? " b" : "") + '">' + lvl + '</span>' +
+        (g.wait > 0.5 ? ' <span style="color:var(--muted);font-size:12.5px">' + t("plan.wait", { t: fmtTime(g.wait) }) + '</span>'
+                      : ' <span style="color:var(--beta);font-size:12.5px">' + t("plan.now") + '</span>') +
         '</span>' +
-        '<span class="price' + (st.est ? " est" : "") + '">' + fmt(st.cost) + ' ' + (isB ? "β" : "α") + (st.est ? "*" : "") + '</span>';
+        '<span class="price' + (g.est ? " est" : "") + '">' + fmt(g.cost) + ' ' + (isB ? "β" : "α") + (g.est ? "*" : "") + '</span>';
       ol.appendChild(li);
     });
     var fin = document.createElement("li");
