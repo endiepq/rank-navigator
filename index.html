@@ -633,7 +633,7 @@
 
   /* ============ состояние ============ */
   var DEF = {
-    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 30, beam: 80,
+    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 80, beam: 50,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, stupen: 0, betaExp: 0.2, beta: 0,
     stupenRank: 13, rankStart: 1, relicGen: 1, n140lvl: 0,
     rankCosts: { "5":160, "6":500, "7":1000, "8":2000, "9":13280, "10":267543,
@@ -899,7 +899,7 @@
     return best;
   }
   function rooted(first){
-    var depth = Math.max(1, Math.min(40, Math.round(S.depth)));
+    var depth = Math.max(1, Math.min(120, Math.round(S.depth)));
     var st0 = origin();
     var L0 = st0.lv[first] + 1;
     var c0 = costOf(first, L0);
@@ -910,12 +910,51 @@
     var head = [{ track: first, level: L0, cost: c0.v, est: c0.est, at: s0.t, wait: s0.wait }];
     return beamFrom(st1, head, depth - 1, S.beam > 0 ? Math.min(400, Math.round(S.beam)) : 80);
   }
+  // Проигрываем последовательность покупок заново — нужно, чтобы
+  // оценивать переставленные варианты плана.
+  function replay(path){
+    var st = origin(), steps = [];
+    for (var i = 0; i < path.length; i++){
+      var p = path[i];
+      if (st.lv[p.track] + 1 !== p.level) return null;
+      var c = costOf(p.track, p.level);
+      if (c.v == null) return null;
+      var s = buyStep(st, p.track, c.v);
+      if (!s) return null;
+      var lv = withLevel(st.lv, p.track, p.level);
+      st = { A: s.A, B: s.B, lv: lv, t: s.t };
+      steps.push({ track: p.track, level: p.level, cost: c.v, est: c.est, at: s.t, wait: s.wait });
+    }
+    return { time: st.t + tailTime(st), path: steps, end: st };
+  }
+  // Лучевой поиск иногда ставит покупку позже, чем стоило бы, и тогда
+  // после её исполнения план «передумывает». Двигаем каждый шаг вперёд,
+  // пока это сокращает время: внутри своей ветки порядок трогать нельзя,
+  // уровни там идут подряд.
+  function polish(best, rounds){
+    if (!best || best.path.length < 2) return best;
+    var cur = best, improved = true, passes = 0;
+    while (improved && passes < rounds){
+      improved = false; passes++;
+      for (var i = 1; i < cur.path.length && !improved; i++){
+        for (var j = i - 1; j >= 0; j--){
+          if (cur.path[j].track === cur.path[i].track) break;
+          var p = cur.path.slice();
+          p.splice(j, 0, p.splice(i, 1)[0]);
+          var r = replay(p);
+          if (r && r.time < cur.time - 1e-9){ cur = r; improved = true; break; }
+        }
+      }
+    }
+    return cur;
+  }
+
   function analyze(){
     var st0 = origin();
     var out = { plain: { time: tailTime(st0), path: [], end: st0 } };
     out.best = out.plain;
     TRACKS.forEach(function(track){
-      out[track] = rooted(track);
+      out[track] = polish(rooted(track), 12);
       if (out[track] && out[track].time < out.best.time - 1e-9) out.best = out[track];
     });
     return out;
@@ -1244,7 +1283,7 @@
     bindField("m-base",     function(){ return S.basePerRank; }, function(v){ S.basePerRank = v; });
     bindField("m-rank5k",   function(){ return S.rank5k; },    function(v){ S.rank5k = v; });
     bindField("m-rank12k",  function(){ return S.rank12k; },   function(v){ S.rank12k = v; });
-    bindField("m-depth",    function(){ return S.depth; },     function(v){ S.depth = Math.max(1, Math.min(40, Math.round(v))); });
+    bindField("m-depth",    function(){ return S.depth; },     function(v){ S.depth = Math.max(1, Math.min(120, Math.round(v))); });
     bindField("m-beam",     function(){ return S.beam; },      function(v){ S.beam = Math.max(4, Math.min(400, Math.round(v))); });
 
     TRACKS.forEach(function(track){
