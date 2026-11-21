@@ -688,10 +688,16 @@
     if (x == null || !isFinite(x)) return "—";
     var a = Math.abs(x);
     if (a === 0) return "0";
-    if (a >= 1e7 || a < 1e-4) return x.toExponential(2).replace("e+", "e");
+    if (a >= 1e6 || a < 1e-4) return x.toExponential(2).replace("e+", "e");
     var d = a < 1 ? 3 : a < 100 ? 2 : a < 10000 ? 1 : 0;
     var r = Math.round(x * Math.pow(10, d)) / Math.pow(10, d);
     return r.toLocaleString("ru-RU", { maximumFractionDigits: d });
+  }
+  // В поля ввода пишем компактно, но без разделителей разрядов:
+  // значение оттуда потом читается обратно.
+  function fmtInput(x){
+    if (x == null || !isFinite(x)) return "";
+    return Math.abs(x) >= 1e6 ? x.toExponential(2).replace("e+", "e") : String(x);
   }
   function fmtTime(s){
     if (s == null || !isFinite(s)) return "∞";
@@ -1226,11 +1232,11 @@
       row.classList.toggle("next", L === t.level + 1);
       row.querySelector(".badge").hidden = L !== t.level + 1;
       var ci = row.querySelector('[data-kind="cost"]'), c = costOf(track, L);
-      if (document.activeElement !== ci) ci.value = (t.costs[L] != null) ? String(t.costs[L]) : "";
+      if (document.activeElement !== ci) ci.value = (t.costs[L] != null) ? fmtInput(t.costs[L]) : "";
       ci.placeholder = c.v == null ? "?" : fmt(c.v);
       ci.classList.toggle("est", t.costs[L] == null);
       var ei = row.querySelector('[data-kind="eff"]');
-      if (document.activeElement !== ei) ei.value = (t.eff[L] != null) ? String(t.eff[L]) : "";
+      if (document.activeElement !== ei) ei.value = (t.eff[L] != null) ? fmtInput(t.eff[L]) : "";
       ei.placeholder = fmt(effectOf(track, L));
       ei.classList.toggle("est", t.eff[L] == null);
     });
@@ -1286,13 +1292,14 @@
   function bindField(id, get, set){
     var input = el(id);
     if (!input) return;
-    input.value = get();
+    input.value = fmtInput(get());
     input.addEventListener("input", function(){
       var n = parseNum(input.value);
       if (n != null){ set(n); save(); scheduleRender(); }
     });
-    input.addEventListener("blur", function(){ input.value = get(); });
-    FIELDS.push({ apply: function(){ input.value = get(); } });
+    input.addEventListener("blur", function(){ input.value = fmtInput(get()); });
+    // Поле, в котором сейчас печатают, не трогаем.
+    FIELDS.push({ apply: function(){ if (document.activeElement !== input) input.value = fmtInput(get()); } });
   }
   // Одноуровневый узел: галочка стоит — коэффициент его, снята — единица.
   function bindCheck(id, factor, get, set){
