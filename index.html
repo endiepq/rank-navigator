@@ -325,6 +325,7 @@
                 <label class="chk"><input type="checkbox" id="f-n141"><span data-i18n="n.141">141 — награда ранга 5 ×3</span></label>
                 <label class="chk"><input type="checkbox" id="f-n142"><span data-i18n="n.142">142 — база генераторов ×1.25 за 10 ур.</span></label>
                 <label class="chk"><input type="checkbox" id="f-n143"><span data-i18n="n.143">143 — база множителей ×2 за 7 ур.</span></label>
+                <label class="chk"><input type="checkbox" id="f-n145"><span data-i18n="n.145">145 — база генераторов ×10 за 100 ур.</span></label>
               </div>
             </div>
           </div>
@@ -436,7 +437,7 @@
       "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Узлы дерева и ступень", "n.140":"Узел 140: уровень из 9 →", "n.bought":"Куплённые узлы",
       "n.139":"139 — база ген. α ×2", "n.141":"141 — награда ранга 5 ×3",
-      "n.142":"142 — база генераторов ×1.25 за 10 ур.", "n.143":"143 — база множителей ×2 за 7 ур.",
+      "n.142":"142 — база генераторов ×1.25 за 10 ур.", "n.143":"143 — база множителей ×2 за 7 ур.", "n.145":"145 — база генераторов ×10 за 100 ур.",
       "n.tier":"Ступень", "n.exp":"Показатель β→α", "n.tierreq":"Ступень требует ранг", "n.rankstart":"Ранг после сброса",
       "n.relic":"Реликвия: база ген. α и β ×",
       "n.relichint":"Множитель из реликвии — умножает базу обоих генераторов. Нет такой реликвии — оставь 1. Бонус ступени 2: <b class=\"val\" id=\"check-stupen2\">—</b>.",
@@ -496,7 +497,7 @@
       "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Refine Tree nodes and tier", "n.140":"Node 140: level out of 9 →", "n.bought":"Nodes purchased",
       "n.139":"139 — α Generator base ×2", "n.141":"141 — rank 5 bonus ×3",
-      "n.142":"142 — Generator bases ×1.25 per 10 lv", "n.143":"143 — Multiplier bases ×2 per 7 lv",
+      "n.142":"142 — Generator bases ×1.25 per 10 lv", "n.143":"143 — Multiplier bases ×2 per 7 lv", "n.145":"145 — Generator bases ×10 per 100 lv",
       "n.tier":"Tier", "n.exp":"β→α exponent", "n.tierreq":"Tier requires rank", "n.rankstart":"Rank after reset",
       "n.relic":"Relic: α and β Generator base ×",
       "n.relichint":"The relic multiplier — it multiplies the base of both Generators. No such relic — leave it at 1. Tier 2 bonus: <b class=\"val\" id=\"check-stupen2\">—</b>.",
@@ -634,7 +635,7 @@
   /* ============ состояние ============ */
   var DEF = {
     rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 80, beam: 50, tuned: 2,
-    node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, stupen: 0, betaExp: 0.2, beta: 0,
+    node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, stupen: 0, betaExp: 0.2, beta: 0,
     stupenRank: 13, rankStart: 1, relicGen: 1, n140lvl: 0,
     rankCosts: { "5":160, "6":500, "7":1000, "8":2000, "9":13280, "10":267543,
                  "11":7797571, "12":638133197, "13":1.91e11, "14":1.73e14 },
@@ -728,6 +729,9 @@
   function node142(track, L){ return stepBonus(track, L, S.node142, 10); }
   // Узел 143: база множителя ×2 каждые 7 уровней.
   function node143(track, L){ return stepBonus(track, L, S.node143, 7); }
+  // Узел 145: база генератора ×10 каждые 100 уровней — та же механика,
+  // что у 142, но шаг крупнее и отдача резче.
+  function node145(track, L){ return stepBonus(track, L, S.node145, 100); }
   function effectOf(track, L){
     var t = S[track];
     if (t.eff[L] != null) return t.eff[L];
@@ -764,7 +768,7 @@
   // Скорость α имеет вид K × (β+1)^P: усилитель возводит всё выражение
   // в степень, поэтому показатель при β тоже умножается на неё.
   function kp(lv){
-    var C = S.basePerRank * S.rank * S.node139 * bonus5(lv.gen) * node142("gen", lv.gen)
+    var C = S.basePerRank * S.rank * S.node139 * bonus5(lv.gen) * node142("gen", lv.gen) * node145("gen", lv.gen)
           * stupen2Gen() * S.relicGen
           * effectOf("gen", lv.gen) * effectOf("mult", lv.mult);
     var e = effectOf("boost", lv.boost);
@@ -780,7 +784,7 @@
     return k.K * Math.pow(Math.max(0, beta) + 1, k.P);
   }
   function rateBeta(lv){
-    var C = S.basePerRank * S.stupen * S.relicGen * node142("bgen", lv.bgen) * bonus12(lv.bgen)
+    var C = S.basePerRank * S.stupen * S.relicGen * node142("bgen", lv.bgen) * node145("bgen", lv.bgen) * bonus12(lv.bgen)
           * effectOf("bgen", lv.bgen) * effectOf("bmult", lv.bmult);
     if (!(C > 0)) return 0;
     var e = effectOf("bboost", lv.bboost);
@@ -1313,6 +1317,7 @@
     bindCheck("f-n141", 3,  function(){ return S.node141; },   function(v){ S.node141 = v; });
     bindCheck("f-n142", 1.25, function(){ return S.node142; }, function(v){ S.node142 = v; });
     bindCheck("f-n143", 2,    function(){ return S.node143; }, function(v){ S.node143 = v; });
+    bindCheck("f-n145", 10,   function(){ return S.node145; }, function(v){ S.node145 = v; });
     bindField("f-n140",     function(){ return S.n140lvl; },   function(v){ S.n140lvl = Math.max(0, Math.min(9, Math.round(v))); });
     bindField("f-stupen",   function(){ return S.stupen; },    function(v){ S.stupen = Math.max(0, Math.round(v)); });
     bindField("f-betaexp",  function(){ return S.betaExp; },   function(v){ S.betaExp = Math.max(0, v); });
