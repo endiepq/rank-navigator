@@ -648,7 +648,7 @@
   };
   var S = JSON.parse(JSON.stringify(DEF));
   var LS = "rank-navigator-public-v1";
-  var dbDoc = null, saveTimer = null;
+  var dbDoc = null, saveTimer = null, lastApplied = null;
 
   // Раньше у узла 140 хранился сам множитель, теперь — уровень.
   // Пересчитываем один раз: множитель 4 означал уровень 3.
@@ -1226,6 +1226,7 @@
     saveTimer = setTimeout(function(){
       saveTimer = null;
       if (!dbDoc) return;
+      try { lastApplied = JSON.stringify(S); } catch(e){ lastApplied = null; }
       dbDoc.set({ state: JSON.parse(JSON.stringify(S)), savedAt: new Date().toISOString() }).then(function(){
         setSync(true, "sync.cloud");
       }, function(){ setSync(false, "sync.browser"); });
@@ -1410,24 +1411,36 @@
   refreshFields();
   render();
 
+  // Подписка, а не разовое чтение: иначе вкладка со старым состоянием
+  // не увидит правок, сделанных в другом месте, и затрёт их при своём
+  // следующем сохранении. Сверяем содержимое — правка в обход страницы
+  // метку времени не меняет.
+  function applyRemote(data){
+    if (!data || !data.state) return false;
+    var incoming;
+    try { incoming = JSON.stringify(data.state); } catch(e){ incoming = null; }
+    if (incoming && incoming === lastApplied) return false;
+    lastApplied = incoming;
+    if (data.state.n140lvl == null) S.n140lvl = null;
+    mergeInto(S, data.state);
+    migrate();
+    TRACKS.forEach(buildRows);
+    refreshFields();
+    render();
+    return true;
+  }
   if (window.claude && window.claude.use){
     window.claude.use("db").then(function(d){
       if (!d) return;
       dbDoc = d.doc("state/main");
-      return dbDoc.get().then(function(snap){
+      dbDoc.onSnapshot(function(snap){
         if (snap && snap.exists){
-          var data = snap.data();
-          if (data && data.state){
-            // Если в облаке ещё старый формат — пересчитываем уровень
-            // от его же множителя, а не от локального.
-            if (data.state.n140lvl == null) S.n140lvl = null;
-            mergeInto(S, data.state);
-            migrate();
-            TRACKS.forEach(buildRows);
-            refreshFields(); render();
-          }
+          var meta = snap.metadata || {};
+          if (!meta.hasPendingWrites) applyRemote(snap.data());
         }
         setSync(true, "sync.cloud");
+      }, function(){
+        setSync(false, "sync.browser");
       });
     }).catch(function(){ setSync(false, "sync.browser"); });
   }
