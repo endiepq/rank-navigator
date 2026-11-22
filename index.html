@@ -337,7 +337,8 @@
           </div>
           <div class="grid4" style="margin-top:12px">
             <label><span class="lab" data-i18n="n.relic">Реликвия: база ген. α и β ×</span><input type="text" id="f-relic" inputmode="decimal"></label>
-            <div style="grid-column:span 3;display:flex;align-items:flex-end;padding-bottom:9px">
+            <label><span class="lab" data-i18n="n.sing">Множитель сингулярности ×</span><input type="text" id="f-singmult" inputmode="decimal"></label>
+            <div style="grid-column:span 2;display:flex;align-items:flex-end;padding-bottom:9px">
               <span class="hint" style="margin:0" data-i18n-html="n.relichint"></span>
             </div>
           </div>
@@ -439,8 +440,8 @@
       "n.139":"139 — база ген. α ×2", "n.141":"141 — награда ранга 5 ×3",
       "n.142":"142 — база генераторов ×1.25 за 10 ур.", "n.143":"143 — база множителей ×2 за 7 ур.", "n.145":"145 — база генераторов ×10 за 100 ур.",
       "n.tier":"Ступень", "n.exp":"Показатель β→α", "n.tierreq":"Ступень требует ранг", "n.rankstart":"Ранг после сброса",
-      "n.relic":"Реликвия: база ген. α и β ×",
-      "n.relichint":"Множитель из реликвии — умножает базу обоих генераторов. Нет такой реликвии — оставь 1. Бонус ступени 2: <b class=\"val\" id=\"check-stupen2\">—</b>.",
+      "n.relic":"Реликвия: база ген. α и β ×", "n.sing":"Множитель сингулярности ×",
+      "n.relichint":"Оба поля умножают базу обоих генераторов. Множитель сингулярности открывает узел 146, а само число смотри в <b>Сингулярность → Эффекты → Множитель сингулярности</b>. Нет реликвии или узла — оставь 1. Бонус ступени 2: <b class=\"val\" id=\"check-stupen2\">—</b>.",
       "btn.tierup":"Ступень взята ↻",
       "n.tierhint":"Покупается за ранги α и сносит ранг, α, β и все шесть веток. Узлы дерева, прайс-листы и сама ступень сохраняются. До ступени осталось <b class=\"val\" id=\"check-togo\">—</b>.",
       "n.hint":"Узел 140 вводится уровнем, как в игре: 0/9 даёт ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. Множитель считается сам и показан рядом с полем. Узлы 139 и 141 одноуровневые — просто ставь галочку, когда куплен. Сверка: «бонус ранга 5» в блоке «Альфа» должен совпасть с наградой за ранг 5 в игре. Показатель 0.2 даёт «α Генератор ×<span id=\"hint-bonus\">—</span>» при нынешних β; узел 147 его улучшает — тогда подними показатель, пока не сойдётся.",
@@ -499,8 +500,8 @@
       "n.139":"139 — α Generator base ×2", "n.141":"141 — rank 5 bonus ×3",
       "n.142":"142 — Generator bases ×1.25 per 10 lv", "n.143":"143 — Multiplier bases ×2 per 7 lv", "n.145":"145 — Generator bases ×10 per 100 lv",
       "n.tier":"Tier", "n.exp":"β→α exponent", "n.tierreq":"Tier requires rank", "n.rankstart":"Rank after reset",
-      "n.relic":"Relic: α and β Generator base ×",
-      "n.relichint":"The relic multiplier — it multiplies the base of both Generators. No such relic — leave it at 1. Tier 2 bonus: <b class=\"val\" id=\"check-stupen2\">—</b>.",
+      "n.relic":"Relic: α and β Generator base ×", "n.sing":"Singularity multiplier ×",
+      "n.relichint":"Both fields multiply the base of both Generators. The singularity multiplier is unlocked by node 146; read the number in <b>Singularity → Effects → Singularity mults</b>. No relic or node — leave it at 1. Tier 2 bonus: <b class=\"val\" id=\"check-stupen2\">—</b>.",
       "btn.tierup":"Tiered up ↻",
       "n.tierhint":"Bought with α ranks; it wipes the rank, α, β and all six branches. Refine Tree nodes, price lists and the tier itself are kept. Ranks left to the tier: <b class=\"val\" id=\"check-togo\">—</b>.",
       "n.hint":"Node 140 is entered as a level, like in the game: 0/9 gives ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. The multiplier is computed and shown beside the field. Nodes 139 and 141 are single-level — just tick them once bought. Cross-check: the “rank 5 bonus” in the Alpha block must match the rank 5 bonus in the game. The 0.2 exponent yields “α Generator ×<span id=\"hint-bonus\">—</span>” at your current β; refinement node 147 improves it — then raise the exponent until it matches.",
@@ -636,7 +637,7 @@
   var DEF = {
     rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 80, beam: 50, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, stupen: 0, betaExp: 0.2, beta: 0,
-    stupenRank: 13, rankStart: 1, relicGen: 1, n140lvl: 0,
+    stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, n140lvl: 0,
     rankCosts: { "5":160, "6":500, "7":1000, "8":2000, "9":13280, "10":267543,
                  "11":7797571, "12":638133197, "13":1.91e11, "14":1.73e14 },
     gen:    { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5,
@@ -775,7 +776,7 @@
   // в степень, поэтому показатель при β тоже умножается на неё.
   function kp(lv){
     var C = S.basePerRank * S.rank * S.node139 * bonus5(lv.gen) * node142("gen", lv.gen) * node145("gen", lv.gen)
-          * stupen2Gen() * S.relicGen
+          * stupen2Gen() * S.relicGen * S.singMult
           * effectOf("gen", lv.gen) * effectOf("mult", lv.mult);
     var e = effectOf("boost", lv.boost);
     // Бонус β→α выдаёт первая ступень вместе с генератором β. До неё
@@ -790,7 +791,7 @@
     return k.K * Math.pow(Math.max(0, beta) + 1, k.P);
   }
   function rateBeta(lv){
-    var C = S.basePerRank * S.stupen * S.relicGen * node142("bgen", lv.bgen) * node145("bgen", lv.bgen) * bonus12(lv.bgen)
+    var C = S.basePerRank * S.stupen * S.relicGen * S.singMult * node142("bgen", lv.bgen) * node145("bgen", lv.bgen) * bonus12(lv.bgen)
           * effectOf("bgen", lv.bgen) * effectOf("bmult", lv.bmult);
     if (!(C > 0)) return 0;
     var e = effectOf("bboost", lv.bboost);
@@ -1331,6 +1332,7 @@
     bindField("f-stupenrank", function(){ return S.stupenRank; }, function(v){ S.stupenRank = Math.max(1, Math.round(v)); });
     bindField("f-rankstart",  function(){ return S.rankStart; },  function(v){ S.rankStart = Math.max(0, Math.round(v)); });
     bindField("f-relic",      function(){ return S.relicGen; },   function(v){ S.relicGen = Math.max(0, v); });
+    bindField("f-singmult",   function(){ return S.singMult; },   function(v){ S.singMult = v > 0 ? v : 1; });
     bindField("m-base",     function(){ return S.basePerRank; }, function(v){ S.basePerRank = v; });
     bindField("m-rank5k",   function(){ return S.rank5k; },    function(v){ S.rank5k = v; });
     bindField("m-rank12k",  function(){ return S.rank12k; },   function(v){ S.rank12k = v; });
