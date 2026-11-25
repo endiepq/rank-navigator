@@ -692,12 +692,14 @@
     // убираем целиком: они набирались руками, среди них есть опечатки
     // (ранг 9 как 13280 вместо 13289, ранг 2 как 5000 вместо 1), а
     // таблица — те же числа, что в игре. Записи выше 17 остаются.
-    if (!(S.tuned >= 3)){
+    // Метка 4, а не 3: первая версия чистки сверяла значения и потому
+    // оставляла как раз опечатки — ради которых всё и затевалось.
+    if (!(S.tuned >= 4)){
       Object.keys(S.rankCosts || {}).forEach(function(k){
         if (RANK_COSTS[k] != null) delete S.rankCosts[k];
       });
       S.stupenRank = tierRank(S.stupen);
-      S.tuned = 3;
+      S.tuned = 4;
     }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
