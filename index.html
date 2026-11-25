@@ -327,6 +327,7 @@
                 <label class="chk"><input type="checkbox" id="f-n143"><span data-i18n="n.143">143 — база множителей ×2 за 7 ур.</span></label>
                 <label class="chk"><input type="checkbox" id="f-n145"><span data-i18n="n.145">145 — база генераторов ×10 за 100 ур.</span></label>
                 <label class="chk"><input type="checkbox" id="f-n147"><span data-i18n="n.147">147 — показатель β→α 0.2 → 0.3</span></label>
+                <label class="chk"><input type="checkbox" id="f-n148"><span data-i18n="n.148">148 — база усилителей +0.001 за 20 ур.</span></label>
               </div>
             </div>
           </div>
@@ -441,7 +442,7 @@
       "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Узлы дерева и ступень", "n.140":"Узел 140: уровень из 9 →", "n.bought":"Куплённые узлы",
       "n.139":"139 — база ген. α ×2", "n.141":"141 — награда ранга 5 ×3",
-      "n.142":"142 — база генераторов ×1.25 за 10 ур.", "n.143":"143 — база множителей ×2 за 7 ур.", "n.145":"145 — база генераторов ×10 за 100 ур.", "n.147":"147 — показатель β→α 0.2 → 0.3",
+      "n.142":"142 — база генераторов ×1.25 за 10 ур.", "n.143":"143 — база множителей ×2 за 7 ур.", "n.145":"145 — база генераторов ×10 за 100 ур.", "n.147":"147 — показатель β→α 0.2 → 0.3", "n.148":"148 — база усилителей +0.001 за 20 ур.",
       "n.tier":"Ступень", "n.exp":"Показатель β→α", "n.tierreq":"Ступень требует ранг", "n.rankstart":"Ранг после сброса",
       "n.relic":"Реликвия: база ген. α и β ×", "n.sing":"Множитель сингулярности ×",
       "n.relichint":"Оба поля умножают базу обоих генераторов. Множитель сингулярности открывает узел 146, а само число смотри в <b>Сингулярность → Эффекты → Множитель сингулярности</b>. Нет реликвии или узла — оставь 1. Бонус ступени 2: <b class=\"val\" id=\"check-stupen2\">—</b>.",
@@ -503,7 +504,7 @@
       "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Refine Tree nodes and tier", "n.140":"Node 140: level out of 9 →", "n.bought":"Nodes purchased",
       "n.139":"139 — α Generator base ×2", "n.141":"141 — rank 5 bonus ×3",
-      "n.142":"142 — Generator bases ×1.25 per 10 lv", "n.143":"143 — Multiplier bases ×2 per 7 lv", "n.145":"145 — Generator bases ×10 per 100 lv", "n.147":"147 — β→α exponent 0.2 → 0.3",
+      "n.142":"142 — Generator bases ×1.25 per 10 lv", "n.143":"143 — Multiplier bases ×2 per 7 lv", "n.145":"145 — Generator bases ×10 per 100 lv", "n.147":"147 — β→α exponent 0.2 → 0.3", "n.148":"148 — empowerer base +0.001 per 20 lv.",
       "n.tier":"Tier", "n.exp":"β→α exponent", "n.tierreq":"Tier requires rank", "n.rankstart":"Rank after reset",
       "n.relic":"Relic: α and β Generator base ×", "n.sing":"Singularity multiplier ×",
       "n.relichint":"Both fields multiply the base of both Generators. The singularity multiplier is unlocked by node 146; read the number in <b>Singularity → Effects → Singularity mults</b>. No relic or node — leave it at 1. Tier 2 bonus: <b class=\"val\" id=\"check-stupen2\">—</b>.",
@@ -641,7 +642,7 @@
   /* ============ состояние ============ */
   var DEF = {
     rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 80, beam: 50, tuned: 2,
-    node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, stupen: 0, betaExp: 0.2, beta: 0,
+    node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, node148: 0, stupen: 0, betaExp: 0.2, beta: 0,
     stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, n140lvl: 0,
     rankCosts: {},
     gen:    { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5,
@@ -774,6 +775,13 @@
   // Узел 145: база генератора ×10 каждые 100 уровней — та же механика,
   // что у 142, но шаг крупнее и отдача резче.
   function node145(track, L){ return stepBonus(track, L, S.node145, 100); }
+  // Узел 148: база усилителей обеих частиц растёт на 0.001 каждые
+  // 20 уровней самого усилителя. Прибавка идёт к шагу за уровень,
+  // а не умножает его, — так написано в игре: «повышается на 0.001».
+  function node148(L){
+    if (!(S.node148 > 0)) return 0;
+    return S.node148 * Math.floor(Math.max(0, L) / 20);
+  }
   function effectOf(track, L){
     var t = S[track];
     if (t.eff[L] != null) return t.eff[L];
@@ -782,6 +790,8 @@
     if (track === "mult") step = step * node140();
     // Узел 143 — базу любого множителя частиц.
     if (track === "mult" || track === "bmult") step = step * node143(track, L);
+    // Узел 148 — базе усилителей обеих частиц.
+    if (track === "boost" || track === "bboost") step = step + node148(L);
     var part = step * Math.max(0, L - t.free);
     // Ступень 2: база множителя α ×ступень и ещё ×(1 + 0.5 × уровень множителя).
     // Бонус множит именно наращённую часть, единица базы остаётся единицей:
@@ -1399,6 +1409,7 @@
     bindCheck("f-n143", 2,    function(){ return S.node143; }, function(v){ S.node143 = v; });
     bindCheck("f-n145", 10,   function(){ return S.node145; }, function(v){ S.node145 = v; });
     bindExpCheck("f-n147", 0.3, 0.2, function(){ return S.betaExp; }, function(v){ S.betaExp = v; });
+    bindExpCheck("f-n148", 0.001, 0, function(){ return S.node148; }, function(v){ S.node148 = v; });
     bindField("f-n140",     function(){ return S.n140lvl; },   function(v){ S.n140lvl = Math.max(0, Math.min(9, Math.round(v))); });
     bindField("f-stupen",   function(){ return S.stupen; },    function(v){ S.stupen = Math.max(0, Math.round(v)); S.stupenRank = tierRank(S.stupen); refreshFields(); });
     bindField("f-betaexp",  function(){ return S.betaExp; },   function(v){ S.betaExp = Math.max(0, v); });
