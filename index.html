@@ -1546,6 +1546,7 @@
     if (data.state.tuned == null) S.tuned = null;
     mergeInto(S, data.state);
     migrate();
+    syncRankCost();
     TRACKS.forEach(buildRows);
     refreshFields();
     render();
