@@ -275,7 +275,7 @@
           <div class="grid4">
             <label><span class="lab" data-i18n="a.rank">Ранг</span><input type="text" id="f-rank" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="a.alpha">α сейчас</span><input type="text" id="f-alpha" inputmode="decimal"></label>
-            <label><span class="lab" data-i18n="a.req">Нужно α на ранг</span><input type="text" id="f-rankcost" inputmode="decimal"></label>
+            <label data-i18n-title="a.req.t" title="Цены рангов 2–17 подставляются сами. Своё значение перебивает таблицу и запоминается."><span class="lab" data-i18n="a.req">Нужно α на ранг</span><input type="text" id="f-rankcost" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.gen">Ур. генератора</span><input type="text" id="f-gen" inputmode="decimal"></label>
           </div>
           <div class="grid4" style="margin-top:12px">
@@ -333,7 +333,7 @@
           <div class="grid4" style="margin-top:12px">
             <label><span class="lab" data-i18n="n.tier">Ступень</span><input type="text" id="f-stupen" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="n.exp">Показатель β→α</span><input type="text" id="f-betaexp" inputmode="decimal"></label>
-            <label><span class="lab" data-i18n="n.tierreq">Ступень требует ранг</span><input type="text" id="f-stupenrank" inputmode="numeric"></label>
+            <label data-i18n-title="n.tierreq.t" title="Ступени просят ранг 10, 13, 16, 19 — поле заполняется по номеру ступени."><span class="lab" data-i18n="n.tierreq">Ступень требует ранг</span><input type="text" id="f-stupenrank" inputmode="numeric"></label>
             <label><span class="lab" data-i18n="n.rankstart">Ранг после сброса</span><input type="text" id="f-rankstart" inputmode="numeric"></label>
           </div>
           <div class="grid4" style="margin-top:12px">
@@ -430,6 +430,8 @@
       "cmp.pay":"Отобьётся", "cmp.eta":"До ранга",
       "cmp.hint":"«Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.",
       "a.h":"Альфа — сейчас в игре", "a.rank":"Ранг", "a.alpha":"α сейчас", "a.req":"Нужно α на ранг",
+      "a.req.t":"Цены рангов 2–17 подставляются сами. Своё значение перебивает таблицу и запоминается.",
+      "n.tierreq.t":"Ступени просят ранг 10, 13, 16, 19 — поле заполняется по номеру ступени.",
       "lv.gen":"Ур. генератора", "lv.mult":"Ур. множителя", "lv.boost":"Ур. усилителя",
       "btn.rankup":"Ранг взят ↻",
       "a.rankuphint":"«Ранг взят» поднимает ранг, обнуляет α и возвращает α-ветки на старт. Прайс-листы остаются — при сбросе цены идут теми же числами.",
@@ -490,6 +492,8 @@
       "cmp.pay":"Pays off", "cmp.eta":"To rank",
       "cmp.hint":"“Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly.",
       "a.h":"Alpha — current in game", "a.rank":"Rank", "a.alpha":"α now", "a.req":"α required for rank",
+      "a.req.t":"Rank costs 2–17 are filled in automatically. Your own value overrides the table and is remembered.",
+      "n.tierreq.t":"Tiers require rank 10, 13, 16, 19 — this field follows the tier number.",
       "lv.gen":"Generator Lv", "lv.mult":"Multiplier Lv", "lv.boost":"Empowerer Lv",
       "btn.rankup":"Ranked up ↻",
       "a.rankuphint":"“Ranked up” raises the rank, zeroes α and returns the α branches to their start. Price lists stay — after a reset the costs repeat the same numbers.",
@@ -639,8 +643,7 @@
     rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 80, beam: 50, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, stupen: 0, betaExp: 0.2, beta: 0,
     stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, n140lvl: 0,
-    rankCosts: { "5":160, "6":500, "7":1000, "8":2000, "9":13280, "10":267543,
-                 "11":7797571, "12":638133197, "13":1.91e11, "14":1.73e14 },
+    rankCosts: {},
     gen:    { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5,
               costs: { "2":1, "5":3.38, "7":7.59, "12":57.67, "16":292, "20":1478, "35":647160, "45":37318497 }, eff: {} },
     mult:   { level: 0, start: 0, free: 0, step: 0.1,  ratio: 5,   costs: { "1":10, "2":50, "3":250, "7":156250 }, eff: {} },
@@ -649,6 +652,26 @@
     bmult:  { level: 0, start: 0, free: 0, step: 0.1,  ratio: 5,   costs: { "1":10, "3":250, "8":781250 }, eff: {} },
     bboost: { level: 0, start: 0, free: 0, step: 0.01, ratio: 20,  costs: { "1":1000, "2":20000, "3":400000 }, eff: {} }
   };
+  // Цены рангов — константы игры: одни и те же у всех и после каждого
+  // сброса. Поэтому они зашиты, а не набираются руками; поле «Нужно α
+  // на ранг» остаётся, чтобы поправить или продолжить таблицу выше 17.
+  var RANK_COSTS = {
+    "2": 1, "3": 10, "4": 50, "5": 160, "6": 500, "7": 1000, "8": 2000,
+    "9": 13289, "10": 267543, "11": 7797571, "12": 638133197,
+    "13": 1.91e11, "14": 1.73e14, "15": 4.45e17, "16": 3.75e21, "17": 9.07e25
+  };
+  // Ступени просят ранг 10, 13, 16, 19 — шаг три ранга.
+  function tierRank(stupen){ return 10 + 3 * Math.max(0, Math.round(stupen)); }
+  // Цена следующего ранга: сначала то, что ввели руками, иначе таблица.
+  function rankCostFor(rank){
+    var k = String(Math.round(rank) + 1);
+    if (S.rankCosts && S.rankCosts[k] != null) return S.rankCosts[k];
+    return RANK_COSTS[k] != null ? RANK_COSTS[k] : null;
+  }
+  function syncRankCost(){
+    var c = rankCostFor(S.rank);
+    if (c != null) S.rankCost = c;
+  }
   var S = JSON.parse(JSON.stringify(DEF));
   var LS = "rank-navigator-public-v1";
   var dbDoc = null, saveTimer = null, lastApplied = null;
@@ -663,6 +686,17 @@
       if (!(S.depth > 30)) S.depth = 80;
       if (!(S.beam >= 50)) S.beam = 50;
       S.tuned = 2;
+    }
+    // Цены рангов переехали в зашитую таблицу. Из сохранёнки убираем
+    // те, что совпадают с ней (и прежний ранг 9 с опечаткой 13280),
+    // чтобы правки пользователя остались, а дубли не мешали.
+    if (!(S.tuned >= 3)){
+      if (S.rankCosts && S.rankCosts["9"] === 13280) S.rankCosts["9"] = 13289;
+      Object.keys(S.rankCosts || {}).forEach(function(k){
+        if (RANK_COSTS[k] != null && S.rankCosts[k] === RANK_COSTS[k]) delete S.rankCosts[k];
+      });
+      S.stupenRank = tierRank(S.stupen);
+      S.tuned = 3;
     }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
@@ -1355,7 +1389,7 @@
   function refreshFields(){ FIELDS.forEach(function(f){ f.apply(); }); }
 
   function wire(){
-    bindField("f-rank",     function(){ return S.rank; },      function(v){ S.rank = Math.max(1, Math.round(v)); });
+    bindField("f-rank",     function(){ return S.rank; },      function(v){ S.rank = Math.max(1, Math.round(v)); syncRankCost(); refreshFields(); });
     bindField("f-alpha",    function(){ return S.alpha; },     function(v){ S.alpha = Math.max(0, v); });
     bindField("f-rankcost", function(){ return S.rankCost; },  function(v){ S.rankCost = Math.max(0, v); S.rankCosts[S.rank + 1] = S.rankCost; });
     bindField("f-beta",     function(){ return S.beta; },      function(v){ S.beta = Math.max(0, v); });
@@ -1366,7 +1400,7 @@
     bindCheck("f-n145", 10,   function(){ return S.node145; }, function(v){ S.node145 = v; });
     bindExpCheck("f-n147", 0.3, 0.2, function(){ return S.betaExp; }, function(v){ S.betaExp = v; });
     bindField("f-n140",     function(){ return S.n140lvl; },   function(v){ S.n140lvl = Math.max(0, Math.min(9, Math.round(v))); });
-    bindField("f-stupen",   function(){ return S.stupen; },    function(v){ S.stupen = Math.max(0, Math.round(v)); });
+    bindField("f-stupen",   function(){ return S.stupen; },    function(v){ S.stupen = Math.max(0, Math.round(v)); S.stupenRank = tierRank(S.stupen); refreshFields(); });
     bindField("f-betaexp",  function(){ return S.betaExp; },   function(v){ S.betaExp = Math.max(0, v); });
     bindField("f-stupenrank", function(){ return S.stupenRank; }, function(v){ S.stupenRank = Math.max(1, Math.round(v)); });
     bindField("f-rankstart",  function(){ return S.rankStart; },  function(v){ S.rankStart = Math.max(0, Math.round(v)); });
@@ -1456,7 +1490,7 @@
     el("btn-rankup").addEventListener("click", function(){
       S.rank = S.rank + 1;
       resetAlphaSide();
-      if (S.rankCosts[S.rank + 1] != null) S.rankCost = S.rankCosts[S.rank + 1];
+      syncRankCost();
       refreshFields(); save(); render();
       el("f-rankcost").focus();
       el("f-rankcost").select();
@@ -1471,7 +1505,8 @@
       S.rank = S.rankStart;
       resetAlphaSide();
       resetBetaSide();
-      if (S.rankCosts[S.rank + 1] != null) S.rankCost = S.rankCosts[S.rank + 1];
+      S.stupenRank = tierRank(S.stupen);
+      syncRankCost();
       refreshFields(); save(); render();
       el("f-rankcost").focus();
       el("f-rankcost").select();
@@ -1484,6 +1519,7 @@
     if (raw) mergeInto(S, JSON.parse(raw));
   } catch(e){}
   migrate();
+  syncRankCost();
 
   buildTrackBlocks();
   buildTrackParams();
