@@ -173,7 +173,15 @@
   .thead .now{font-family:var(--mono);font-size:12px;color:var(--muted)}
   .thead .flash{font-family:var(--mono);font-size:11.5px;color:var(--beta);flex-basis:100%;order:9}
   .thead .flash:empty{display:none}
+  .nextline{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:0 16px 12px}
+  .nextline .nlab{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .nextline input{width:116px;padding:6px 8px;font-size:13px}
+  .nextline .cur{font-family:var(--mono);font-size:12.5px;color:var(--dim)}
+  .more{background:none;border:0;color:var(--muted);font-size:11.5px;
+    letter-spacing:.04em;text-transform:uppercase;cursor:pointer;padding:4px 2px}
+  .more:hover{color:var(--alpha)}
   .lvls{max-height:196px;overflow-y:auto;padding:0 16px 14px}
+  .lvls[hidden]{display:none}
   .lvl-row{display:grid;grid-template-columns:58px 1fr 1fr;gap:8px;align-items:center;padding:4px 0}
   .lvl-row + .lvl-row{border-top:1px solid #16233a}
   .lvl-row.head .lab{margin:0}
@@ -459,7 +467,7 @@
       "about.h":"Об инструменте",
       "tr.gen":"Генератор", "tr.mult":"Множитель", "tr.boost":"Усилитель",
       "col.lv":"Ур.", "col.cost":"Цена", "col.eff":"Эффект ×", "col.exp":"Степень ^",
-      "row.next":"след.", "btn.buy":"Купил ур. {l} ✓", "btn.undo":"Откатить уровень назад",
+      "row.next":"след.", "row.nextlv":"След. ур.", "btn.more":"Все уровни", "btn.less":"Свернуть", "btn.buy":"Купил ур. {l} ✓", "btn.undo":"Откатить уровень назад",
       "flash.wait":"учтено {t} ожидания · β +{b}",
       "v.now.t":"Бери ранг прямо сейчас",
       "v.now.w":"На счету <em>{a} α</em> при требовании <em>{r} α</em>.",
@@ -521,7 +529,7 @@
       "about.h":"About",
       "tr.gen":"Generator", "tr.mult":"Multiplier", "tr.boost":"Empowerer",
       "col.lv":"Lv", "col.cost":"Cost", "col.eff":"Effect ×", "col.exp":"Exponent ^",
-      "row.next":"next", "btn.buy":"Bought Lv {l} ✓", "btn.undo":"Undo one level",
+      "row.next":"next", "row.nextlv":"Next Lv", "btn.more":"All levels", "btn.less":"Collapse", "btn.buy":"Bought Lv {l} ✓", "btn.undo":"Undo one level",
       "flash.wait":"counted {t} of waiting · β +{b}",
       "v.now.t":"Take the rank right now",
       "v.now.w":"You hold <em>{a} α</em> against a requirement of <em>{r} α</em>.",
@@ -1263,16 +1271,29 @@
       TRACKS.filter(function(tk){ return cur(tk) === group; }).forEach(function(track){
         var div = document.createElement("div");
         div.className = "track";
+        div.id = "track-" + track;
+        var sym = group === "a" ? "α" : "β";
         div.innerHTML =
           '<div class="thead">' +
             '<h3 data-i18n="tr.' + META[track].kind + '">' + t("tr." + META[track].kind) + '</h3><span class="now" id="now-' + track + '"></span>' +
             '<span class="flash" id="flash-' + track + '"></span>' +
             '<span class="row" style="margin-left:auto;gap:6px">' +
+              '<button class="more" id="more-' + track + '" data-i18n="btn.more">' + t("btn.more") + '</button>' +
               '<button class="mini undo" id="undo-' + track + '" data-i18n-title="btn.undo" title="' + t("btn.undo") + '">−</button>' +
               '<button class="mini buy" id="buy-' + track + '"></button>' +
             '</span>' +
           '</div>' +
-          '<div class="lvls">' +
+          // Главное на виду: цена следующего уровня и его эффект.
+          // Вся таблица — за кнопкой, она нужна редко.
+          '<div class="nextline">' +
+            '<span class="nlab"><span data-i18n="row.nextlv">След. ур.</span> ' +
+              '<b class="val" id="nl-' + track + '">—</b></span>' +
+            '<input type="text" inputmode="decimal" id="' + track + '-nc" data-kind="cost" data-level="0">' +
+            '<span class="cur">' + sym + '</span>' +
+            '<span class="nlab" data-i18n="' + META[track].col + '">' + t(META[track].col) + '</span>' +
+            '<input type="text" inputmode="decimal" id="' + track + '-ne" data-kind="eff" data-level="0">' +
+          '</div>' +
+          '<div class="lvls" id="lvls-' + track + '" hidden>' +
             '<div class="lvl-row head"><span class="lab" data-i18n="col.lv">' + t("col.lv") + '</span>' +
             '<span class="lab"><span data-i18n="col.cost">' + t("col.cost") + '</span>, ' + (group === "a" ? "α" : "β") + '</span>' +
             '<span class="lab" data-i18n="' + META[track].col + '">' + t(META[track].col) + '</span></div>' +
@@ -1297,7 +1318,24 @@
       host.appendChild(row);
     }
   }
+  // Поле уровня: значение своё, подсказка — то, что посчитали.
+  function fillCell(input, stored, guess, est){
+    if (document.activeElement !== input) input.value = (stored != null) ? fmtInput(stored) : "";
+    input.placeholder = guess == null ? "?" : fmt(guess);
+    input.classList.toggle("est", est);
+  }
+  function updateNext(track){
+    var t = S[track], L = t.level + 1;
+    el("nl-" + track).textContent = L;
+    var ci = el(track + "-nc"), ei = el(track + "-ne");
+    ci.dataset.level = L; ei.dataset.level = L;
+    var c = costOf(track, L);
+    fillCell(ci, t.costs[L], c.v, t.costs[L] == null);
+    fillCell(ei, t.eff[L], effectOf(track, L), t.eff[L] == null);
+  }
   function updateRows(track){
+    updateNext(track);
+    if (el("lvls-" + track).hidden) return;
     var host = el("rows-" + track), t = S[track];
     if (host.children.length !== rowCount(track)) buildRows(track);
     Array.prototype.forEach.call(host.children, function(row){
@@ -1305,14 +1343,8 @@
       row.classList.toggle("done", L <= t.level);
       row.classList.toggle("next", L === t.level + 1);
       row.querySelector(".badge").hidden = L !== t.level + 1;
-      var ci = row.querySelector('[data-kind="cost"]'), c = costOf(track, L);
-      if (document.activeElement !== ci) ci.value = (t.costs[L] != null) ? fmtInput(t.costs[L]) : "";
-      ci.placeholder = c.v == null ? "?" : fmt(c.v);
-      ci.classList.toggle("est", t.costs[L] == null);
-      var ei = row.querySelector('[data-kind="eff"]');
-      if (document.activeElement !== ei) ei.value = (t.eff[L] != null) ? fmtInput(t.eff[L]) : "";
-      ei.placeholder = fmt(effectOf(track, L));
-      ei.classList.toggle("est", t.eff[L] == null);
+      fillCell(row.querySelector('[data-kind="cost"]'), t.costs[L], costOf(track, L).v, t.costs[L] == null);
+      fillCell(row.querySelector('[data-kind="eff"]'), t.eff[L], effectOf(track, L), t.eff[L] == null);
     });
   }
 
@@ -1431,7 +1463,14 @@
       bindField("p-" + track + "-free",  function(){ return S[track].free; },  function(v){ S[track].free = Math.max(0, Math.round(v)); });
       bindField("p-" + track + "-ratio", function(){ return S[track].ratio; }, function(v){ S[track].ratio = v; });
 
-      el("rows-" + track).addEventListener("input", function(ev){
+      el("more-" + track).addEventListener("click", function(){
+        var box = el("lvls-" + track), btn = el("more-" + track);
+        box.hidden = !box.hidden;
+        btn.setAttribute("data-i18n", box.hidden ? "btn.more" : "btn.less");
+        btn.textContent = tr(box.hidden ? "btn.more" : "btn.less");
+        if (!box.hidden) updateRows(track);
+      });
+      el("track-" + track).addEventListener("input", function(ev){
         var tgt = ev.target;
         if (!tgt.dataset || !tgt.dataset.kind) return;
         var L = +tgt.dataset.level, store = tgt.dataset.kind === "cost" ? S[track].costs : S[track].eff;
