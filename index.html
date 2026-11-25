@@ -274,7 +274,7 @@
               <tbody></tbody>
             </table>
           </div>
-          <div class="hint" data-i18n="cmp.hint">«Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.</div>
+          <div class="hint" data-i18n="cmp.hint">Каждая строка — «взять это прямо сейчас, а дальше идти по плану». «Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.</div>
         </div>
       </section>
     </div>
@@ -441,7 +441,7 @@
       "plan.refining":"уточняю…", "plan.rough":"черновой", "btn.redo":"Пересчитать",
       "cmp.h":"Сравнение первого хода", "cmp.move":"Первый ход", "cmp.cost":"Цена",
       "cmp.pay":"Отобьётся", "cmp.eta":"До ранга",
-      "cmp.hint":"«Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.",
+      "cmp.hint":"Каждая строка — «взять это прямо сейчас, а дальше идти по плану». «Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.",
       "a.h":"Альфа — сейчас в игре", "a.rank":"Ранг", "a.alpha":"α сейчас", "a.req":"Нужно α на ранг",
       "a.req.t":"Цены рангов 2–17 подставляются сами. Своё значение перебивает таблицу и запоминается.",
       "n.tierreq.t":"Ступени просят ранг 10, 13, 16, 19 — поле заполняется по номеру ступени.",
@@ -506,7 +506,7 @@
       "plan.refining":"refining…", "plan.rough":"rough", "btn.redo":"Recalculate",
       "cmp.h":"First move compared", "cmp.move":"First move", "cmp.cost":"Cost",
       "cmp.pay":"Pays off", "cmp.eta":"To rank",
-      "cmp.hint":"“Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly.",
+      "cmp.hint":"Each row means “take this right now, then follow the plan”. “Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly.",
       "a.h":"Alpha — current in game", "a.rank":"Rank", "a.alpha":"α now", "a.req":"α required for rank",
       "a.req.t":"Rank costs 2–17 are filled in automatically. Your own value overrides the table and is remembered.",
       "n.tierreq.t":"Tiers require rank 10, 13, 16, 19 — this field follows the tier number.",
@@ -1395,14 +1395,26 @@
     el("plan-total").textContent = fmtTime(best.time);
   }
 
+  // Строка сравнения: берём остаток плана и ставим эту покупку первой.
+  // Раньше тут показывалось время замороженной ветки, у которой первый
+  // ход мог быть уже куплен, — и три разные строки показывали одно и
+  // то же число. Теперь каждая строка считает ровно то, что обещает.
+  function firstMoveRow(track, rest){
+    var L = S[track].level + 1;
+    if (costOf(track, L).v == null) return null;
+    var seq = [{ track: track, level: L }];
+    rest.forEach(function(st){ if (!(st.track === track && st.level === L)) seq.push(st); });
+    return replay(seq);
+  }
   function renderCompare(a){
     var tb = document.querySelector("#compare tbody"); tb.innerHTML = "";
+    var rest = a.best.path;
     var rows = [{ label: t("cmp.save"), res: a.plain, cost: null, be: null, sym: "" }];
     TRACKS.forEach(function(track){
       var L = S[track].level + 1;
       rows.push({
         label: fullName(track) + " " + t("cmp.to", { l: L }),
-        res: a[track],
+        res: firstMoveRow(track, rest),
         cost: costOf(track, L),
         be: breakEven(track),
         sym: cur(track) === "a" ? " α" : " β"
