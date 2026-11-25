@@ -95,6 +95,7 @@
   }
   .panel.beta > h2{color:#86c6a8}
   .panel > h2 .tag{margin-left:auto;font-size:10px;letter-spacing:.06em;color:var(--muted);text-transform:none;font-family:var(--body)}
+  .panel > h2 .tag + .tag{margin-left:0;color:var(--alpha)}
   .pad{padding:16px}
 
   .verdict{border:1px solid #2d5f6d;border-radius:14px;overflow:hidden;background:linear-gradient(165deg,#13354044 0%, var(--panel) 46%)}
@@ -246,7 +247,9 @@
       </section>
 
       <section class="panel">
-        <h2><span data-i18n="plan.h">План до ранга</span> <span class="tag" id="plan-tag"></span></h2>
+        <h2><span data-i18n="plan.h">План до ранга</span> <span class="tag" id="plan-tag"></span>
+          <span class="tag" id="plan-state"></span>
+          <button class="more" id="plan-redo" data-i18n="btn.redo">Пересчитать</button></h2>
         <div class="pad">
           <ol class="plan" id="plan"></ol>
           <div class="finish">
@@ -383,8 +386,8 @@
               <label><span class="lab" data-i18n="m.r12">Бонус ранга 12: коэф.</span><input type="text" id="m-rank12k" inputmode="decimal"></label>
             </div>
             <div class="grid2" style="margin-top:12px">
-              <label><span class="lab" data-i18n="m.depth">Покупок в плане</span><input type="text" id="m-depth" inputmode="numeric"></label>
-              <label><span class="lab" data-i18n="m.beam">Ширина луча</span><input type="text" id="m-beam" inputmode="numeric"></label>
+              <label data-i18n-title="m.depth.t" title="Потолок длины плана, до 500. Поиск всё равно кончается, когда ранг взят, так что высокий потолок почти ничего не стоит; если план в него упёрся, он поднимается сам."><span class="lab" data-i18n="m.depth">Покупок в плане</span><input type="text" id="m-depth" inputmode="numeric"></label>
+              <label data-i18n-title="m.beam.t" title="Сколько вариантов поиск держит в уме, до 400. Чем шире, тем лучше план и тем дольше счёт: черновой план виден сразу, точный досчитывается в фоне."><span class="lab" data-i18n="m.beam">Ширина луча</span><input type="text" id="m-beam" inputmode="numeric"></label>
             </div>
             <div id="track-params"></div>
             <div class="hint" data-i18n-html="m.hint"></div>
@@ -435,6 +438,7 @@
       "chip.arate":"α / сек", "chip.brate":"β / сек", "chip.bonus":"бонус β→α", "chip.eta":"до ранга",
       "v.naive":"Если копить в лоб", "v.best":"По плану", "v.save":"Экономия",
       "plan.h":"План до ранга", "plan.total":"Ранг в руках через",
+      "plan.refining":"уточняю…", "plan.rough":"черновой", "btn.redo":"Пересчитать",
       "cmp.h":"Сравнение первого хода", "cmp.move":"Первый ход", "cmp.cost":"Цена",
       "cmp.pay":"Отобьётся", "cmp.eta":"До ранга",
       "cmp.hint":"«Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.",
@@ -461,6 +465,8 @@
       "pr.hint":"Купил улучшение в игре — жми <b style=\"color:var(--alpha)\">«Купил ✓»</b>: уровень поднимется, цена спишется с нужной валюты, а если на неё ещё надо было копить — заодно прокрутится время, и β подрастут на то, что накопилось за ожидание. <b>−</b> возвращает ровно то состояние, что было до нажатия. Жёлтым — цена, достроенная по шагу роста; впишешь настоящую — станет белой.",
       "m.h":"Модель: коэффициенты и шаги", "m.base":"База за ранг", "m.r5":"Бонус ранга 5: коэф.",
       "m.r12":"Бонус ранга 12: коэф.", "m.depth":"Покупок в плане", "m.beam":"Ширина луча",
+      "m.depth.t":"Потолок длины плана, до 500. Поиск всё равно кончается, когда ранг взят, так что высокий потолок почти ничего не стоит; если план в него упёрся, он поднимается сам.",
+      "m.beam.t":"Сколько вариантов поиск держит в уме, до 400. Чем шире, тем лучше план и тем дольше счёт: черновой план виден сразу, точный досчитывается в фоне.",
       "m.hint":"Эффект уровня: <code>1 + шаг × (ур − сдвиг)</code>. Генераторы — сдвиг 1 (ур. 1 даёт ×1), множители и усилители — сдвиг 0. У множителя α шаг дополнительно умножается на узел 140. Рост цены работает только там, где настоящая цена ещё не введена.",
       "t.h":"Тетратор — добавим позже",
       "t.hint":"Тетрация стоит 1.00e25 — до неё разговор не про этот ранг. Как подберёшься, скажи, что даёт первый уровень, и добавлю седьмой веткой.",
@@ -481,7 +487,7 @@
       "v.saves":". Экономит <em>{t}</em> против «копить в лоб»", "v.more":", дальше по плану ещё {n}",
       "plan.none":"Просто копим до <b>{a} α</b>.", "plan.wait":"· ждём {t}", "plan.now":"· сразу",
       "plan.rank":"Ранг {r}", "plan.onhand":"— на счету {a} α", "plan.rate":"· скорость {v} α/с",
-      "plan.nobuys":"без покупок", "plan.range":"ур. {a}–{b}", "plan.steps":"{n} шагов",
+      "plan.nobuys":"без покупок", "plan.range":"ур. {a}–{b}",
       "cmp.save":"Копить, ничего не брать", "cmp.best":"лучший", "cmp.to":"→ ур. {l}",
       "sync.local":"локальное сохранение", "sync.cloud":"синхронизируется между устройствами",
       "sync.browser":"сохранено в этом браузере",
@@ -497,6 +503,7 @@
       "chip.arate":"α / sec", "chip.brate":"β / sec", "chip.bonus":"β→α bonus", "chip.eta":"to rank",
       "v.naive":"Saving up plainly", "v.best":"Following the plan", "v.save":"Saved",
       "plan.h":"Plan to the rank", "plan.total":"Rank in hand after",
+      "plan.refining":"refining…", "plan.rough":"rough", "btn.redo":"Recalculate",
       "cmp.h":"First move compared", "cmp.move":"First move", "cmp.cost":"Cost",
       "cmp.pay":"Pays off", "cmp.eta":"To rank",
       "cmp.hint":"“Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly.",
@@ -523,6 +530,8 @@
       "pr.hint":"Bought an upgrade in the game — press <b style=\"color:var(--alpha)\">“Bought ✓”</b>: the level goes up, the cost is deducted from the right currency, and if you still had to save for it, time is wound forward too, so β grows by whatever accumulated during the wait. <b>−</b> restores exactly the state before the press. Amber means a cost extrapolated from the growth step; type the real one and it turns white.",
       "m.h":"Model: coefficients and steps", "m.base":"Base per rank", "m.r5":"Rank 5 bonus: coef.",
       "m.r12":"Rank 12 bonus: coef.", "m.depth":"Buys in a plan", "m.beam":"Beam width",
+      "m.depth.t":"Cap on plan length, up to 500. The search stops once the rank is reached, so a high cap costs almost nothing; if a plan hits the cap, it is raised automatically.",
+      "m.beam.t":"How many variants the search keeps in mind, up to 400. Wider means a better plan and a longer wait: the rough plan shows at once, the exact one finishes in the background.",
       "m.hint":"Level effect: <code>1 + step × (lv − offset)</code>. Generators use offset 1 (Lv 1 gives ×1), Multipliers and Empowerers use 0. The α Multiplier step is additionally multiplied by node 140. Cost growth is used only where a real price has not been entered yet.",
       "t.h":"Tetrator — to be added later",
       "t.hint":"Tetration costs 1.00e25 — far beyond this rank. Once you get close, tell me what the first level gives and I will add it as a seventh branch.",
@@ -543,7 +552,7 @@
       "v.saves":". Saves <em>{t}</em> against plain saving", "v.more":", with {n} more ahead in the plan",
       "plan.none":"Just save up to <b>{a} α</b>.", "plan.wait":"· wait {t}", "plan.now":"· right away",
       "plan.rank":"Rank {r}", "plan.onhand":"— {a} α on hand", "plan.rate":"· rate {v} α/s",
-      "plan.nobuys":"no buys", "plan.range":"Lv {a}–{b}", "plan.steps":"{n} steps",
+      "plan.nobuys":"no buys", "plan.range":"Lv {a}–{b}",
       "cmp.save":"Save, buy nothing", "cmp.best":"best", "cmp.to":"→ Lv {l}",
       "sync.local":"saved in this browser", "sync.cloud":"synced across devices",
       "sync.browser":"saved in this browser",
@@ -575,6 +584,13 @@
     if (m10 === 1 && m100 !== 11) f = "ка";
     else if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) f = "ки";
     return n + " покуп" + f;
+  }
+  function nSteps(n){
+    if (LANG === "en") return n + (n === 1 ? " step" : " steps");
+    var m10 = n % 10, m100 = n % 100, f = "ов";
+    if (m10 === 1 && m100 !== 11) f = "";
+    else if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) f = "а";
+    return n + " шаг" + f;
   }
   function nRanks(n){
     if (LANG === "en") return n + (n === 1 ? " rank" : " ranks");
@@ -649,7 +665,7 @@
 
   /* ============ состояние ============ */
   var DEF = {
-    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 80, beam: 50, tuned: 2,
+    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 500, beam: 300, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, node148: 0, stupen: 0, betaExp: 0.2, beta: 0,
     stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, n140lvl: 0,
     rankCosts: {},
@@ -688,9 +704,10 @@
   // Раньше у узла 140 хранился сам множитель, теперь — уровень.
   // Пересчитываем один раз: множитель 4 означал уровень 3.
   function migrate(){
-    // Глубина и ширина — не пользовательский выбор, а настройка поиска.
-    // Старое значение 30 обрезало план, поэтому один раз поднимаем его
-    // до нового умолчания; метка не даёт сделать это повторно.
+    // Глубина и ширина — не пользовательский выбор, а настройка поиска,
+    // и каждый раз, когда выяснялось, что прежние значения урезают план,
+    // их поднимали здесь. Метка не даёт сделать это повторно поверх
+    // того, что человек выставил руками.
     if (!(S.tuned >= 2)){
       if (!(S.depth > 30)) S.depth = 80;
       if (!(S.beam >= 50)) S.beam = 50;
@@ -708,6 +725,15 @@
       });
       S.stupenRank = tierRank(S.stupen);
       S.tuned = 4;
+    }
+    // Глубина 80 обрезала длинные планы, а луч 50 находил заметно
+    // худший: на ранге 17 широкий луч давал вдвое меньшее время.
+    // Глубина теперь ничего не стоит — поиск всё равно заканчивается,
+    // когда ранг взят, — поэтому ставим потолок.
+    if (!(S.tuned >= 5)){
+      if (!(S.depth >= 500)) S.depth = 500;
+      if (!(S.beam >= 300)) S.beam = 300;
+      S.tuned = 5;
     }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
@@ -940,12 +966,21 @@
   // оцениваем каждое по «сколько до ранга, если больше ничего не покупать»
   // и оставляем лучшие. Набор уровней однозначно задаёт потраченное, так
   // что одинаковые наборы схлопываем, оставляя тот, что пришёл раньше.
-  function beamFrom(st0, head, depth, width){
-    var best = { time: st0.t + tailTime(st0), path: head.slice(), end: st0 };
-    var beam = [{ st: st0, path: head }];
-    for (var d = 0; d < depth && beam.length; d++){
-      var next = [];
-      beam.forEach(function(node){
+  var MAX_DEPTH = 500, MAX_WIDTH = 400;
+  function clampDepth(d){ d = Math.round(d || 0); return Math.max(1, Math.min(MAX_DEPTH, d || 1)); }
+  function clampWidth(w){ w = Math.round(w || 0); return w > 0 ? Math.max(4, Math.min(MAX_WIDTH, w)) : 80; }
+
+  // Поиск разбит на «один уровень за вызов»: так его можно гонять
+  // кусками по кадру, не подвешивая страницу на несколько секунд.
+  function beamInit(st0, head, width){
+    return { beam: [{ st: st0, path: head }], width: clampWidth(width),
+             best: { time: st0.t + tailTime(st0), path: head.slice(), end: st0 } };
+  }
+  function beamStep(J){
+    if (!J.beam.length) return false;
+    var best = J.best, width = J.width;
+    var next = [];
+    J.beam.forEach(function(node){
         TRACKS.forEach(function(track){
           var L = node.st.lv[track] + 1;
           var c = costOf(track, L);
@@ -959,21 +994,22 @@
           if (score < best.time - 1e-9) best = { time: score, path: npath, end: nst };
           next.push({ st: nst, path: npath, score: score });
         });
-      });
-      next.sort(function(a, b){ return a.score - b.score; });
-      var seen = {}, keep = [];
-      for (var i = 0; i < next.length && keep.length < width; i++){
-        var key = TRACKS.map(function(t){ return next[i].st.lv[t]; }).join(",");
-        if (seen[key]) continue;
-        seen[key] = 1;
-        keep.push(next[i]);
-      }
-      beam = keep;
+    });
+    next.sort(function(a, b){ return a.score - b.score; });
+    var seen = {}, keep = [];
+    for (var i = 0; i < next.length && keep.length < width; i++){
+      var key = TRACKS.map(function(t){ return next[i].st.lv[t]; }).join(",");
+      if (seen[key]) continue;
+      seen[key] = 1;
+      keep.push(next[i]);
     }
-    return best;
+    J.best = best;
+    J.beam = keep;
+    return keep.length > 0;
   }
-  function rooted(first){
-    var depth = Math.max(1, Math.min(120, Math.round(S.depth)));
+  // Задел поиска с заданной первой покупкой — отсюда идут и обычный
+  // расчёт, и фоновое уточнение.
+  function rootStart(first, width){
     var st0 = origin();
     var L0 = st0.lv[first] + 1;
     var c0 = costOf(first, L0);
@@ -982,7 +1018,13 @@
     if (!s0) return null;
     var st1 = { A: s0.A, B: s0.B, lv: withLevel(st0.lv, first, L0), t: s0.t };
     var head = [{ track: first, level: L0, cost: c0.v, est: c0.est, at: s0.t, wait: s0.wait }];
-    return beamFrom(st1, head, depth - 1, S.beam > 0 ? Math.min(400, Math.round(S.beam)) : 80);
+    return beamInit(st1, head, width);
+  }
+  function rooted(first, depth, width){
+    var J = rootStart(first, width);
+    if (!J) return null;
+    for (var d = clampDepth(depth) - 1; d > 0 && beamStep(J); d--){}
+    return J.best;
   }
   // Проигрываем последовательность покупок заново — нужно, чтобы
   // оценивать переставленные варианты плана.
@@ -1052,15 +1094,32 @@
     return cur;
   }
 
-  function analyze(){
+  function analyzeOnce(depth, width, withPolish){
     var st0 = origin();
-    var out = { plain: { time: tailTime(st0), path: [], end: st0 } };
+    var out = { plain: { time: tailTime(st0), path: [], end: st0 }, depth: depth, width: width };
     out.best = out.plain;
     TRACKS.forEach(function(track){
-      out[track] = pullForward(polish(rooted(track), 12, true), true);
-      if (out[track] && out[track].time < out.best.time - 1e-9) out.best = out[track];
+      var r = rooted(track, depth, width);
+      if (r && withPolish) r = pullForward(polish(r, 12, true), true);
+      out[track] = r;
+      if (r && r.time < out.best.time - 1e-9) out.best = r;
     });
     return out;
+  }
+  // Если план упёрся в потолок глубины, значит его обрезали на полуслове.
+  // Поднимаем потолок и считаем заново, пока упираться не перестанет.
+  function analyze(opts){
+    opts = opts || {};
+    var width = clampWidth(opts.width != null ? opts.width : S.beam);
+    var depth = clampDepth(opts.depth != null ? opts.depth : S.depth);
+    var withPolish = opts.polish !== false;
+    var a = analyzeOnce(depth, width, withPolish);
+    while (a.best.path.length >= depth && depth < MAX_DEPTH){
+      depth = Math.min(MAX_DEPTH, depth * 2);
+      a = analyzeOnce(depth, width, withPolish);
+    }
+    a.hitCap = a.best.path.length >= depth;
+    return a;
   }
 
   // Момент, когда накопленная α с покупкой обгонит вариант без неё.
@@ -1085,6 +1144,114 @@
       if (buy(mid) >= base(mid)) hi = mid; else lo = mid;
     }
     return hi;
+  }
+
+  /* ============ план: считаем редко, показываем всегда ============ */
+  // Пересчёт на каждую покупку заставляет план «передумывать»: луч
+  // не находит один и тот же оптимум из разных точек. Поэтому план
+  // считается один раз и дальше только пересчитывает время оставшихся
+  // шагов — цены и скорость к тому моменту уже другие.
+  var PLAN = null;   // { sig, raw, bestTrack, quick }
+  var REF = null;    // фоновое уточнение широким лучом
+  var planGen = 0;   // счётчик ручных пересчётов
+
+  function planSig(){
+    return [planGen, Math.round(S.rank), S.rankCost, Math.round(S.stupen)].join("|");
+  }
+  function levelKey(){ return TRACKS.map(function(tk){ return S[tk].level; }).join(","); }
+  // Уже купленные шаги из плана выпадают, остальные проигрываются заново.
+  function restOf(res){
+    return res.path.filter(function(st){ return st.level > S[st.track].level; });
+  }
+  function reuse(){
+    if (!PLAN || PLAN.sig !== planSig()) return null;
+    var st0 = origin();
+    var out = { plain: { time: tailTime(st0), path: [], end: st0 }, quick: PLAN.quick, reused: true };
+    var ok = true;
+    TRACKS.forEach(function(tk){
+      if (!ok) return;
+      if (!PLAN.raw[tk]){ out[tk] = null; return; }
+      var r = replay(restOf(PLAN.raw[tk]));
+      if (!r){ ok = false; return; }
+      out[tk] = r;
+    });
+    if (!ok) return null;
+    var b = PLAN.bestTrack ? out[PLAN.bestTrack] : out.plain;
+    if (!b) return null;
+    if (PLAN.bestTrack && !b.path.length) return null;   // план пройден до конца
+    out.best = b;
+    return out;
+  }
+  function bestTrackOf(a){
+    var bt = null;
+    TRACKS.forEach(function(tk){ if (a[tk] && a[tk] === a.best) bt = tk; });
+    return bt;
+  }
+  var QUICK_WIDTH = 20;   // ширина черновика: он виден сразу, пока считается точный
+  function recompute(){
+    var sig = planSig();
+    var q = analyze({ width: QUICK_WIDTH, polish: false });
+    PLAN = { sig: sig, raw: q, bestTrack: bestTrackOf(q), quick: true };
+    startRefine(sig);
+    return q;
+  }
+  // setTimeout(…, 0) на вложенных вызовах зажимается до 4 мс, и на
+  // долгом поиске это набегает в заметную долю. MessageChannel будит
+  // следующий кусок сразу.
+  var tick = (function(){
+    if (typeof MessageChannel !== "function") return function(fn){ return setTimeout(fn, 0); };
+    var ch = new MessageChannel(), queue = [];
+    ch.port1.onmessage = function(){ var fn = queue.shift(); if (fn) fn(); };
+    return function(fn){ queue.push(fn); ch.port2.postMessage(0); return null; };
+  })();
+  function stopRefine(){
+    if (REF) REF.dead = true;
+    REF = null;
+  }
+  // Широкий луч находит заметно лучший план, но считается секундами.
+  // Гоняем его кусками по 16 мс: страница остаётся живой, а план
+  // через пару секунд сам заменяется на лучший.
+  function startRefine(sig){
+    stopRefine();
+    var depth = clampDepth(S.depth), width = clampWidth(S.beam);
+    if (width <= QUICK_WIDTH) return;
+    var queue = TRACKS.slice(), res = {}, J = null, cur = null, left = 0;
+    var job = REF = { sig: sig, lv: levelKey(), dead: false };
+    function nextRoot(){
+      while (queue.length){
+        cur = queue.shift();
+        J = rootStart(cur, width);
+        left = depth - 1;
+        if (J) return true;
+        res[cur] = null;
+      }
+      return false;
+    }
+    function finish(){
+      REF = null;
+      var best = null, bt = null;
+      TRACKS.forEach(function(tk){
+        if (res[tk] && (!best || res[tk].time < best.time - 1e-9)){ best = res[tk]; bt = tk; }
+      });
+      var st0 = origin();
+      res.plain = { time: tailTime(st0), path: [], end: st0 };
+      if (best && best.time < res.plain.time - 1e-9){ res.best = best; }
+      else { res.best = res.plain; bt = null; }
+      PLAN = { sig: sig, raw: res, bestTrack: bt, quick: false };
+      render();
+    }
+    function slice(){
+      if (REF !== job || job.dead) return;   // состояние сменилось — работа не нужна
+      var t0 = Date.now();
+      while (Date.now() - t0 < 24){
+        if (left > 0 && beamStep(J)){ left--; continue; }
+        res[cur] = pullForward(polish(J.best, 12, true), true) || J.best;
+        if (!nextRoot()){ finish(); return; }
+      }
+      tick(slice);
+    }
+    if (!nextRoot()){ REF = null; return; }
+    tick(slice);
   }
 
   /* ============ отрисовка ============ */
@@ -1116,7 +1283,11 @@
     var togo = Math.max(0, Math.round(S.stupenRank) - Math.round(S.rank));
     el("check-togo").textContent = togo > 0 ? nRanks(togo) : t("x.ready");
 
-    var a = analyze();
+    // Купили что-то, пока шло уточнение, — начинаем его заново,
+    // иначе половина веток посчитана из старого состояния.
+    if (REF && REF.lv !== levelKey()) startRefine(REF.sig);
+    var a = reuse() || recompute();
+    el("plan-state").textContent = REF ? t("plan.refining") : (a.quick ? t("plan.rough") : "");
     el("ro-eta").textContent = fmtTime(a.best.time);
     renderVerdict(a, rA);
     renderPlan(a.best);
@@ -1197,7 +1368,7 @@
     var ol = el("plan"); ol.innerHTML = "";
     var groups = best.path.length ? groupPlan(best.path).length : 0;
     el("plan-tag").textContent = best.path.length
-      ? nBuys(best.path.length) + (groups < best.path.length ? " · " + t("plan.steps", { n: groups }) : "")
+      ? nBuys(best.path.length) + (groups < best.path.length ? " · " + nSteps(groups) : "")
       : t("plan.nobuys");
     if (!best.path.length){
       ol.innerHTML = '<li><span class="tcode">' + clock(0) + '</span><span class="step">' + t("plan.none", { a: fmt(S.rankCost) }) + '</span><span class="price"></span></li>';
@@ -1454,8 +1625,8 @@
     bindField("m-base",     function(){ return S.basePerRank; }, function(v){ S.basePerRank = v; });
     bindField("m-rank5k",   function(){ return S.rank5k; },    function(v){ S.rank5k = v; });
     bindField("m-rank12k",  function(){ return S.rank12k; },   function(v){ S.rank12k = v; });
-    bindField("m-depth",    function(){ return S.depth; },     function(v){ S.depth = Math.max(1, Math.min(120, Math.round(v))); });
-    bindField("m-beam",     function(){ return S.beam; },      function(v){ S.beam = Math.max(4, Math.min(400, Math.round(v))); });
+    bindField("m-depth",    function(){ return S.depth; },     function(v){ S.depth = clampDepth(v); planGen++; });
+    bindField("m-beam",     function(){ return S.beam; },      function(v){ S.beam = clampWidth(v); planGen++; });
 
     TRACKS.forEach(function(track){
       bindField("f-" + track,         function(){ return S[track].level; }, function(v){ S[track].level = Math.max(startOf(track), Math.round(v)); });
@@ -1549,6 +1720,9 @@
     });
     // Ступень покупается за ранги α и сносит вообще всё: ранг падает
     // на старт, обе частицы обнуляются, все шесть веток на старт.
+    el("plan-redo").addEventListener("click", function(){
+      planGen++; PLAN = null; stopRefine(); render();
+    });
     el("lang-ru").addEventListener("click", function(){ setLang("ru"); });
     el("lang-en").addEventListener("click", function(){ setLang("en"); });
 
