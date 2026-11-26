@@ -375,6 +375,7 @@
           <div class="grid4" style="margin-top:12px">
             <label><span class="lab" data-i18n="n.relic">Реликвия: база ген. α и β ×</span><input type="text" id="f-relic" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="n.sing">Множитель сингулярности ×</span><input type="text" id="f-singmult" inputmode="decimal"></label>
+            <label data-i18n-title="n.statue.t" title="«Преследующая статуя» делит показатель степени требования ранга. Вводи делитель так, как он написан в игре: на шестом уровне это 1.02, на седьмом 1.023. Таблица цен рангов хранится без статуи, поэтому при 1 ничего не меняется. Делитель бьёт по показателю, а не по самой цене, так что чем дальше ранг, тем сильнее выигрыш: на 22-м ранге 1.16e54 превращается в 1.01e53, вдесятеро."><span class="lab"><span data-i18n="n.statue">Статуя: делит показатель ранга на</span> <b class="val" id="check-statue">—</b></span><input type="text" id="f-statue" inputmode="decimal"></label>
             <label data-i18n-title="n.singn.t" title="Достижение «СТО»: базы всех генераторов и множителей частиц умножаются на 1 + Сингулярность / 100. Вводи саму сингулярность, не множитель: при 100 выходит ×2."><span class="lab" data-i18n="n.singn">Сингулярность (шт.)</span><input type="text" id="f-singn" inputmode="decimal"></label>
             <div style="grid-column:span 2;display:flex;align-items:flex-end;padding-bottom:9px">
               <span class="hint" style="margin:0" data-i18n-html="n.relichint"></span>
@@ -529,6 +530,9 @@
       "sync.browser":"сохранено в этом браузере",
       "x.off":"не активен", "x.off12":"не активен (нужен ранг 12)", "x.off2":"не активен (нужна ступень 2)",
       "x.multbase":"база множ. ×{v}", "x.ready":"можно брать",
+      "n.statue":"Статуя: делит показатель ранга на",
+      "n.statue.t":"«Преследующая статуя» делит показатель степени требования ранга. Вводи делитель так, как он написан в игре: на шестом уровне это 1.02, на седьмом 1.023. Таблица цен рангов хранится без статуи, поэтому при 1 ничего не меняется. Делитель бьёт по показателю, а не по самой цене, так что чем дальше ранг, тем сильнее выигрыш: на 22-м ранге 1.16e54 превращается в 1.01e53, вдесятеро.",
+      "x.statue":"ранг {a} → {b}",
       "n.150":"Узел 150: уровень из 11 →",
       "n.150.t":"Узел 150 умножает базу множителя β. Вводится уровнем из 11, как и 140-й. Растёт прибавкой: 1 + 0.5 × уровень, то есть ×1.5 на первом уровне, ×2 на втором и ×6.5 на одиннадцатом. Сверено с игрой на двух уровнях.",
       "x.gen":"ген α ×{g} · множ α ×{m} (ур. {l})",
@@ -615,6 +619,9 @@
       "sync.browser":"saved in this browser",
       "x.off":"not active", "x.off12":"not active (needs rank 12)", "x.off2":"not active (needs tier 2)",
       "x.multbase":"multiplier base ×{v}", "x.ready":"available now",
+      "n.statue":"Statue: divides the rank exponent by",
+      "n.statue.t":"The Stalking Statue divides the exponent of the rank requirement. Enter the divisor exactly as the game writes it: 1.02 at level 6, 1.023 at level 7. The rank-cost table is stored without the statue, so 1 changes nothing. It divides the exponent, not the price, so the further the rank the bigger the gain: at rank 22 it turns 1.16e54 into 1.01e53, a tenfold cut.",
+      "x.statue":"rank {a} → {b}",
       "n.150":"Node 150: level out of 11 →",
       "n.150.t":"Node 150 multiplies the β Multiplier base. Entered as a level out of 11, like node 140. It grows by addition: 1 + 0.5 × level, so ×1.5 at level 1, ×2 at level 2 and ×6.5 at level 11. Checked against the game at two levels.",
       "x.gen":"α Gen ×{g} · α Mult ×{m} (Lv {l})",
@@ -726,7 +733,7 @@
   var DEF = {
     rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, rank18k: 0.005, alphaReal: 0, betaReal: 0, climbStart: 0, depth: 500, beam: 300, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, node148: 0, stupen: 0, betaExp: 0.2, beta: 0,
-    stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, prestAfter: 0, node149: 1, singCount: 0, n140lvl: 0, n150lvl: 0,
+    stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, prestAfter: 0, node149: 1, singCount: 0, n140lvl: 0, n150lvl: 0, statue: 1,
     rankCosts: {},
     gen:    { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5,
               costs: { "2":1, "5":3.38, "7":7.59, "12":57.67, "16":292, "20":1478, "35":647160, "45":37318497 }, eff: {} },
@@ -756,19 +763,39 @@
   };
   // Цены рангов — константы игры: одни и те же у всех и после каждого
   // сброса. Поэтому они зашиты, а не набираются руками; поле «Нужно α
-  // на ранг» остаётся, чтобы поправить или продолжить таблицу выше 17.
+  // на ранг» остаётся, чтобы поправить или продолжить таблицу выше 22.
+  // Хранятся БЕЗ статуи, то есть такими, какими игра их показывала,
+  // пока «Преследующей статуи» не было. Делитель применяется ниже.
+  // Показатели степени этих цен ложатся на очень ровную линию: их
+  // вторые разности с 16-го ранга держатся около 0.410 (0.458, 0.414,
+  // 0.412, 0.411, 0.409). По ней 22-й ранг предсказывался как 10^54.06
+  // ещё до замера — и замер 1.01e53 при делителе 1.02 дал ровно его.
+  // Это же доказывает, что вся таблица выше снята без статуи.
   var RANK_COSTS = {
     "2": 1, "3": 10, "4": 50, "5": 160, "6": 500, "7": 1000, "8": 2000,
     "9": 13289, "10": 267543, "11": 7797571, "12": 638133197,
-    "13": 1.91e11, "14": 1.73e14, "15": 4.45e17, "16": 3.75e21, "17": 9.07e25, "18": 5.70e30, "19": 9.24e35, "20": 3.86e41
+    "13": 1.91e11, "14": 1.73e14, "15": 4.45e17, "16": 3.75e21, "17": 9.07e25, "18": 5.70e30, "19": 9.24e35, "20": 3.86e41,
+    "21": 4.14e47, "22": 1.16e54
   };
+  // «Преследующая статуя» делит показатель степени требования ранга:
+  // цена 10^E превращается в 10^(E/d). Поэтому выигрыш растёт с рангом —
+  // на 22-м это уже десятикратное удешевление, а на 13-м было бы
+  // всего в полтора раза.
+  function statueDiv(){ return S.statue > 1 ? S.statue : 1; }
+  function applyStatue(v){
+    var d = statueDiv();
+    if (d <= 1 || !(v > 0)) return v;
+    return Math.pow(10, (Math.log(v) / Math.LN10) / d);
+  }
   // Ступени просят ранг 10, 13, 16, 19 — шаг три ранга.
   function tierRank(stupen){ return 10 + 3 * Math.max(0, Math.round(stupen)); }
   // Цена следующего ранга: сначала то, что ввели руками, иначе таблица.
   function rankCostFor(rank){
     var k = String(Math.round(rank) + 1);
+    // Своё значение статуей не трогаем: человек вводит то, что видит в
+    // игре, а там делитель уже учтён. Делится только таблица.
     if (S.rankCosts && S.rankCosts[k] != null) return S.rankCosts[k];
-    return RANK_COSTS[k] != null ? RANK_COSTS[k] : null;
+    return RANK_COSTS[k] != null ? applyStatue(RANK_COSTS[k]) : null;
   }
   function syncRankCost(){
     var c = rankCostFor(S.rank);
@@ -884,6 +911,16 @@
     if (!(S.tuned >= 13)){
       ["tetra", "btetra"].forEach(function(tk){ delete S[tk].accel; });
       S.tuned = 13;
+    }
+    // Таблица доросла до 22-го ранга, и теперь к ней применяется
+    // делитель статуи. Ручные записи 18–21 повторяют те же числа, но
+    // мимо делителя — после ступени человек пошёл бы по ним и считал
+    // ранги вдесятеро дороже, чем они есть. Чистим, как метка 4.
+    if (!(S.tuned >= 14)){
+      Object.keys(S.rankCosts || {}).forEach(function(k){
+        if (RANK_COSTS[k] != null) delete S.rankCosts[k];
+      });
+      S.tuned = 14;
     }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
@@ -1595,6 +1632,9 @@
     if (atRank != null) el("pr-rankspeed").textContent = "×" + fmt(prestSpeed(atRank));
     el("check-n140").textContent = t("x.multbase", { v: node140() });
     el("check-n150").textContent = t("x.multbase", { v: fmt(node150()) });
+    var rawRank = RANK_COSTS[String(Math.round(S.rank) + 1)];
+    el("check-statue").textContent = (statueDiv() > 1 && rawRank != null)
+      ? t("x.statue", { a: fmt(rawRank), b: fmt(applyStatue(rawRank)) }) : "";
     el("check-stupen2").textContent = Math.round(S.stupen) >= 2
       ? t("x.gen", { g: fmt(stupen2Gen()), m: fmt(stupen2Mult(lv.mult)), l: lv.mult })
       : t("x.off2");
@@ -1937,6 +1977,7 @@
     bindField("f-stupenrank", function(){ return S.stupenRank; }, function(v){ S.stupenRank = Math.max(1, Math.round(v)); });
     bindField("f-rankstart",  function(){ return S.rankStart; },  function(v){ S.rankStart = Math.max(0, Math.round(v)); });
     bindField("f-relic",      function(){ return S.relicGen; },   function(v){ S.relicGen = Math.max(0, v); });
+    bindField("f-statue",     function(){ return S.statue; },     function(v){ S.statue = Math.max(1, v); syncRankCost(); refreshFields(); });
     bindField("f-singmult",   function(){ return S.singMult; },   function(v){ S.singMult = v > 0 ? v : 1; });
     bindField("f-prestb",     function(){ return S.prestB; },     function(v){ S.prestB = v > 0 ? v : 1; });
     bindField("f-prestg",     function(){ return S.prestG; },     function(v){ S.prestG = v > 0 ? v : 1; });
