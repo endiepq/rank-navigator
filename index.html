@@ -500,7 +500,7 @@
       "n.tierhint":"Покупается за ранги α и сносит ранг, α, β и все шесть веток. Узлы дерева, прайс-листы, сама ступень и <b>база β от престижа</b> сохраняются — она переживает и ранги, и ступени. До ступени осталось <b class=\"val\" id=\"check-togo\">—</b>.",
       "n.hint":"Узел 140 вводится уровнем, как в игре: 0/9 даёт ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. Множитель считается сам и показан рядом с полем. Узлы 139 и 141 одноуровневые — просто ставь галочку, когда куплен. Сверка: «бонус ранга 5» в блоке «Альфа» должен совпасть с наградой за ранг 5 в игре. Показатель 0.2 даёт «α Генератор ×<span id=\"hint-bonus\">—</span>» при нынешних β; узел 147 его улучшает — тогда подними показатель, пока не сойдётся.",
       "pr.a":"Прайс-листы α", "pr.b":"Прайс-листы β", "pr.tag":"вводишь один раз — помнит навсегда",
-      "pr.tetra":"<b>Тетратор</b> подписан в игре как <code>^^1.01</code>, но ведёт себя иначе: он <b>умножает</b> показатель усилителя на <b>1.035</b> за уровень. Поэтому в столбце «Степень ^» у него стоит 1.0324, а не то, что написано в игре. Проверено по двум замерам: показатель 1.18 требовал 1.21793, показатель 1.22 — 1.25992. Слагаемым это не объяснить: оно плывёт с 0.0379 до 0.0399, а отношение держится. Контроль — β, где тетратор на нуле: там цепочка сходится точно.",
+      "pr.tetra":"<b>Тетратор</b> подписан в игре как <code>^^1.01</code>, но ведёт себя иначе: он <b>умножает</b> показатель усилителя примерно на <b>1.0355</b> за уровень, и эта надбавка медленно растёт вместе с масштабом чисел. Поэтому в столбце «Степень ^» у него стоит 1.0324, а не то, что написано в игре. Проверено по двум замерам: показатель 1.18 требовал 1.21793, показатель 1.22 — 1.25992. Слагаемым это не объяснить: оно плывёт с 0.0379 до 0.0399, а отношение держится. Контроль — β, где тетратор на нуле: там цепочка сходится точно.",
       "pr.hint":"Купил улучшение в игре — жми <b style=\"color:var(--alpha)\">«Купил ✓»</b>: уровень поднимется, цена спишется с нужной валюты, а если на неё ещё надо было копить — заодно прокрутится время, и β подрастут на то, что накопилось за ожидание. <b>−</b> возвращает ровно то состояние, что было до нажатия. Жёлтым — цена, достроенная по шагу роста; впишешь настоящую — станет белой.",
       "m.h":"Модель: коэффициенты и шаги", "m.base":"База за ранг", "m.r5":"Бонус ранга 5: коэф.",
       "m.r12":"Бонус ранга 12: коэф.", "m.r18":"Бонус ранга 18: коэф.",
@@ -586,7 +586,7 @@
       "n.tierhint":"Bought with α ranks; it wipes the rank, α, β and all six branches. Refine Tree nodes, price lists, the tier itself and the <b>β prestige base</b> are kept — that base survives both ranks and tiers. Ranks left to the tier: <b class=\"val\" id=\"check-togo\">—</b>.",
       "n.hint":"Node 140 is entered as a level, like in the game: 0/9 gives ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. The multiplier is computed and shown beside the field. Nodes 139 and 141 are single-level — just tick them once bought. Cross-check: the “rank 5 bonus” in the Alpha block must match the rank 5 bonus in the game. The 0.2 exponent yields “α Generator ×<span id=\"hint-bonus\">—</span>” at your current β; refinement node 147 improves it — then raise the exponent until it matches.",
       "pr.a":"α price lists", "pr.b":"β price lists", "pr.tag":"enter once — remembered for good",
-      "pr.tetra":"The <b>Tetrator</b> reads <code>^^1.01</code> in the game but behaves differently: it <b>multiplies</b> the Empowerer exponent by <b>1.035</b> per level. So its “Exponent ^” column holds 1.0324 rather than what the game prints. Checked on two readings: an exponent of 1.18 needed 1.21793, an exponent of 1.22 needed 1.25992. An additive term cannot explain that — it drifts from 0.0379 to 0.0399 while the ratio holds. Control: on the β side, where the Tetrator is at zero, the chain matches exactly.",
+      "pr.tetra":"The <b>Tetrator</b> reads <code>^^1.01</code> in the game but behaves differently: it <b>multiplies</b> the Empowerer exponent by about <b>1.0355</b> per level, and that bonus creeps up as the numbers grow. So its “Exponent ^” column holds 1.0324 rather than what the game prints. Checked on two readings: an exponent of 1.18 needed 1.21793, an exponent of 1.22 needed 1.25992. An additive term cannot explain that — it drifts from 0.0379 to 0.0399 while the ratio holds. Control: on the β side, where the Tetrator is at zero, the chain matches exactly.",
       "pr.hint":"Bought an upgrade in the game — press <b style=\"color:var(--alpha)\">“Bought ✓”</b>: the level goes up, the cost is deducted from the right currency, and if you still had to save for it, time is wound forward too, so β grows by whatever accumulated during the wait. <b>−</b> restores exactly the state before the press. Amber means a cost extrapolated from the growth step; type the real one and it turns white.",
       "m.h":"Model: coefficients and steps", "m.base":"Base per rank", "m.r5":"Rank 5 bonus: coef.",
       "m.r12":"Rank 12 bonus: coef.", "m.r18":"Rank 18 bonus: coef.",
@@ -741,8 +741,8 @@
     // 1 + 0.035 × 2, и это закрепило значение. Рост цены
     // 7.59e8 — по двум известным ценам: уровень 1 стоит 1.00e25, второй
     // 7.59e33.
-    tetra:  { level: 0, start: 0, free: 0, step: 0.035, ratio: 7.59e8, costs: { "1":1.00e25, "2":7.59e33 }, eff: {} },
-    btetra: { level: 0, start: 0, free: 0, step: 0.035, ratio: 7.59e8, costs: { "1":1.00e25 }, eff: {} }
+    tetra:  { level: 0, start: 0, free: 0, step: 0.0355, ratio: 7.59e8, costs: { "1":1.00e25, "2":7.59e33 }, eff: {} },
+    btetra: { level: 0, start: 0, free: 0, step: 0.0355, ratio: 7.59e8, costs: { "1":1.00e25 }, eff: {} }
   };
   // Цены рангов — константы игры: одни и те же у всех и после каждого
   // сброса. Поэтому они зашиты, а не набираются руками; поле «Нужно α
@@ -850,6 +850,16 @@
         if (Math.abs(S[tk].step - 0.0336) < 1e-9) S[tk].step = 0.035;
       });
       S.tuned = 10;
+    }
+    // Надбавка тетратора ползёт вместе с масштабом чисел: шесть замеров
+    // на двух уровнях ложатся на прямую 0.01611 + 3.483e-4 × ln(ген×множ)
+    // с разбросом 0.6%. Пока держим одно число по свежему замеру, но
+    // раз в несколько порядков его придётся поднимать снова.
+    if (!(S.tuned >= 11)){
+      ["tetra", "btetra"].forEach(function(tk){
+        if (Math.abs(S[tk].step - 0.035) < 1e-9) S[tk].step = 0.0355;
+      });
+      S.tuned = 11;
     }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
