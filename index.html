@@ -290,6 +290,7 @@
           <div class="grid4" style="margin-top:12px">
             <label><span class="lab" data-i18n="lv.mult">Ур. множителя</span><input type="text" id="f-mult" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.boost">Ур. усилителя</span><input type="text" id="f-boost" inputmode="decimal"></label>
+            <label data-i18n-title="n.tetra.t" title="Тетратор подписан как ^^1.01, но ведёт себя не как ^1.01: измеренная добавка к показателю равна 0.038 на первом уровне. Вводится именно добавка — она почти не зависит от масштаба чисел, в отличие от множителя. Тетратор не куплен — оставь 0."><span class="lab" data-i18n="n.tetra">Тетратор: добавка к ^</span><input type="text" id="f-tetraa" inputmode="decimal"></label>
             <div style="grid-column:span 2;display:flex;align-items:flex-end">
               <button id="btn-rankup" class="primary" data-i18n="btn.rankup">Ранг взят ↻</button>
             </div>
@@ -310,6 +311,7 @@
             <label><span class="lab" data-i18n="lv.gen">Ур. генератора</span><input type="text" id="f-bgen" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.mult">Ур. множителя</span><input type="text" id="f-bmult" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.boost">Ур. усилителя</span><input type="text" id="f-bboost" inputmode="decimal"></label>
+            <label data-i18n-title="n.tetra.t" title="Тетратор подписан как ^^1.01, но ведёт себя не как ^1.01: измеренная добавка к показателю равна 0.038 на первом уровне. Вводится именно добавка — она почти не зависит от масштаба чисел, в отличие от множителя. Тетратор не куплен — оставь 0."><span class="lab" data-i18n="n.tetra">Тетратор: добавка к ^</span><input type="text" id="f-tetrab" inputmode="decimal"></label>
             <label data-i18n-title="b.prest.t" title="«База β» из окна «Престиж частиц» α→β — то, что там показано как «База β сейчас ×…». Вводи без знака умножения: 4.01. Умножает производство β целиком, до возведения в степень усилителя β."><span class="lab" data-i18n="b.prest">База β от престижа ×</span><input type="text" id="f-prestb" inputmode="decimal"></label>
             <label data-i18n-title="b.prestg.t" title="«База γ» из второго окна престижа, β→γ. Пока γ закрыта, это число ни на что в расчёте не влияет — поле просто помнит его, чтобы не искать заново, когда γ откроется."><span class="lab" data-i18n="b.prestg">База γ от престижа ×</span><input type="text" id="f-prestg" inputmode="decimal"></label>
             <label data-i18n-title="b.presta.t" title="«База β после» из окна престижа — переписывай сюда прямо из игры. Вывести её расчётом нельзя: до α порядка 1e20 прибавка строго пропорциональна α, а дальше игра зажимает рост, и на 4.9e24 пропорция промахивается в 113 раз. Число растёт вместе с α, так что обновляй его, когда собираешься решать."><span class="lab" data-i18n="b.presta">База β после (из игры)</span><input type="text" id="f-presta" inputmode="decimal"></label>
@@ -345,7 +347,6 @@
                 <label class="chk"><input type="checkbox" id="f-n147"><span data-i18n="n.147">147 — показатель β→α 0.2 → 0.3</span></label>
                 <label class="chk"><input type="checkbox" id="f-n148"><span data-i18n="n.148">148 — база усилителей +0.001 за 20 ур.</span></label>
                 <label class="chk"><input type="checkbox" id="f-n149"><span data-i18n="n.149">149 — база ген. α ×100</span></label>
-                <label class="chk"><input type="checkbox" id="f-basex2"><span data-i18n="n.basex2">базы генераторов и множителей ×2</span></label>
               </div>
             </div>
           </div>
@@ -358,6 +359,7 @@
           <div class="grid4" style="margin-top:12px">
             <label><span class="lab" data-i18n="n.relic">Реликвия: база ген. α и β ×</span><input type="text" id="f-relic" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="n.sing">Множитель сингулярности ×</span><input type="text" id="f-singmult" inputmode="decimal"></label>
+            <label data-i18n-title="n.singn.t" title="Достижение «СТО»: базы всех генераторов и множителей частиц умножаются на 1 + Сингулярность / 100. Вводи саму сингулярность, не множитель: при 100 выходит ×2."><span class="lab" data-i18n="n.singn">Сингулярность (шт.)</span><input type="text" id="f-singn" inputmode="decimal"></label>
             <div style="grid-column:span 2;display:flex;align-items:flex-end;padding-bottom:9px">
               <span class="hint" style="margin:0" data-i18n-html="n.relichint"></span>
             </div>
@@ -463,9 +465,11 @@
       "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Узлы дерева и ступень", "n.140":"Узел 140: уровень из 9 →", "n.bought":"Куплённые узлы",
       "n.139":"139 — база ген. α ×2", "n.141":"141 — награда ранга 5 ×3",
-      "n.142":"142 — база генераторов ×1.25 за 10 ур.", "n.143":"143 — база множителей ×2 за 7 ур.", "n.145":"145 — база генераторов ×10 за 100 ур.", "n.147":"147 — показатель β→α 0.2 → 0.3", "n.148":"148 — база усилителей +0.001 за 20 ур.", "n.149":"149 — база ген. α ×100", "n.basex2":"базы генераторов и множителей ×2",
+      "n.142":"142 — база генераторов ×1.25 за 10 ур.", "n.143":"143 — база множителей ×2 за 7 ур.", "n.145":"145 — база генераторов ×10 за 100 ур.", "n.147":"147 — показатель β→α 0.2 → 0.3", "n.148":"148 — база усилителей +0.001 за 20 ур.", "n.149":"149 — база ген. α ×100",
       "n.tier":"Ступень", "n.exp":"Показатель β→α", "n.tierreq":"Ступень требует ранг", "n.rankstart":"Ранг после сброса",
-      "n.relic":"Реликвия: база ген. α и β ×", "n.sing":"Множитель сингулярности ×",
+      "n.relic":"Реликвия: база ген. α и β ×", "n.sing":"Множитель сингулярности ×", "n.singn":"Сингулярность (шт.)", "n.tetra":"Тетратор: добавка к ^",
+      "n.tetra.t":"Тетратор подписан как ^^1.01, но ведёт себя не как ^1.01: измеренная добавка к показателю равна 0.038 на первом уровне. Вводится именно добавка — она почти не зависит от масштаба чисел, в отличие от множителя. Тетратор не куплен — оставь 0.",
+      "n.singn.t":"Достижение «СТО»: базы всех генераторов и множителей частиц умножаются на 1 + Сингулярность / 100. Вводи саму сингулярность, не множитель: при 100 выходит ×2.",
       "n.relichint":"Оба поля умножают базу обоих генераторов. Множитель сингулярности открывает узел 146, а само число смотри в <b>Сингулярность → Эффекты → Множитель сингулярности</b>. Нет реликвии или узла — оставь 1. Бонус ступени 2: <b class=\"val\" id=\"check-stupen2\">—</b>.",
       "btn.tierup":"Ступень взята ↻",
       "n.tierhint":"Покупается за ранги α и сносит ранг, α, β и все шесть веток. Узлы дерева, прайс-листы и сама ступень сохраняются. До ступени осталось <b class=\"val\" id=\"check-togo\">—</b>.",
@@ -532,9 +536,11 @@
       "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Refine Tree nodes and tier", "n.140":"Node 140: level out of 9 →", "n.bought":"Nodes purchased",
       "n.139":"139 — α Generator base ×2", "n.141":"141 — rank 5 bonus ×3",
-      "n.142":"142 — Generator bases ×1.25 per 10 lv", "n.143":"143 — Multiplier bases ×2 per 7 lv", "n.145":"145 — Generator bases ×10 per 100 lv", "n.147":"147 — β→α exponent 0.2 → 0.3", "n.148":"148 — empowerer base +0.001 per 20 lv.", "n.149":"149 — α Generator base ×100", "n.basex2":"Generator and Multiplier bases ×2",
+      "n.142":"142 — Generator bases ×1.25 per 10 lv", "n.143":"143 — Multiplier bases ×2 per 7 lv", "n.145":"145 — Generator bases ×10 per 100 lv", "n.147":"147 — β→α exponent 0.2 → 0.3", "n.148":"148 — empowerer base +0.001 per 20 lv.", "n.149":"149 — α Generator base ×100",
       "n.tier":"Tier", "n.exp":"β→α exponent", "n.tierreq":"Tier requires rank", "n.rankstart":"Rank after reset",
-      "n.relic":"Relic: α and β Generator base ×", "n.sing":"Singularity multiplier ×",
+      "n.relic":"Relic: α and β Generator base ×", "n.sing":"Singularity multiplier ×", "n.singn":"Singularity (count)", "n.tetra":"Tetrator: added to ^",
+      "n.tetra.t":"The Tetrator reads ^^1.01 but does not behave like ^1.01: the measured addition to the exponent is 0.038 at level 1. Enter the addition itself — unlike a multiplier, it barely depends on the scale of the numbers. Tetrator not bought — leave 0.",
+      "n.singn.t":"The “ONE HUNDRED” achievement: the bases of all particle Generators and Multipliers are multiplied by 1 + Singularity / 100. Enter the Singularity count itself, not the multiplier: 100 gives ×2.",
       "n.relichint":"Both fields multiply the base of both Generators. The singularity multiplier is unlocked by node 146; read the number in <b>Singularity → Effects → Singularity mults</b>. No relic or node — leave it at 1. Tier 2 bonus: <b class=\"val\" id=\"check-stupen2\">—</b>.",
       "btn.tierup":"Tiered up ↻",
       "n.tierhint":"Bought with α ranks; it wipes the rank, α, β and all six branches. Refine Tree nodes, price lists and the tier itself are kept. Ranks left to the tier: <b class=\"val\" id=\"check-togo\">—</b>.",
@@ -671,7 +677,7 @@
   var DEF = {
     rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 500, beam: 300, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, node148: 0, stupen: 0, betaExp: 0.2, beta: 0,
-    stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, prestAfter: 0, node149: 1, baseX2: 1, n140lvl: 0,
+    stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, prestAfter: 0, node149: 1, singCount: 0, tetraA: 0, tetraB: 0, n140lvl: 0,
     rankCosts: {},
     gen:    { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5,
               costs: { "2":1, "5":3.38, "7":7.59, "12":57.67, "16":292, "20":1478, "35":647160, "45":37318497 }, eff: {} },
@@ -738,6 +744,13 @@
       if (!(S.depth >= 500)) S.depth = 500;
       if (!(S.beam >= 300)) S.beam = 300;
       S.tuned = 5;
+    }
+    // Галочка «базы ×2» была заглушкой, пока источник множителя не нашёлся.
+    // Теперь это достижение «СТО», и считается оно от самой сингулярности.
+    if (!(S.tuned >= 6)){
+      if (S.baseX2 > 1 && !(S.singCount > 0)) S.singCount = 100;
+      delete S.baseX2;
+      S.tuned = 6;
     }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
@@ -864,7 +877,7 @@
     var C = S.basePerRank * S.rank * S.node139 * S.node149 * bonus5(lv.gen) * node142("gen", lv.gen) * node145("gen", lv.gen)
           * stupen2Gen() * S.relicGen * S.singMult
           * effectOf("gen", lv.gen) * effectOf("mult", lv.mult);
-    var e = effectOf("boost", lv.boost);
+    var e = effectOf("boost", lv.boost) + tetra("tetraA");
     // Бонус β→α выдаёт первая ступень вместе с генератором β. До неё
     // показатель нулевой, даже если на руках остались β.
     return { K: C > 0 ? Math.pow(C, e) : 0, P: betaOpen() ? S.betaExp * e : 0 };
@@ -876,7 +889,21 @@
     var k = kp(lv);
     return k.K * Math.pow(Math.max(0, beta) + 1, k.P);
   }
-  function baseX2(){ return S.baseX2 > 1 ? S.baseX2 : 1; }
+  // Достижение «СТО»: базы всех генераторов и множителей частиц
+  // умножаются на 1 + Сингулярность / 100. При сотне это ровно ×2 —
+  // именно столько недоставало модели на ранге 17.
+  function baseX2(){ return 1 + Math.max(0, S.singCount || 0) / 100; }
+  // Тетратор подписан как ^^1.01, но ведёт себя не как ^1.01. На уровне 0
+  // он был пустышкой: тогда «(генератор × множитель) в степени усилителя»
+  // сходилось со скоростью из игры в пределах процента. На уровне 1
+  // сходиться перестало ровно в 5.73 раза, и больше в цепочке меняться
+  // нечему — всё остальное уже сидит в показаниях самой игры.
+  // В пересчёте это добавка +0.038 к показателю. Храним именно добавку,
+  // а не множитель: множитель растёт вместе с числами (×4.8 на 1e18 и
+  // ×8.9 на 1e25), а добавка от масштаба почти не зависит. Какова
+  // настоящая формула — по одной точке не сказать, второй уровень стоит
+  // 7.59e33, так что проверить будет нескоро.
+  function tetra(key){ var v = S[key]; return v > 0 ? v : 0; }
   function prestB(){ return S.prestB > 0 ? S.prestB : 1; }
   // Прибавка к базе β растёт пропорционально α, но лишь до перелома
   // около 4e21, а дальше упирается в кубический корень. Два режима
@@ -915,7 +942,7 @@
     var C = S.basePerRank * S.stupen * prestB() * S.relicGen * S.singMult * node142("bgen", lv.bgen) * node145("bgen", lv.bgen) * bonus12(lv.bgen)
           * effectOf("bgen", lv.bgen) * effectOf("bmult", lv.bmult);
     if (!(C > 0)) return 0;
-    var e = effectOf("bboost", lv.bboost);
+    var e = effectOf("bboost", lv.bboost) + tetra("tetraB");
     return e === 1 ? C : Math.pow(C, e);
   }
   function curLv(){
@@ -1644,7 +1671,9 @@
     bindCheck("f-n139", 2,  function(){ return S.node139; },   function(v){ S.node139 = v; });
     bindCheck("f-n141", 3,  function(){ return S.node141; },   function(v){ S.node141 = v; });
     bindCheck("f-n149", 100, function(){ return S.node149; },  function(v){ S.node149 = v; });
-    bindCheck("f-basex2", 2, function(){ return S.baseX2; },   function(v){ S.baseX2 = v; });
+    bindField("f-singn",      function(){ return S.singCount; }, function(v){ S.singCount = Math.max(0, v); });
+    bindField("f-tetraa",     function(){ return S.tetraA; },     function(v){ S.tetraA = Math.max(0, v); });
+    bindField("f-tetrab",     function(){ return S.tetraB; },     function(v){ S.tetraB = Math.max(0, v); });
     bindCheck("f-n142", 1.25, function(){ return S.node142; }, function(v){ S.node142 = v; });
     bindCheck("f-n143", 2,    function(){ return S.node143; }, function(v){ S.node143 = v; });
     bindCheck("f-n145", 10,   function(){ return S.node145; }, function(v){ S.node145 = v; });
