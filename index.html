@@ -468,7 +468,7 @@
       "n.tierhint":"Покупается за ранги α и сносит ранг, α, β и все шесть веток. Узлы дерева, прайс-листы и сама ступень сохраняются. До ступени осталось <b class=\"val\" id=\"check-togo\">—</b>.",
       "n.hint":"Узел 140 вводится уровнем, как в игре: 0/9 даёт ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. Множитель считается сам и показан рядом с полем. Узлы 139 и 141 одноуровневые — просто ставь галочку, когда куплен. Сверка: «бонус ранга 5» в блоке «Альфа» должен совпасть с наградой за ранг 5 в игре. Показатель 0.2 даёт «α Генератор ×<span id=\"hint-bonus\">—</span>» при нынешних β; узел 147 его улучшает — тогда подними показатель, пока не сойдётся.",
       "pr.a":"Прайс-листы α", "pr.b":"Прайс-листы β", "pr.tag":"вводишь один раз — помнит навсегда",
-      "pr.tetra":"<b>Тетратор</b> подписан в игре как <code>^^1.01</code>, но ведёт себя иначе: измеренная добавка к показателю — <b>0.038</b> за уровень, а не 0.01. Поэтому в столбце «Степень ^» у него стоит 1.038, а не то, что написано в игре. Проверено сравнением с самой игрой: на нулевом уровне «генератор × множитель в степени усилителя» давало ровно её скорость, на первом — в 5.73 раза меньше.",
+      "pr.tetra":"<b>Тетратор</b> подписан в игре как <code>^^1.01</code>, но ведёт себя иначе: он <b>умножает</b> показатель усилителя на <b>1.0324</b> за уровень. Поэтому в столбце «Степень ^» у него стоит 1.0324, а не то, что написано в игре. Проверено по двум замерам: показатель 1.18 требовал 1.21793, показатель 1.22 — 1.25992. Слагаемым это не объяснить: оно плывёт с 0.0379 до 0.0399, а отношение держится. Контроль — β, где тетратор на нуле: там цепочка сходится точно.",
       "pr.hint":"Купил улучшение в игре — жми <b style=\"color:var(--alpha)\">«Купил ✓»</b>: уровень поднимется, цена спишется с нужной валюты, а если на неё ещё надо было копить — заодно прокрутится время, и β подрастут на то, что накопилось за ожидание. <b>−</b> возвращает ровно то состояние, что было до нажатия. Жёлтым — цена, достроенная по шагу роста; впишешь настоящую — станет белой.",
       "m.h":"Модель: коэффициенты и шаги", "m.base":"База за ранг", "m.r5":"Бонус ранга 5: коэф.",
       "m.r12":"Бонус ранга 12: коэф.",
@@ -538,7 +538,7 @@
       "n.tierhint":"Bought with α ranks; it wipes the rank, α, β and all six branches. Refine Tree nodes, price lists and the tier itself are kept. Ranks left to the tier: <b class=\"val\" id=\"check-togo\">—</b>.",
       "n.hint":"Node 140 is entered as a level, like in the game: 0/9 gives ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. The multiplier is computed and shown beside the field. Nodes 139 and 141 are single-level — just tick them once bought. Cross-check: the “rank 5 bonus” in the Alpha block must match the rank 5 bonus in the game. The 0.2 exponent yields “α Generator ×<span id=\"hint-bonus\">—</span>” at your current β; refinement node 147 improves it — then raise the exponent until it matches.",
       "pr.a":"α price lists", "pr.b":"β price lists", "pr.tag":"enter once — remembered for good",
-      "pr.tetra":"The <b>Tetrator</b> reads <code>^^1.01</code> in the game but behaves differently: the measured addition to the exponent is <b>0.038</b> per level, not 0.01. So its “Exponent ^” column holds 1.038 rather than what the game prints. Checked against the game itself: at level 0 “generator × multiplier raised to the empowerer” matched its rate exactly, at level 1 it fell short by a factor of 5.73.",
+      "pr.tetra":"The <b>Tetrator</b> reads <code>^^1.01</code> in the game but behaves differently: it <b>multiplies</b> the Empowerer exponent by <b>1.0324</b> per level. So its “Exponent ^” column holds 1.0324 rather than what the game prints. Checked on two readings: an exponent of 1.18 needed 1.21793, an exponent of 1.22 needed 1.25992. An additive term cannot explain that — it drifts from 0.0379 to 0.0399 while the ratio holds. Control: on the β side, where the Tetrator is at zero, the chain matches exactly.",
       "pr.hint":"Bought an upgrade in the game — press <b style=\"color:var(--alpha)\">“Bought ✓”</b>: the level goes up, the cost is deducted from the right currency, and if you still had to save for it, time is wound forward too, so β grows by whatever accumulated during the wait. <b>−</b> restores exactly the state before the press. Amber means a cost extrapolated from the growth step; type the real one and it turns white.",
       "m.h":"Model: coefficients and steps", "m.base":"Base per rank", "m.r5":"Rank 5 bonus: coef.",
       "m.r12":"Rank 12 bonus: coef.",
@@ -656,9 +656,11 @@
     bgen:   { kind: "gen",   cur: "b", sign: "×", col: "col.eff" },
     bmult:  { kind: "mult",  cur: "b", sign: "×", col: "col.eff" },
     bboost: { kind: "boost", cur: "b", sign: "^", col: "col.exp" },
-    // Тетратор складывается с показателем усилителя, а не умножает.
-    // В столбце «эффект» стоит добавка плюс единица — ровно как у
-    // усилителя, чтобы ветка жила по общим правилам.
+    // Тетратор умножает показатель усилителя. Сначала я принял его за
+    // слагаемое — на одном замере это было неотличимо, а на втором
+    // разошлось на 8.7%. По двум точкам: показатель 1.18 просит 1.21793,
+    // показатель 1.22 просит 1.25992. Слагаемое при этом плывёт с 0.0379
+    // до 0.0399, а отношение держится: 1.03214 и 1.03273.
     tetra:  { kind: "tetra", cur: "a", sign: "^", col: "col.exp" },
     btetra: { kind: "tetra", cur: "b", sign: "^", col: "col.exp" }
   };
@@ -682,12 +684,13 @@
     bgen:   { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5, costs: { "1":1, "11":57.67, "19":1478, "30":127834 }, eff: {} },
     bmult:  { level: 0, start: 0, free: 0, step: 0.1,  ratio: 5,   costs: { "1":10, "3":250, "8":781250 }, eff: {} },
     bboost: { level: 0, start: 0, free: 0, step: 0.01, ratio: 20,  costs: { "1":1000, "2":20000, "3":400000 }, eff: {} },
-    // Шаг 0.038 — измеренная добавка к показателю за первый уровень, а не
-    // подписанные в игре 0.01: подпись и поведение расходятся втрое с
-    // лишним. Рост цены 7.59e8 взят по двум известным ценам: первый
-    // уровень 1.00e25, второй 7.59e33.
-    tetra:  { level: 0, start: 0, free: 0, step: 0.038, ratio: 7.59e8, costs: { "1":1.00e25, "2":7.59e33 }, eff: {} },
-    btetra: { level: 0, start: 0, free: 0, step: 0.038, ratio: 7.59e8, costs: { "1":1.00e25 }, eff: {} }
+    // Шаг 0.0324 — измеренный множитель показателя за первый уровень, а
+    // не подписанные в игре 0.01: подпись и поведение расходятся втрое с
+    // лишним. Два замера дают 1.03214 и 1.03273, взято среднее. Рост цены
+    // 7.59e8 — по двум известным ценам: уровень 1 стоит 1.00e25, второй
+    // 7.59e33.
+    tetra:  { level: 0, start: 0, free: 0, step: 0.0324, ratio: 7.59e8, costs: { "1":1.00e25, "2":7.59e33 }, eff: {} },
+    btetra: { level: 0, start: 0, free: 0, step: 0.0324, ratio: 7.59e8, costs: { "1":1.00e25 }, eff: {} }
   };
   // Цены рангов — константы игры: одни и те же у всех и после каждого
   // сброса. Поэтому они зашиты, а не набираются руками; поле «Нужно α
@@ -754,16 +757,27 @@
       delete S.baseX2;
       S.tuned = 6;
     }
+    // Порядок меток важен: та, что ставит большее число, обязана идти
+    // последней, иначе предыдущая никогда не выполнится. На этом я уже
+    // попадался с метками 4 и 5.
     // Тетратор был отдельным полем-добавкой, пока не стал веткой.
+    // Добавка хранилась в прежних единицах, с шагом 0.038 за уровень.
     if (!(S.tuned >= 7)){
       [["tetraA", "tetra"], ["tetraB", "btetra"]].forEach(function(pair){
         var add = S[pair[0]];
         if (add > 0 && !(S[pair[1]].level > 0)){
-          S[pair[1]].level = Math.max(1, Math.round(add / S[pair[1]].step));
+          S[pair[1]].level = Math.max(1, Math.round(add / 0.038));
         }
         delete S[pair[0]];
       });
       S.tuned = 7;
+    }
+    // Шаг тетратора был 0.038 как слагаемое; стал множителем 0.0324.
+    if (!(S.tuned >= 8)){
+      ["tetra", "btetra"].forEach(function(tk){
+        if (Math.abs(S[tk].step - 0.038) < 1e-9) S[tk].step = 0.0324;
+      });
+      S.tuned = 8;
     }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
@@ -890,7 +904,7 @@
     var C = S.basePerRank * S.rank * S.node139 * S.node149 * bonus5(lv.gen) * node142("gen", lv.gen) * node145("gen", lv.gen)
           * stupen2Gen() * S.relicGen * S.singMult
           * effectOf("gen", lv.gen) * effectOf("mult", lv.mult);
-    var e = effectOf("boost", lv.boost) + (effectOf("tetra", lv.tetra) - 1);
+    var e = effectOf("boost", lv.boost) * effectOf("tetra", lv.tetra);
     // Бонус β→α выдаёт первая ступень вместе с генератором β. До неё
     // показатель нулевой, даже если на руках остались β.
     return { K: C > 0 ? Math.pow(C, e) : 0, P: betaOpen() ? S.betaExp * e : 0 };
@@ -944,7 +958,7 @@
     var C = S.basePerRank * S.stupen * prestB() * S.relicGen * S.singMult * node142("bgen", lv.bgen) * node145("bgen", lv.bgen) * bonus12(lv.bgen)
           * effectOf("bgen", lv.bgen) * effectOf("bmult", lv.bmult);
     if (!(C > 0)) return 0;
-    var e = effectOf("bboost", lv.bboost) + (effectOf("btetra", lv.btetra) - 1);
+    var e = effectOf("bboost", lv.bboost) * effectOf("btetra", lv.btetra);
     return e === 1 ? C : Math.pow(C, e);
   }
   function curLv(){
