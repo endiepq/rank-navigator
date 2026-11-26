@@ -300,6 +300,10 @@
             <span class="k">=</span>
             <span data-i18n-html="a.formula"></span>
           </div>
+          <div class="note" id="b-check" hidden>
+            <span class="k">!</span>
+            <span data-i18n-html="b.gap"></span>
+          </div>
           <div class="note" id="a-check" hidden>
             <span class="k">!</span>
             <span data-i18n-html="a.gap"></span>
@@ -312,6 +316,7 @@
         <div class="pad">
           <div class="grid4">
             <label><span class="lab" data-i18n="b.beta">β сейчас</span><input type="text" id="f-beta" inputmode="decimal"></label>
+            <label data-i18n-title="b.real.t" title="Перепиши сюда «Бета +…/sec» из игры. Вместе со сверкой по α это показывает, где ошибка: если обе стороны промахиваются одинаково, виноват общий множитель — реликвия или сингулярность; если только α — что-то в её ветке."><span class="lab" data-i18n="b.real">β/с в игре (сверка)</span><input type="text" id="f-breal" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.gen">Ур. генератора</span><input type="text" id="f-bgen" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.mult">Ур. множителя</span><input type="text" id="f-bmult" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.boost">Ур. усилителя</span><input type="text" id="f-bboost" inputmode="decimal"></label>
@@ -460,6 +465,9 @@
       "a.rankuphint":"«Ранг взят» поднимает ранг, обнуляет α и возвращает α-ветки на старт. Прайс-листы остаются — при сбросе цены идут теми же числами.",
       "a.formula":"Скорость α = <code>0.01 × ранг × узел139 × бонус5 × ступень(≥2) × реликвия × (β+1)^показатель × ген × множ</code>, всё в степени усилителя. Сейчас <b class=\"val\" id=\"check-rate\">—</b>, бонус ранга 5 <b class=\"val\" id=\"check-bonus\">—</b>, множитель <b class=\"val\" id=\"check-mult\">—</b>. Сверь с игрой.",
       "b.h":"Бета — сейчас в игре", "b.beta":"β сейчас",
+      "b.real":"β/с в игре (сверка)",
+      "b.real.t":"Перепиши сюда «Бета +…/sec» из игры. Вместе со сверкой по α это показывает, где ошибка: если обе стороны промахиваются одинаково, виноват общий множитель — реликвия или сингулярность; если только α — что-то в её ветке.",
+      "b.gap":"Модель даёт <b class=\"val\" id=\"bgap-model\">—</b> β/с, а в игре <b class=\"val\" id=\"bgap-real\">—</b> — расхождение <b class=\"val\" id=\"bgap-pct\">—</b>. Если по α расхождение такое же, дело в общем множителе: реликвия или множитель сингулярности.",
       "b.prest":"База β от престижа ×",
       "b.prest.t":"«База β» из окна «Престиж частиц» α→β — то, что там показано как «База β сейчас ×…». Вводи без знака умножения: 4.01. Умножает производство β целиком, до возведения в степень усилителя β.",
       "b.prestg":"База γ от престижа ×",
@@ -536,6 +544,9 @@
       "a.rankuphint":"“Ranked up” raises the rank, zeroes α and returns the α branches to their start. Price lists stay — after a reset the costs repeat the same numbers.",
       "a.formula":"α rate = <code>0.01 × rank × node139 × rank5 bonus × tier(≥2) × relic × (β+1)^exponent × gen × mult</code>, all raised to the Empowerer exponent. Now <b class=\"val\" id=\"check-rate\">—</b>, rank 5 bonus <b class=\"val\" id=\"check-bonus\">—</b>, multiplier <b class=\"val\" id=\"check-mult\">—</b>. Check against the game.",
       "b.h":"Beta — current in game", "b.beta":"β now",
+      "b.real":"β/s in the game (check)",
+      "b.real.t":"Copy “Beta +…/sec” from the game here. Together with the α check it localises the error: if both sides are off by the same factor, a shared multiplier is to blame — the relic or the singularity; if only α is off, the fault is in its own branch.",
+      "b.gap":"The model gives <b class=\"val\" id=\"bgap-model\">—</b> β/s against <b class=\"val\" id=\"bgap-real\">—</b> in the game — a gap of <b class=\"val\" id=\"bgap-pct\">—</b>. If α is off by the same amount, a shared multiplier is to blame: the relic or the singularity multiplier.",
       "b.prest":"β base from prestige ×",
       "b.prest.t":"The “β base” from the α→β Particle Prestige window — what it shows as “β base now ×…”. Enter it without the multiplication sign: 4.01. It multiplies β production as a whole, before the β Empowerer exponent is applied.",
       "b.prestg":"γ base from prestige ×",
@@ -695,7 +706,7 @@
 
   /* ============ состояние ============ */
   var DEF = {
-    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, rank18k: 0.005, alphaReal: 0, depth: 500, beam: 300, tuned: 2,
+    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, rank18k: 0.005, alphaReal: 0, betaReal: 0, depth: 500, beam: 300, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, node148: 0, stupen: 0, betaExp: 0.2, beta: 0,
     stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, prestAfter: 0, node149: 1, singCount: 0, n140lvl: 0,
     rankCosts: {},
@@ -1488,6 +1499,16 @@
     // становится не та. Показываем расхождение, чтобы это было видно.
     var real = S.alphaReal, gap = (real > 0 && rA > 0) ? real / rA : null;
     el("a-check").hidden = !(gap != null && Math.abs(gap - 1) > 0.02);
+    // Та же сверка для β. Реликвия и множитель сингулярности входят в
+    // оба генератора, поэтому одинаковый промах с обеих сторон указывает
+    // прямо на них, а промах только по α — на её собственную ветку.
+    var breal = S.betaReal, bgap = (breal > 0 && rB > 0) ? breal / rB : null;
+    el("b-check").hidden = !(bgap != null && Math.abs(bgap - 1) > 0.02);
+    if (bgap != null){
+      el("bgap-model").textContent = fmt(rB);
+      el("bgap-real").textContent = fmt(breal);
+      el("bgap-pct").textContent = (bgap > 1 ? "+" : "−") + fmt(Math.abs(bgap - 1) * 100) + "%";
+    }
     if (gap != null){
       el("gap-model").textContent = fmt(rA);
       el("gap-real").textContent = fmt(real);
@@ -1834,6 +1855,7 @@
     bindCheck("f-n139", 2,  function(){ return S.node139; },   function(v){ S.node139 = v; });
     bindCheck("f-n141", 3,  function(){ return S.node141; },   function(v){ S.node141 = v; });
     bindCheck("f-n149", 100, function(){ return S.node149; },  function(v){ S.node149 = v; });
+    bindField("f-breal",      function(){ return S.betaReal; },   function(v){ S.betaReal = Math.max(0, v); });
     bindField("f-areal",      function(){ return S.alphaReal; },  function(v){ S.alphaReal = Math.max(0, v); });
     bindField("m-rank18k",    function(){ return S.rank18k; },    function(v){ S.rank18k = Math.max(0, v); });
     bindField("f-singn",      function(){ return S.singCount; }, function(v){ S.singCount = Math.max(0, v); });
