@@ -736,11 +736,15 @@
     bmult:  { level: 0, start: 0, free: 0, step: 0.1,  ratio: 5,   costs: { "1":10, "3":250, "8":781250 }, eff: {} },
     bboost: { level: 0, start: 0, free: 0, step: 0.01, ratio: 20,  costs: { "1":1000, "2":20000, "3":400000 }, eff: {} },
     // Шаг нужен только столбцу «Степень ^» в прайс-листе: сам показатель
-    // считается законом выше, от масштаба чисел. Рост цены
-    // 7.59e8 — по двум известным ценам: уровень 1 стоит 1.00e25, второй
-    // 7.59e33.
-    tetra:  { level: 0, start: 0, free: 0, step: 0.03635, ratio: 7.59e8, costs: { "1":1.00e25, "2":7.59e33 }, eff: {} },
-    btetra: { level: 0, start: 0, free: 0, step: 0.03635, ratio: 7.59e8, costs: { "1":1.00e25 }, eff: {} }
+    // считается законом выше, от масштаба чисел.
+    // Цена тетратора, в отличие от остальных веток, растёт не в
+    // постоянное число раз: 1.00e25, 7.59e33, 1.08e43. Шаги 7.59e8 и
+    // 1.42e9 — само отношение множится на 1.8747 за уровень (подозрительно
+    // близко к 15/8, но трёх точек мало, чтобы это утверждать). Поле
+    // accel и есть это ускорение; у прочих веток его нет, и формула
+    // сводится к обычной геометрии.
+    tetra:  { level: 0, start: 0, free: 0, step: 0.03635, ratio: 7.59e8, accel: 1.8747, costs: { "1":1.00e25, "2":7.59e33, "3":1.08e43 }, eff: {} },
+    btetra: { level: 0, start: 0, free: 0, step: 0.03635, ratio: 7.59e8, accel: 1.8747, costs: { "1":1.00e25 }, eff: {} }
   };
   // Цены рангов — константы игры: одни и те же у всех и после каждого
   // сброса. Поэтому они зашиты, а не набираются руками; поле «Нужно α
@@ -1167,11 +1171,21 @@
   }
 
   /* ============ цены ============ */
+  // Цена ветки: c(L) = c(1) × R^(L-1) × A^((L-1)(L-2)/2). При A = 1 это
+  // обычная геометрия, какой цены и оказались у генераторов, множителей
+  // и усилителей — отношение 1.5, 5 и 20 держится на всём диапазоне до
+  // 45-го уровня. У тетратора A = 1.8747, и без него оценка третьего
+  // уровня занижалась вшестеро: 4.4e51 вместо 1.08e43 × 7.59e8 × 1.87².
+  function accelOf(track){ var a = S[track].accel; return a > 1 ? a : 1; }
+  function triAt(L){ return (L - 1) * (L - 2) / 2; }
   function fitRatio(track){
     var t = S[track], ls = Object.keys(t.costs).map(Number).filter(function(l){ return t.costs[l] > 0; }).sort(function(a,b){ return a-b; });
     if (ls.length >= 2){
-      var lo = ls[0], hi = ls[ls.length - 1];
-      var r = Math.pow(t.costs[hi] / t.costs[lo], 1 / (hi - lo));
+      var lo = ls[0], hi = ls[ls.length - 1], A = accelOf(track);
+      // Крайние точки разделены ускорением, иначе на них сел бы средний
+      // шаг, а нужен первый: у тетратора по уровням 1 и 3 так выходит
+      // ровно 7.59e8 — измеренный шаг 1→2. Сходится, значит закон верен.
+      var r = Math.pow(t.costs[hi] / t.costs[lo] / Math.pow(A, triAt(hi) - triAt(lo)), 1 / (hi - lo));
       if (isFinite(r) && r > 1.0001) return r;
     }
     return t.ratio > 1 ? t.ratio : 1.5;
@@ -1182,7 +1196,9 @@
     var ls = Object.keys(t.costs).map(Number).filter(function(l){ return t.costs[l] > 0; });
     if (!ls.length) return { v: null, est: true };
     var near = ls.reduce(function(b, l){ return Math.abs(l - L) < Math.abs(b - L) ? l : b; }, ls[0]);
-    return { v: t.costs[near] * Math.pow(fitRatio(track), L - near), est: true };
+    var A = accelOf(track);
+    var v = t.costs[near] * Math.pow(fitRatio(track), L - near) * Math.pow(A, triAt(L) - triAt(near));
+    return { v: v, est: true };
   }
 
   /* ============ симуляция ============ */
