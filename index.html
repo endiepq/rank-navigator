@@ -310,6 +310,8 @@
             <label><span class="lab" data-i18n="lv.gen">Ур. генератора</span><input type="text" id="f-bgen" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.mult">Ур. множителя</span><input type="text" id="f-bmult" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.boost">Ур. усилителя</span><input type="text" id="f-bboost" inputmode="decimal"></label>
+            <label data-i18n-title="b.prest.t" title="«База β» из окна «Престиж частиц» α→β — то, что там показано как «База β сейчас ×…». Вводи без знака умножения: 4.01. Умножает производство β целиком, до возведения в степень усилителя β."><span class="lab" data-i18n="b.prest">База β от престижа ×</span><input type="text" id="f-prestb" inputmode="decimal"></label>
+            <label data-i18n-title="b.prestg.t" title="«База γ» из второго окна престижа, β→γ. Пока γ закрыта, это число ни на что в расчёте не влияет — поле просто помнит его, чтобы не искать заново, когда γ откроется."><span class="lab" data-i18n="b.prestg">База γ от престижа ×</span><input type="text" id="f-prestg" inputmode="decimal"></label>
           </div>
           <div class="note" id="beta-locked" hidden>
             <span class="k">!</span>
@@ -443,6 +445,10 @@
       "a.rankuphint":"«Ранг взят» поднимает ранг, обнуляет α и возвращает α-ветки на старт. Прайс-листы остаются — при сбросе цены идут теми же числами.",
       "a.formula":"Скорость α = <code>0.01 × ранг × узел139 × бонус5 × ступень(≥2) × реликвия × (β+1)^показатель × ген × множ</code>, всё в степени усилителя. Сейчас <b class=\"val\" id=\"check-rate\">—</b>, бонус ранга 5 <b class=\"val\" id=\"check-bonus\">—</b>, множитель <b class=\"val\" id=\"check-mult\">—</b>. Сверь с игрой.",
       "b.h":"Бета — сейчас в игре", "b.beta":"β сейчас",
+      "b.prest":"База β от престижа ×",
+      "b.prest.t":"«База β» из окна «Престиж частиц» α→β — то, что там показано как «База β сейчас ×…». Вводи без знака умножения: 4.01. Умножает производство β целиком, до возведения в степень усилителя β.",
+      "b.prestg":"База γ от престижа ×",
+      "b.prestg.t":"«База γ» из второго окна престижа, β→γ. Он сбрасывает и α, и β. Пока γ закрыта, это число ни на что в расчёте не влияет — поле просто помнит его, чтобы не искать заново, когда γ откроется.",
       "b.locked":"Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего. Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.",
       "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Узлы дерева и ступень", "n.140":"Узел 140: уровень из 9 →", "n.bought":"Куплённые узлы",
@@ -506,6 +512,10 @@
       "a.rankuphint":"“Ranked up” raises the rank, zeroes α and returns the α branches to their start. Price lists stay — after a reset the costs repeat the same numbers.",
       "a.formula":"α rate = <code>0.01 × rank × node139 × rank5 bonus × tier(≥2) × relic × (β+1)^exponent × gen × mult</code>, all raised to the Empowerer exponent. Now <b class=\"val\" id=\"check-rate\">—</b>, rank 5 bonus <b class=\"val\" id=\"check-bonus\">—</b>, multiplier <b class=\"val\" id=\"check-mult\">—</b>. Check against the game.",
       "b.h":"Beta — current in game", "b.beta":"β now",
+      "b.prest":"β base from prestige ×",
+      "b.prest.t":"The “β base” from the α→β Particle Prestige window — what it shows as “β base now ×…”. Enter it without the multiplication sign: 4.01. It multiplies β production as a whole, before the β Empowerer exponent is applied.",
+      "b.prestg":"γ base from prestige ×",
+      "b.prestg.t":"The “γ base” from the second prestige window, β→γ. That one resets both α and β. While γ is locked this number changes nothing in the calculation — the field just remembers it, so you need not look it up again once γ opens.",
       "b.locked":"Tier 0 — the β Generator is not unlocked yet. β does not accumulate and gives no α bonus, so there is nothing to buy on this side. Tier 1 grants the first β Generator level for free, and only then does β start flowing.",
       "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Refine Tree nodes and tier", "n.140":"Node 140: level out of 9 →", "n.bought":"Nodes purchased",
@@ -650,7 +660,7 @@
   var DEF = {
     rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 500, beam: 300, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, node148: 0, stupen: 0, betaExp: 0.2, beta: 0,
-    stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, n140lvl: 0,
+    stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, n140lvl: 0,
     rankCosts: {},
     gen:    { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5,
               costs: { "2":1, "5":3.38, "7":7.59, "12":57.67, "16":292, "20":1478, "35":647160, "45":37318497 }, eff: {} },
@@ -848,8 +858,12 @@
     var k = kp(lv);
     return k.K * Math.pow(Math.max(0, beta) + 1, k.P);
   }
+  function prestB(){ return S.prestB > 0 ? S.prestB : 1; }
   function rateBeta(lv){
-    var C = S.basePerRank * S.stupen * S.relicGen * S.singMult * node142("bgen", lv.bgen) * node145("bgen", lv.bgen) * bonus12(lv.bgen)
+    // Престиж α→β множит производство β целиком — ровно так, как в игре
+    // показано «База β ×…». Множитель сидит внутри, до возведения в
+    // степень усилителя β: иначе он бы ещё и в неё возводился.
+    var C = S.basePerRank * S.stupen * prestB() * S.relicGen * S.singMult * node142("bgen", lv.bgen) * node145("bgen", lv.bgen) * bonus12(lv.bgen)
           * effectOf("bgen", lv.bgen) * effectOf("bmult", lv.bmult);
     if (!(C > 0)) return 0;
     var e = effectOf("bboost", lv.bboost);
@@ -1607,6 +1621,8 @@
     bindField("f-rankstart",  function(){ return S.rankStart; },  function(v){ S.rankStart = Math.max(0, Math.round(v)); });
     bindField("f-relic",      function(){ return S.relicGen; },   function(v){ S.relicGen = Math.max(0, v); });
     bindField("f-singmult",   function(){ return S.singMult; },   function(v){ S.singMult = v > 0 ? v : 1; });
+    bindField("f-prestb",     function(){ return S.prestB; },     function(v){ S.prestB = v > 0 ? v : 1; });
+    bindField("f-prestg",     function(){ return S.prestG; },     function(v){ S.prestG = v > 0 ? v : 1; });
     bindField("m-base",     function(){ return S.basePerRank; }, function(v){ S.basePerRank = v; });
     bindField("m-rank5k",   function(){ return S.rank5k; },    function(v){ S.rank5k = v; });
     bindField("m-rank12k",  function(){ return S.rank12k; },   function(v){ S.rank12k = v; });
