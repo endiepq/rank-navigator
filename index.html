@@ -237,7 +237,7 @@
         <div class="vstats">
           <div><span data-i18n="adv.cost">Цена</span><b id="va-cost">—</b></div>
           <div><span data-i18n="adv.pay">Отобьётся</span><b id="va-pay">—</b></div>
-          <div><span data-i18n="adv.gain">Быстрее, чем копить</span><b id="va-gain">—</b></div>
+          <div><span data-i18n="adv.when">Когда по плану</span><b id="va-gain">—</b></div>
         </div>
       </section>
 
@@ -253,7 +253,7 @@
         <div class="vstats">
           <div><span data-i18n="adv.cost">Цена</span><b id="vb-cost">—</b></div>
           <div><span data-i18n="adv.pay">Отобьётся</span><b id="vb-pay">—</b></div>
-          <div><span data-i18n="adv.gain">Быстрее, чем копить</span><b id="vb-gain">—</b></div>
+          <div><span data-i18n="adv.when">Когда по плану</span><b id="vb-gain">—</b></div>
         </div>
       </section>
 
@@ -439,7 +439,7 @@
       "h.sub":"Что купить следующим — за α или за β — чтобы ранг пришёл раньше",
       "chip.arate":"α / сек", "chip.brate":"β / сек", "chip.bonus":"бонус β→α", "chip.eta":"до ранга",
       "adv.a":"За альфу", "adv.b":"За бетту",
-      "adv.cost":"Цена", "adv.pay":"Отобьётся", "adv.gain":"Быстрее, чем копить",
+      "adv.cost":"Цена", "adv.pay":"Отобьётся", "adv.when":"Когда по плану",
       "cmp.h":"Сравнение первого хода", "cmp.move":"Первый ход", "cmp.cost":"Цена",
       "cmp.pay":"Отобьётся", "cmp.eta":"До ранга",
       "cmp.hint":"Каждая строка — «взять это прямо сейчас, а дальше десять покупок так, как выйдет быстрее всего». Знак <b>≤</b> у времени значит, что десяти покупок до ранга не хватило: настоящий срок меньше показанного, потому что покупки на этом не кончатся. Сравнивать строки между собой при этом можно — мерка у всех одна. «Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.",
@@ -457,7 +457,7 @@
       "b.prestg.t":"«База γ» из второго окна престижа, β→γ. Он сбрасывает и α, и β. Пока γ закрыта, это число ни на что в расчёте не влияет — поле просто помнит его, чтобы не искать заново, когда γ откроется.",
       "b.presta":"База β после (из игры)",
       "b.presta.t":"«База β после» из окна престижа — переписывай сюда прямо из игры. Вывести её расчётом нельзя: до α порядка 1e20 прибавка строго пропорциональна α, а дальше игра зажимает рост, и на 4.9e24 пропорция промахивается в 113 раз. Число растёт вместе с α, так что обновляй его, когда собираешься решать.",
-      "b.prestnote":"Престиж α→β: база β <b class=\"val\" id=\"pr-now\">—</b> станет <b class=\"val\" id=\"pr-after\">—</b>, и скорость α вырастет в <b class=\"val\" id=\"pr-speed\">—</b>. Он сбрасывает α и все её улучшения — ровно то же, что делает взятие ранга, так что выбирать приходится между ними. Чем позже нажать, тем больше даст, но насколько именно — расчётом не вывести: до α около 1e20 прибавка шла строго пропорционально α, а выше игра её зажимает. Поэтому «базу β после» бери прямо с экрана игры.",
+      "b.prestnote":"Престиж α→β: база β <b class=\"val\" id=\"pr-now\">—</b> станет <b class=\"val\" id=\"pr-after\">—</b>, и скорость α вырастет в <b class=\"val\" id=\"pr-speed\">—</b>. Он сбрасывает α и все её улучшения — ровно то же, что делает взятие ранга, так что выбирать приходится между ними. Чем позже нажать, тем больше даст: прибавка идёт пропорционально α примерно до 4e21, а выше упирается в кубический корень, и рост резко замедляется. Знак ≈ значит, что число посчитано по этому правилу; впишешь своё из игры — оно станет главнее.",
       "b.locked":"Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего. Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.",
       "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Узлы дерева и ступень", "n.140":"Узел 140: уровень из 9 →", "n.bought":"Куплённые узлы",
@@ -485,15 +485,14 @@
       "v.now.w":"На счету <em>{a} α</em> при требовании <em>{r} α</em>.",
       "v.zero.t":"Скорость α равна нулю",
       "v.zero.w":"Проверь уровни и коэффициенты модели — при таких значениях α не капает вовсе.",
-      "v.wait.t":"Пока ничего не бери",
-      "v.wait.w":"Ни одна покупка в этой ветке не ускоряет ранг — <em>{t}</em> до него и так меньше.",
-      "v.none.t":"Нечего покупать",
-      "v.none.w":"Цены этой ветки ещё не введены — заполни прайс-лист, и совет появится.",
+      "v.skip.t":"За эту сторону брать нечего",
+      "v.skip.a":"В плане ближайших покупок нет ни одной за α — ранг приходит через <em>{t}</em> и без них.",
+      "v.skip.b":"В плане ближайших покупок нет ни одной за β — ранг приходит через <em>{t}</em> и без них. β тратятся отдельно от α, так что дело не в деньгах: покупка просто не ускоряет ранг.",
+      "v.later":"Это {n}-я покупка плана, через <em>{t}</em> — сначала идёт то, что в карточке рядом.",
+      "v.nowword":"сразу",
       "v.buy.t":"Бери {n} → ур. {l}",
       "v.ready":"Хватает уже сейчас. ", "v.hold":"Накопится через <em>{t}</em>. ",
       "v.est":"Цена — прикидка по шагу роста. ",
-      "v.ahead":"Опережает «просто копить» на <em>{t}</em>.",
-      "v.aheadp":"Приближает ранг на <em>{p}</em> против «просто копить».",
       "v.tie":" Остальное в этой ветке — столько же или хуже.",
       "cmp.save":"Копить, ничего не брать", "cmp.best":"лучший", "cmp.to":"→ ур. {l}",
       "sync.local":"локальное сохранение", "sync.cloud":"синхронизируется между устройствами",
@@ -509,7 +508,7 @@
       "h.sub":"What to buy next — with α or β — so the rank arrives sooner",
       "chip.arate":"α / sec", "chip.brate":"β / sec", "chip.bonus":"β→α bonus", "chip.eta":"to rank",
       "adv.a":"With alpha", "adv.b":"With beta",
-      "adv.cost":"Cost", "adv.pay":"Pays off", "adv.gain":"Faster than saving",
+      "adv.cost":"Cost", "adv.pay":"Pays off", "adv.when":"When in the plan",
       "cmp.h":"First move compared", "cmp.move":"First move", "cmp.cost":"Cost",
       "cmp.pay":"Pays off", "cmp.eta":"To rank",
       "cmp.hint":"Each row means “take this right now, then ten more purchases in whatever order comes out fastest”. A <b>≤</b> before a time means ten purchases were not enough to reach the rank: the real wait is shorter, because the buying does not stop there. Rows are still comparable with each other — they all use the same yardstick. “Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly.",
@@ -527,7 +526,7 @@
       "b.prestg.t":"The “γ base” from the second prestige window, β→γ. That one resets both α and β. While γ is locked this number changes nothing in the calculation — the field just remembers it, so you need not look it up again once γ opens.",
       "b.presta":"β base after (from the game)",
       "b.presta.t":"The “β base after” from the prestige window — copy it straight from the game. It cannot be derived: up to α around 1e20 the gain is strictly proportional to α, but above that the game damps it, and at 4.9e24 the proportion is off by a factor of 113. The number grows with α, so refresh it when you are about to decide.",
-      "b.prestnote":"An α→β prestige: the β base <b class=\"val\" id=\"pr-now\">—</b> becomes <b class=\"val\" id=\"pr-after\">—</b>, and the α rate grows <b class=\"val\" id=\"pr-speed\">—</b>. It resets α and every α upgrade — exactly what taking a rank does, so the two compete. The later you press it the more it gives, but by how much cannot be derived: up to α around 1e20 the gain tracked α exactly, above that the game damps it. So take the “β base after” straight off the game screen.",
+      "b.prestnote":"An α→β prestige: the β base <b class=\"val\" id=\"pr-now\">—</b> becomes <b class=\"val\" id=\"pr-after\">—</b>, and the α rate grows <b class=\"val\" id=\"pr-speed\">—</b>. It resets α and every α upgrade — exactly what taking a rank does, so the two compete. The later you press it the more it gives: the gain tracks α up to about 4e21, then hits a cube root and slows sharply. A ≈ sign means the number came from that rule; type your own from the game and yours wins.",
       "b.locked":"Tier 0 — the β Generator is not unlocked yet. β does not accumulate and gives no α bonus, so there is nothing to buy on this side. Tier 1 grants the first β Generator level for free, and only then does β start flowing.",
       "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Refine Tree nodes and tier", "n.140":"Node 140: level out of 9 →", "n.bought":"Nodes purchased",
@@ -555,15 +554,14 @@
       "v.now.w":"You hold <em>{a} α</em> against a requirement of <em>{r} α</em>.",
       "v.zero.t":"The α rate is zero",
       "v.zero.w":"Check the levels and model coefficients — at these values α does not accumulate at all.",
-      "v.wait.t":"Hold off for now",
-      "v.wait.w":"No purchase in this branch brings the rank closer — <em>{t}</em> is already less.",
-      "v.none.t":"Nothing to buy",
-      "v.none.w":"This branch has no prices yet — fill in its price list and the advice appears.",
+      "v.skip.t":"Nothing to take on this side",
+      "v.skip.a":"The plan ahead holds no α purchase — the rank arrives in <em>{t}</em> without one.",
+      "v.skip.b":"The plan ahead holds no β purchase — the rank arrives in <em>{t}</em> without one. β is spent separately from α, so this is not about affording it: the purchase simply does not bring the rank closer.",
+      "v.later":"This is purchase {n} of the plan, in <em>{t}</em> — the card next to this one comes first.",
+      "v.nowword":"right away",
       "v.buy.t":"Buy {n} → Lv {l}",
       "v.ready":"You can afford it already. ", "v.hold":"It accumulates in <em>{t}</em>. ",
       "v.est":"The cost is extrapolated from the growth step. ",
-      "v.ahead":"Beats plain saving by <em>{t}</em>.",
-      "v.aheadp":"Brings the rank <em>{p}</em> closer than plain saving.",
       "v.tie":" Everything else in this branch is the same or worse.",
       "cmp.save":"Save, buy nothing", "cmp.best":"best", "cmp.to":"→ Lv {l}",
       "sync.local":"saved in this browser", "sync.cloud":"synced across devices",
@@ -871,19 +869,26 @@
     return k.K * Math.pow(Math.max(0, beta) + 1, k.P);
   }
   function prestB(){ return S.prestB > 0 ? S.prestB : 1; }
-  // «База β после» берётся из игры, а не выводится. Сначала казалось,
-  // что прибавка строго пропорциональна α: три замера подряд при базе
-  // 4.01 легли на прямую (5.52e18 → +0.03, 1.67e19 → +0.09, 1.08e20 →
-  // +0.56, показатель 0.98–0.99). Но на 4.9e24 игра показала 229 вместо
-  // 25 435 — пропорция промахнулась в 113 раз. Значит между 1e20 и 1e24
-  // рост зажимается, а чем именно — по четырём точкам не понять: единый
-  // степенной закон с показателем 0.559 ложится на две верхние точки и
-  // мимо двух нижних. Пока закон не известен, честнее не выдумывать его,
-  // а переписывать число с экрана.
+  // Прибавка к базе β растёт пропорционально α, но лишь до перелома
+  // около 4e21, а дальше упирается в кубический корень. Два режима
+  // выведены по шести замерам при базе 4.01: 5.52e18 → +0.03,
+  // 1.67e19 → +0.09, 1.08e20 → +0.56, 1.88e23 → +74.57,
+  // 2.61e23 → +84.65, 4.90e24 → +224.99. Правило «берём меньшее из
+  // двух» ложится на все шесть: пять точек до 0.1%, худшая 1.7%.
+  // Одной пропорции верить нельзя: выведенная по трём нижним точкам,
+  // она промахивалась на 4.9e24 в 113 раз. Поэтому введённое вручную
+  // показание из игры всегда главнее расчёта.
+  var PREST_K = 5.19e-21, PREST_C = 1.325e-6;
+  function prestLaw(){
+    var a = Math.max(0, S.alpha);
+    if (!(a > 0)) return prestB();
+    return prestB() + Math.min(PREST_K * a, PREST_C * Math.pow(a, 1 / 3));
+  }
   function prestAfter(){
     var v = S.prestAfter;
-    return v > prestB() ? v : prestB();
+    return v > prestB() ? v : prestLaw();
   }
+  function prestIsLaw(){ return !(S.prestAfter > prestB()); }
   // Во сколько вырастет скорость α, если нажать престиж при запасе α.
   // База множит производство β, значит со временем во столько же раз
   // вырастет и сама β, а она входит в α через (β+1)^показатель.
@@ -1236,25 +1241,26 @@
   var HORIZON = 10;
   // Шире ответ не меняется: проверено от 20 до 400 на двух состояниях.
   var ADVICE_WIDTH = 60;
-  var A_TRACKS = TRACKS.filter(function(tk){ return cur(tk) === "a"; });
-  var B_TRACKS = TRACKS.filter(function(tk){ return cur(tk) !== "a"; });
 
-  // Лучшее в группе: по времени до ранга, а при равенстве — что дешевле.
-  function bestOf(a, list){
-    var b = null;
-    list.forEach(function(tk){
-      if (!a[tk]) return;
-      if (!b){ b = tk; return; }
-      var d = a[tk].time - a[b].time;
-      if (d < -1e-9) b = tk;
-      else if (d <= 1e-9 && a[tk].path[0].cost < a[b].path[0].cost) b = tk;
-    });
-    return b;
+  // Сначала карточки брали лучшую ветку своей стороны и сравнивали её с
+  // «не покупать вообще ничего». Это сравнение обманывает: ветка «купить
+  // генератор β, а дальше девять покупок» опережала «копить» на полтора
+  // часа, но весь выигрыш давали те девять α-покупок, которые ты сделаешь
+  // в любом случае. Сам генератор β при этом в оптимальный план не
+  // входил, и запрет покупок за β не менял время до ранга вовсе.
+  // Поэтому обе карточки читаются из одного плана: показываем ближайшую
+  // покупку за α и ближайшую за β внутри него. Нет такой покупки в
+  // плане — значит на этой стороне сейчас брать нечего.
+  function firstOf(path, side){
+    for (var i = 0; i < path.length; i++){
+      if ((cur(path[i].track) === "a") === (side === "a")) return path[i];
+    }
+    return null;
   }
   function advise(){
     var a = analyzeOnce(HORIZON, ADVICE_WIDTH, true);
-    a.aPick = bestOf(a, A_TRACKS);
-    a.bPick = bestOf(a, B_TRACKS);
+    a.aStep = firstOf(a.best.path, "a");
+    a.bStep = firstOf(a.best.path, "b");
     return a;
   }
   // Время ветки = «купить эти покупки и дальше только копить». Если
@@ -1263,15 +1269,6 @@
   // граница, и так его и подписываем, а не выдаём за точный срок.
   function capped(r){ return !!r && r.path.length >= HORIZON && r.time > 0; }
   function etaText(r){ return (capped(r) ? "≤ " : "") + fmtTime(r.time); }
-  // Выигрыш в секундах осмысленен, только когда и сам срок настоящий.
-  // Пока горизонт обрезан, оба срока — «никогда», и разница между ними
-  // в днях ничего не говорит. Доля же читается при любом масштабе.
-  function gainPct(plainT, time){
-    if (!isFinite(plainT) || plainT <= 0) return null;
-    var p = (plainT - time) / plainT * 100;
-    if (!isFinite(p) || p <= 0) return null;
-    return (p >= 99.95 ? p.toFixed(3) : p >= 10 ? p.toFixed(1) : p.toFixed(2)) + "%";
-  }
 
   // Момент, когда накопленная α с покупкой обгонит вариант без неё.
   function breakEven(track){
@@ -1321,7 +1318,7 @@
     el("hint-bonus").textContent = fmt(bb);
     // Престиж: что он даёт сейчас и что дал бы на полном требовании ранга.
     el("pr-now").textContent = "×" + fmt(prestB());
-    el("pr-after").textContent = "×" + fmt(prestAfter());
+    el("pr-after").textContent = (prestIsLaw() ? "≈ ×" : "×") + fmt(prestAfter());
     el("pr-speed").textContent = "×" + fmt(prestSpeed());
     el("check-n140").textContent = t("x.multbase", { v: node140() });
     el("check-stupen2").textContent = Math.round(S.stupen) >= 2
@@ -1349,19 +1346,10 @@
   // независимых вопроса, и отвечать на них надо отдельно. Время каждой
   // строки — «взять это сейчас, дальше десять покупок как выйдет лучше».
   function renderAdvice(a, rA){
-    card("a", el("verdict-a"), "va-", a, a.aPick, rA);
-    card("b", el("verdict-b"), "vb-", a, a.bPick, rA);
+    card("a", el("verdict-a"), "va-", a, a.aStep, rA);
+    card("b", el("verdict-b"), "vb-", a, a.bStep, rA);
   }
-  // Есть ли в ветке соперник с тем же временем — тогда выбор не принципиален.
-  function tied(a, pick){
-    var list = cur(pick) === "a" ? A_TRACKS : B_TRACKS, same = false;
-    list.forEach(function(tk){
-      if (tk === pick || !a[tk]) return;
-      if (Math.abs(a[tk].time - a[pick].time) < 1e-9) same = true;
-    });
-    return same;
-  }
-  function card(side, box, pfx, a, pick, rA){
+  function card(side, box, pfx, a, step, rA){
     var mark = el(pfx + "mark"), title = el(pfx + "title"), why = el(pfx + "why");
     var accent = side === "a" ? "#2b6d7d" : "#3f9c72";
     mark.className = "vmark";
@@ -1384,42 +1372,40 @@
       box.style.borderColor = "#a8574a";
       return;
     }
-    if (!pick){
-      mark.textContent = "?";
-      title.textContent = t("v.none.t");
-      why.textContent = t("v.none.w");
-      return;
-    }
-    var r = a[pick], f = r.path[0], sym = cur(pick) === "a" ? "α" : "β";
-    var gain = a.plain.time - r.time;
-    el(pfx + "cost").textContent = fmt(f.cost) + " " + sym + (f.est ? "*" : "");
-    var be = breakEven(pick);
-    el(pfx + "pay").textContent = be == null ? "—" : fmtTime(be);
-
-    // Покупка, которая не приближает ранг, — не совет, а вред.
-    if (!(gain > 0.05)){
+    // В плане нет ни одной покупки этой стороны — значит она сейчас не
+    // нужна. Раньше тут всё равно предлагалась «лучшая из плохих».
+    if (!step){
       mark.classList.add("save"); mark.textContent = "∅";
-      title.textContent = t("v.wait.t");
-      why.innerHTML = t("v.wait.w", { t: fmtTime(a.plain.time) });
-      el(pfx + "gain").textContent = "0" + t("u.s");
+      title.textContent = t("v.skip.t");
+      why.innerHTML = t(side === "a" ? "v.skip.a" : "v.skip.b",
+                        { t: fmtTime(a.best.time) });
+      el(pfx + "gain").textContent = "—";
       box.style.borderColor = "#a97c27";
       return;
     }
+    var sym = cur(step.track) === "a" ? "α" : "β";
+    el(pfx + "cost").textContent = fmt(step.cost) + " " + sym + (step.est ? "*" : "");
+    var be = breakEven(step.track);
+    // Окупаемость считается только для покупки, доступной прямо сейчас:
+    // для шага из середины плана уровень ещё не тот.
+    el(pfx + "pay").textContent =
+      (step.level === S[step.track].level + 1 && be != null) ? fmtTime(be) : "—";
+    el(pfx + "gain").textContent = step.at > 0.5 ? fmtTime(step.at) : t("v.nowword");
+
     mark.classList.add("buy"); mark.textContent = "✓";
-    title.textContent = t("v.buy.t", { n: fullName(pick), l: f.level });
-    // Абсолютное «до ранга» на горизонте десяти покупок врать не будет
-    // только в самом конце ранга: дальше покупок нет. В начале же оно
-    // чудовищно велико, потому что считает «купил десять и больше
-    // никогда ничего». Поэтому в карточке говорим относительную вещь —
-    // насколько эта покупка опережает «просто копить». Она верна всегда.
-    var pct = capped(r) ? gainPct(a.plain.time, r.time) : null;
+    title.textContent = t("v.buy.t", { n: fullName(step.track), l: step.level });
+    var idx = planIndex(a.best.path, step);
     why.innerHTML =
-      (f.wait > 0.5 ? t("v.hold", { t: fmtTime(f.wait) }) : t("v.ready")) +
-      (f.est ? t("v.est") : "") +
-      (pct ? t("v.aheadp", { p: pct }) : t("v.ahead", { t: fmtTime(gain) })) +
-      (tied(a, pick) ? t("v.tie") : "");
-    el(pfx + "gain").textContent = pct ? "−" + pct : "−" + fmtTime(gain);
+      (idx > 0
+         ? t("v.later", { t: fmtTime(step.at), n: idx + 1 })
+         : (step.wait > 0.5 ? t("v.hold", { t: fmtTime(step.wait) }) : t("v.ready"))) +
+      (step.est ? t("v.est") : "");
     box.style.borderColor = accent;
+  }
+  // Сколько покупок стоит в плане перед этой.
+  function planIndex(path, step){
+    for (var i = 0; i < path.length; i++) if (path[i] === step) return i;
+    return 0;
   }
 
   // Каждая строка — это ровно одна из ветвей, которые уже посчитал
