@@ -467,8 +467,8 @@
       "b.presta":"База β после (из игры)",
       "b.presta.t":"«База β после» из окна престижа — переписывай сюда прямо из игры. Вывести её расчётом нельзя: до α порядка 1e20 прибавка строго пропорциональна α, а дальше игра зажимает рост, и на 4.9e24 пропорция промахивается в 113 раз. Число растёт вместе с α, так что обновляй его, когда собираешься решать.",
       "b.prestyes":"уже выгодно", "b.prestno":"ещё рано",
-      "b.prestneed":"<span id=\"pr-need\">До ступени <b class=\"val\" id=\"pr-nranks\">—</b>, а престиж стоит ровно одного лишнего подъёма — зато остальные идут быстрее. Он окупается, когда «база β после» дойдёт до <b class=\"val\" id=\"pr-needv\">—</b>: <b class=\"val\" id=\"pr-verdict\">—</b>.</span><span id=\"pr-last\">До ступени остался один ранг. Престиж отбивается только начиная со второго подъёма, а второго здесь не будет — так что сейчас он лишь отодвинет ступень. Бери ранг.</span>",
-      "b.prestnote":"Престиж α→β: база β <b class=\"val\" id=\"pr-now\">—</b> станет <b class=\"val\" id=\"pr-after\">—</b>, и скорость α вырастет в <b class=\"val\" id=\"pr-speed\">—</b>. Он сбрасывает α и все её улучшения — ровно то же, что делает взятие ранга. <span id=\"pr-wait\">А прибавка растёт вместе с α: дотерпишь до требования ранга — база станет <b class=\"val\" id=\"pr-rank\">—</b>, а скорость вырастет в <b class=\"val\" id=\"pr-rankspeed\">—</b>. Цена при этом та же самая, так что нажимать раньше — чистый проигрыш. </span>Прибавка идёт пропорционально α примерно до 4e21, а выше упирается в кубический корень. Знак ≈ значит, что число посчитано по правилу; впишешь своё из игры — оно станет главнее, и прогноз на ранг посчитается уже от него.",
+      "b.prestneed":"<span id=\"pr-need\">Нажав, ты проходишь подъём заново, но в <b class=\"val\" id=\"pr-m\">—</b> быстрее. Значит престиж окупится, если с начала этого подъёма прошло меньше <b class=\"val\" id=\"pr-needv\">—</b>. Под конец α растёт взрывом, поэтому почти весь подъём — это его хвост, и в начале нажимать почти всегда выгодно.</span><span id=\"pr-last\">Престиж сейчас ничего не ускорит.</span>",
+      "b.prestnote":"Престиж α→β: скорость α вырастет в <b class=\"val\" id=\"pr-speed\">—</b><span id=\"pr-wait\">, а если дотерпеть до требования ранга — в <b class=\"val\" id=\"pr-rankspeed\">—</b></span>.",
       "b.locked":"Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего. Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.",
       "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Узлы дерева и ступень", "n.140":"Узел 140: уровень из 9 →", "n.bought":"Куплённые узлы",
@@ -543,8 +543,8 @@
       "b.presta":"β base after (from the game)",
       "b.presta.t":"The “β base after” from the prestige window — copy it straight from the game. It cannot be derived: up to α around 1e20 the gain is strictly proportional to α, but above that the game damps it, and at 4.9e24 the proportion is off by a factor of 113. The number grows with α, so refresh it when you are about to decide.",
       "b.prestyes":"already worth it", "b.prestno":"not yet",
-      "b.prestneed":"<span id=\"pr-need\">The tier is <b class=\"val\" id=\"pr-nranks\">—</b> away, and a prestige costs exactly one extra climb — but every other climb then runs faster. It pays off once “β base after” reaches <b class=\"val\" id=\"pr-needv\">—</b>: <b class=\"val\" id=\"pr-verdict\">—</b>.</span><span id=\"pr-last\">One rank is left before the tier. A prestige only repays from the second climb onwards, and there will be no second one here — so right now it would merely push the tier further away. Take the rank.</span>",
-      "b.prestnote":"An α→β prestige: the β base <b class=\"val\" id=\"pr-now\">—</b> becomes <b class=\"val\" id=\"pr-after\">—</b>, and the α rate grows <b class=\"val\" id=\"pr-speed\">—</b>. It resets α and every α upgrade — exactly what taking a rank does. <span id=\"pr-wait\">And the gain grows with α: hold out until the rank requirement and the base becomes <b class=\"val\" id=\"pr-rank\">—</b>, raising the rate <b class=\"val\" id=\"pr-rankspeed\">—</b>. The price is the same either way, so pressing earlier is a pure loss. </span>The gain tracks α up to about 4e21, then hits a cube root. A ≈ sign means the number came from that rule; type your own from the game and yours wins, and the rank forecast is then computed from it.",
+      "b.prestneed":"<span id=\"pr-need\">Pressing it means climbing again, but <b class=\"val\" id=\"pr-m\">—</b> faster. So the prestige repays itself if less than <b class=\"val\" id=\"pr-needv\">—</b> has passed since this climb began. α explodes near the end, so almost the whole climb is its tail — which makes pressing early almost always worth it.</span><span id=\"pr-last\">A prestige would speed up nothing right now.</span>",
+      "b.prestnote":"An α→β prestige raises the α rate <b class=\"val\" id=\"pr-speed\">—</b><span id=\"pr-wait\">, or <b class=\"val\" id=\"pr-rankspeed\">—</b> if you hold out until the rank requirement</span>.",
       "b.locked":"Tier 0 — the β Generator is not unlocked yet. β does not accumulate and gives no α bonus, so there is nothing to buy on this side. Tier 1 grants the first β Generator level for free, and only then does β start flowing.",
       "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Refine Tree nodes and tier", "n.140":"Node 140: level out of 9 →", "n.bought":"Nodes purchased",
@@ -1010,18 +1010,32 @@
   // Оценка осторожная с двух сторон: поздние ранги требуют больше α, то
   // есть сэкономленные подъёмы самые длинные, а быстрая α вдобавок
   // раньше открывает улучшения, и подъём сокращается сильнее, чем в m.
+  // Сколько времени в этом подъёме можно потратить, чтобы престиж всё
+  // равно окупился. Пусть до ранга осталось R, уже потрачено t, а
+  // престиж ускоряет α в m раз. Нажав, проходишь весь подъём заново,
+  // но быстрее: (t + R)/m. Это выгодно, пока (t + R)/m < R, то есть
+  // пока t < R·(m − 1).
+  // Сначала я считал иначе — будто престиж всегда стоит целого подъёма,
+  // и выходило, что на последнем ранге перед ступенью он бесполезен.
+  // Это неверно: нажатый в начале подъёма, он стоит только тех минут,
+  // что ты успел потратить, а α под конец растёт взрывом, так что почти
+  // весь подъём — это его хвост.
   function prestNeed(){
-    var N = Math.max(0, Math.round(S.stupenRank) - Math.round(S.rank));
-    if (!(N >= 2)) return { n: N, base: null };
-    var P = kp(curLv()).P;
-    if (!(P > 0)) return { n: N, base: null };
-    return { n: N, base: prestB() * Math.pow(N / (N - 1), 1 / P) };
+    var m = prestSpeed();
+    if (!(m > 1)) return null;
+    return { m: m, mult: m - 1 };
   }
+  // Показатель, с которым прибавка престижа растёт по α, сам меняется:
+  // до 4e21 была прямая пропорция, дальше кубический корень, а по двум
+  // последним замерам уже 0.207. Берём последний — он ближе всего к той
+  // области, где прогноз и нужен, — но помним, что это экстраполяция
+  // закона, который менялся уже дважды.
+  var PREST_P = 0.207;
   function prestAtRank(){
     var a = Math.max(0, S.alpha), after = S.prestAfter, base = prestB();
     if (!(a > 0) || !(after > base) || !(S.rankCost > a)) return null;
-    var c = (after - base) / Math.pow(a, 1 / 3);
-    return base + c * Math.pow(S.rankCost, 1 / 3);
+    var c = (after - base) / Math.pow(a, PREST_P);
+    return base + c * Math.pow(S.rankCost, PREST_P);
   }
   function rateBeta(lv){
     // Престиж α→β множит производство β целиком — ровно так, как в игре
@@ -1451,23 +1465,10 @@
     el("check-mult").textContent = "×" + fmt(effectOf("mult", lv.mult));
     el("hint-bonus").textContent = fmt(bb);
     // Престиж: что он даёт сейчас и что дал бы на полном требовании ранга.
-    el("pr-now").textContent = "×" + fmt(prestB());
-    el("pr-after").textContent = (prestIsLaw() ? "≈ ×" : "×") + fmt(prestAfter());
     el("pr-speed").textContent = "×" + fmt(prestSpeed());
     var atRank = prestAtRank();
     el("pr-wait").hidden = atRank == null;
-    if (atRank != null){
-      el("pr-rank").textContent = "×" + fmt(atRank);
-      el("pr-rankspeed").textContent = "×" + fmt(prestSpeed(atRank));
-    }
-    var need = prestNeed();
-    el("pr-need").hidden = need.base == null;
-    el("pr-last").hidden = need.base != null;
-    el("pr-nranks").textContent = nRanks(need.n);
-    if (need.base != null){
-      el("pr-needv").textContent = "×" + fmt(need.base);
-      el("pr-verdict").textContent = t(prestAfter() >= need.base ? "b.prestyes" : "b.prestno");
-    }
+    if (atRank != null) el("pr-rankspeed").textContent = "×" + fmt(prestSpeed(atRank));
     el("check-n140").textContent = t("x.multbase", { v: node140() });
     el("check-stupen2").textContent = Math.round(S.stupen) >= 2
       ? t("x.gen", { g: fmt(stupen2Gen()), m: fmt(stupen2Mult(lv.mult)), l: lv.mult })
@@ -1477,6 +1478,14 @@
 
     var a = advise();
     el("ro-eta").textContent = etaText(a.best);
+    // Порогу нужно время до ранга, поэтому он считается после плана.
+    var need = prestNeed();
+    el("pr-need").hidden = need == null;
+    el("pr-last").hidden = need != null;
+    if (need != null){
+      el("pr-needv").textContent = fmtTime(a.best.time * need.mult);
+      el("pr-m").textContent = "×" + fmt(need.m);
+    }
     renderAdvice(a, rA);
     renderCompare(a);
 
