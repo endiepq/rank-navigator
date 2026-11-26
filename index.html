@@ -284,6 +284,7 @@
           <div class="grid4">
             <label><span class="lab" data-i18n="a.rank">Ранг</span><input type="text" id="f-rank" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="a.alpha">α сейчас</span><input type="text" id="f-alpha" inputmode="decimal"></label>
+            <label data-i18n-title="a.real.t" title="Перепиши сюда «Альфа +…/sec» из игры. Модель сверится с этим числом и покажет расхождение — так ошибка в формулах видна сразу, а не через неделю. Пусто — сверка не показывается."><span class="lab" data-i18n="a.real">α/с в игре (сверка)</span><input type="text" id="f-areal" inputmode="decimal"></label>
             <label data-i18n-title="a.req.t" title="Цены рангов 2–17 подставляются сами. Своё значение перебивает таблицу и запоминается."><span class="lab" data-i18n="a.req">Нужно α на ранг</span><input type="text" id="f-rankcost" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="lv.gen">Ур. генератора</span><input type="text" id="f-gen" inputmode="decimal"></label>
           </div>
@@ -298,6 +299,10 @@
           <div class="note">
             <span class="k">=</span>
             <span data-i18n-html="a.formula"></span>
+          </div>
+          <div class="note" id="a-check" hidden>
+            <span class="k">!</span>
+            <span data-i18n-html="a.gap"></span>
           </div>
         </div>
       </section>
@@ -445,6 +450,9 @@
       "n.tierreq.t":"Ступени просят ранг 10, 13, 16, 19 — поле заполняется по номеру ступени.",
       "lv.gen":"Ур. генератора", "lv.mult":"Ур. множителя", "lv.boost":"Ур. усилителя",
       "btn.rankup":"Ранг взят ↻",
+      "a.real":"α/с в игре (сверка)",
+      "a.real.t":"Перепиши сюда «Альфа +…/sec» из игры. Модель сверится с этим числом и покажет расхождение — так ошибка в формулах видна сразу, а не через неделю. Пусто — сверка не показывается.",
+      "a.gap":"Модель даёт <b class=\"val\" id=\"gap-model\">—</b> α/с, а в игре <b class=\"val\" id=\"gap-real\">—</b> — расхождение <b class=\"val\" id=\"gap-pct\">—</b>. Значит в модели чего-то не хватает: нового узла, награды ранга или устаревшего числа в полях. Времена до ранга при этом смещены все разом, поэтому какую покупку брать — подсказка всё равно показывает верно.",
       "a.rankuphint":"«Ранг взят» поднимает ранг, обнуляет α и возвращает α-ветки на старт. Прайс-листы остаются — при сбросе цены идут теми же числами.",
       "a.formula":"Скорость α = <code>0.01 × ранг × узел139 × бонус5 × ступень(≥2) × реликвия × (β+1)^показатель × ген × множ</code>, всё в степени усилителя. Сейчас <b class=\"val\" id=\"check-rate\">—</b>, бонус ранга 5 <b class=\"val\" id=\"check-bonus\">—</b>, множитель <b class=\"val\" id=\"check-mult\">—</b>. Сверь с игрой.",
       "b.h":"Бета — сейчас в игре", "b.beta":"β сейчас",
@@ -516,6 +524,9 @@
       "n.tierreq.t":"Tiers require rank 10, 13, 16, 19 — this field follows the tier number.",
       "lv.gen":"Generator Lv", "lv.mult":"Multiplier Lv", "lv.boost":"Empowerer Lv",
       "btn.rankup":"Ranked up ↻",
+      "a.real":"α/s in the game (check)",
+      "a.real.t":"Copy “Alpha +…/sec” from the game here. The model compares itself with it and shows the gap — so a broken formula shows up at once instead of a week later. Leave it empty and no check is shown.",
+      "a.gap":"The model gives <b class=\"val\" id=\"gap-model\">—</b> α/s against <b class=\"val\" id=\"gap-real\">—</b> in the game — a gap of <b class=\"val\" id=\"gap-pct\">—</b>. Something is missing from the model: a new node, a rank reward, or a stale number in the fields. All times to the rank shift together, so which purchase to take is still advised correctly.",
       "a.rankuphint":"“Ranked up” raises the rank, zeroes α and returns the α branches to their start. Price lists stay — after a reset the costs repeat the same numbers.",
       "a.formula":"α rate = <code>0.01 × rank × node139 × rank5 bonus × tier(≥2) × relic × (β+1)^exponent × gen × mult</code>, all raised to the Empowerer exponent. Now <b class=\"val\" id=\"check-rate\">—</b>, rank 5 bonus <b class=\"val\" id=\"check-bonus\">—</b>, multiplier <b class=\"val\" id=\"check-mult\">—</b>. Check against the game.",
       "b.h":"Beta — current in game", "b.beta":"β now",
@@ -676,7 +687,7 @@
 
   /* ============ состояние ============ */
   var DEF = {
-    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, rank18k: 0.005, depth: 500, beam: 300, tuned: 2,
+    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, rank18k: 0.005, alphaReal: 0, depth: 500, beam: 300, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, node148: 0, stupen: 0, betaExp: 0.2, beta: 0,
     stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, prestAfter: 0, node149: 1, singCount: 0, n140lvl: 0,
     rankCosts: {},
@@ -692,8 +703,8 @@
     // лишним. Два замера дают 1.03214 и 1.03273, взято среднее. Рост цены
     // 7.59e8 — по двум известным ценам: уровень 1 стоит 1.00e25, второй
     // 7.59e33.
-    tetra:  { level: 0, start: 0, free: 0, step: 0.0324, ratio: 7.59e8, costs: { "1":1.00e25, "2":7.59e33 }, eff: {} },
-    btetra: { level: 0, start: 0, free: 0, step: 0.0324, ratio: 7.59e8, costs: { "1":1.00e25 }, eff: {} }
+    tetra:  { level: 0, start: 0, free: 0, step: 0.0336, ratio: 7.59e8, costs: { "1":1.00e25, "2":7.59e33 }, eff: {} },
+    btetra: { level: 0, start: 0, free: 0, step: 0.0336, ratio: 7.59e8, costs: { "1":1.00e25 }, eff: {} }
   };
   // Цены рангов — константы игры: одни и те же у всех и после каждого
   // сброса. Поэтому они зашиты, а не набираются руками; поле «Нужно α
@@ -781,6 +792,16 @@
         if (Math.abs(S[tk].step - 0.038) < 1e-9) S[tk].step = 0.0324;
       });
       S.tuned = 8;
+    }
+    // Множитель тетратора медленно растёт: три замера дали 1.032145,
+    // 1.032722 и 1.033561, и разброс в тридцать раз больше погрешности
+    // округления. Закона по трём точкам не видно, поэтому держим шаг по
+    // самому свежему замеру и полагаемся на сверку с игрой.
+    if (!(S.tuned >= 9)){
+      ["tetra", "btetra"].forEach(function(tk){
+        if (Math.abs(S[tk].step - 0.0324) < 1e-9) S[tk].step = 0.0336;
+      });
+      S.tuned = 9;
     }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
@@ -1390,6 +1411,16 @@
     el("ro-brate").textContent = fmt(rB);
     el("ro-bonus").textContent = "×" + fmt(bb);
     el("check-rate").textContent = fmt(rA) + " α/с";
+    // Сверка с игрой. Модель собрана из десятка множителей, и любой
+    // новый узел или награда ранга ломает её молча — скорость просто
+    // становится не та. Показываем расхождение, чтобы это было видно.
+    var real = S.alphaReal, gap = (real > 0 && rA > 0) ? real / rA : null;
+    el("a-check").hidden = !(gap != null && Math.abs(gap - 1) > 0.02);
+    if (gap != null){
+      el("gap-model").textContent = fmt(rA);
+      el("gap-real").textContent = fmt(real);
+      el("gap-pct").textContent = (gap > 1 ? "+" : "−") + fmt(Math.abs(gap - 1) * 100) + "%";
+    }
     el("check-brate").textContent = fmt(rB) + " β/с";
     el("check-bonus12").textContent = S.rank >= 12 ? "×" + fmt(bonus12(lv.bgen)) : t("x.off12");
     el("check-bonus").textContent = S.rank >= 5 ? "×" + fmt(bonus5(lv.gen)) : t("x.off");
@@ -1720,6 +1751,7 @@
     bindCheck("f-n139", 2,  function(){ return S.node139; },   function(v){ S.node139 = v; });
     bindCheck("f-n141", 3,  function(){ return S.node141; },   function(v){ S.node141 = v; });
     bindCheck("f-n149", 100, function(){ return S.node149; },  function(v){ S.node149 = v; });
+    bindField("f-areal",      function(){ return S.alphaReal; },  function(v){ S.alphaReal = Math.max(0, v); });
     bindField("m-rank18k",    function(){ return S.rank18k; },    function(v){ S.rank18k = Math.max(0, v); });
     bindField("f-singn",      function(){ return S.singCount; }, function(v){ S.singCount = Math.max(0, v); });
     bindCheck("f-n142", 1.25, function(){ return S.node142; }, function(v){ S.node142 = v; });
