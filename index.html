@@ -108,6 +108,8 @@
   .vtitle{font-family:var(--disp);font-size:21px;font-weight:700;line-height:1.2;text-wrap:balance}
   /* жёлтым помечаем цену, достроенную по шагу роста, а не введённую */
   .price.est{color:var(--warn)}
+  .note.good{border-color:#2f6d53;background:#12302444}
+  .note.warn{border-color:#8a6a24;background:#30281244}
   .verdict.beta{border-color:#2f6d53;background:linear-gradient(165deg,#13402f44 0%, var(--panel) 46%)}
   .vkind{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
   .verdict.beta .vkind{color:#6fae91}
@@ -322,6 +324,7 @@
             <label><span class="lab" data-i18n="lv.boost">Ур. усилителя</span><input type="text" id="f-bboost" inputmode="decimal"></label>
             <label data-i18n-title="b.prest.t" title="«База β» из окна «Престиж частиц» α→β — то, что там показано как «База β сейчас ×…». Вводи без знака умножения: 4.01. Умножает производство β целиком, до возведения в степень усилителя β."><span class="lab" data-i18n="b.prest">База β от престижа ×</span><input type="text" id="f-prestb" inputmode="decimal"></label>
             <label data-i18n-title="b.prestg.t" title="«База γ» из второго окна престижа, β→γ. Пока γ закрыта, это число ни на что в расчёте не влияет — поле просто помнит его, чтобы не искать заново, когда γ откроется."><span class="lab" data-i18n="b.prestg">База γ от престижа ×</span><input type="text" id="f-prestg" inputmode="decimal"></label>
+            <button id="btn-prest" data-i18n="btn.prest" style="align-self:end">Престиж нажат ↻</button>
             <label data-i18n-title="b.presta.t" title="«База β после» из окна престижа — переписывай сюда прямо из игры. Вывести её расчётом нельзя: до α порядка 1e20 прибавка строго пропорциональна α, а дальше игра зажимает рост, и на 4.9e24 пропорция промахивается в 113 раз. Число растёт вместе с α, так что обновляй его, когда собираешься решать."><span class="lab" data-i18n="b.presta">База β после (из игры)</span><input type="text" id="f-presta" inputmode="decimal"></label>
           </div>
           <div class="note" id="beta-locked" hidden>
@@ -336,9 +339,9 @@
             <span class="k">↻</span>
             <span data-i18n-html="b.prestnote"></span>
           </div>
-          <div class="note">
+          <div class="note" id="pr-box">
             <span class="k">?</span>
-            <span data-i18n-html="b.prestneed"></span>
+            <span data-i18n-html="pv.wrap" id="pr-verdict"></span>
           </div>
         </div>
       </section>
@@ -475,7 +478,12 @@
       "b.presta":"База β после (из игры)",
       "b.presta.t":"«База β после» из окна престижа — переписывай сюда прямо из игры. Вывести её расчётом нельзя: до α порядка 1e20 прибавка строго пропорциональна α, а дальше игра зажимает рост, и на 4.9e24 пропорция промахивается в 113 раз. Число растёт вместе с α, так что обновляй его, когда собираешься решать.",
       "b.waityes":"стоит", "b.waitno":"не стоит",
-      "b.prestneed":"<span id=\"pr-need\">Нажав, ты проходишь подъём заново, но в <b class=\"val\" id=\"pr-m\">—</b> быстрее. Значит престиж окупится, если с начала этого подъёма прошло меньше <b class=\"val\" id=\"pr-needv\">—</b>. Под конец α растёт взрывом, поэтому почти весь подъём — это его хвост, и в начале нажимать почти всегда выгодно.</span><span id=\"pr-last\">Престиж сейчас ничего не ускорит.</span><span id=\"pr-wait2\"> Ждать до <b class=\"val\" id=\"pr-w-m\">—</b> (вдесятеро больше α) — <b class=\"val\" id=\"pr-w-verdict\">—</b>: ожидание займёт <b class=\"val\" id=\"pr-w-dt\">—</b>, а на пересдаче подъёма сбережёт <b class=\"val\" id=\"pr-w-save\">—</b>.</span>",
+      "pv.wrap":"—",
+      "pv.yes":"<b>Жми престиж сейчас.</b> Ускорение {m}, и ранг окажется в руках через {now} вместо {never}, если не жать. Ждать дальше смысла нет: прибавка растёт медленнее, чем уходит время.",
+      "pv.wait":"<b>Подожди, жать рано.</b> Сейчас престиж даёт {m} и привёл бы к рангу через {now}. Если дотерпеть, пока α вырастет в {k} раз, будет {m2} и {wait}.",
+      "pv.never":"<b>Не жми в этом подъёме.</b> Ускорение всего {m}: нажав, придёшь к рангу через {now}, а просто доиграв — через {never}.",
+      "pv.unknown":"Чтобы сказать, жать престиж или ждать, мне нужно знать, когда начался подъём. Нажми «Ранг взят» или «Престиж нажат» в тот момент, когда сделаешь это в игре, — дальше посчитаю сам.",
+      "pv.no":"Престиж сейчас ничего не ускорит.",
       "b.prestnote":"Престиж α→β: скорость α вырастет в <b class=\"val\" id=\"pr-speed\">—</b><span id=\"pr-wait\">, а если дотерпеть до требования ранга — в <b class=\"val\" id=\"pr-rankspeed\">—</b></span>.",
       "b.locked":"Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего. Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.",
       "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
@@ -487,7 +495,7 @@
       "n.tetra.t":"Тетратор подписан как ^^1.01, но ведёт себя не как ^1.01: измеренная добавка к показателю равна 0.038 на первом уровне. Вводится именно добавка — она почти не зависит от масштаба чисел, в отличие от множителя. Тетратор не куплен — оставь 0.",
       "n.singn.t":"Достижение «СТО»: базы всех генераторов и множителей частиц умножаются на 1 + Сингулярность / 100. Вводи саму сингулярность, не множитель: при 100 выходит ×2.",
       "n.relichint":"Оба поля умножают базу обоих генераторов. Множитель сингулярности открывает узел 146, а само число смотри в <b>Сингулярность → Эффекты → Множитель сингулярности</b>. Нет реликвии или узла — оставь 1. Бонус ступени 2: <b class=\"val\" id=\"check-stupen2\">—</b>.",
-      "btn.tierup":"Ступень взята ↻",
+      "btn.tierup":"Ступень взята ↻", "btn.prest":"Престиж нажат ↻",
       "n.tierhint":"Покупается за ранги α и сносит ранг, α, β и все шесть веток. Узлы дерева, прайс-листы и сама ступень сохраняются. До ступени осталось <b class=\"val\" id=\"check-togo\">—</b>.",
       "n.hint":"Узел 140 вводится уровнем, как в игре: 0/9 даёт ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. Множитель считается сам и показан рядом с полем. Узлы 139 и 141 одноуровневые — просто ставь галочку, когда куплен. Сверка: «бонус ранга 5» в блоке «Альфа» должен совпасть с наградой за ранг 5 в игре. Показатель 0.2 даёт «α Генератор ×<span id=\"hint-bonus\">—</span>» при нынешних β; узел 147 его улучшает — тогда подними показатель, пока не сойдётся.",
       "pr.a":"Прайс-листы α", "pr.b":"Прайс-листы β", "pr.tag":"вводишь один раз — помнит навсегда",
@@ -554,7 +562,12 @@
       "b.presta":"β base after (from the game)",
       "b.presta.t":"The “β base after” from the prestige window — copy it straight from the game. It cannot be derived: up to α around 1e20 the gain is strictly proportional to α, but above that the game damps it, and at 4.9e24 the proportion is off by a factor of 113. The number grows with α, so refresh it when you are about to decide.",
       "b.waityes":"worth it", "b.waitno":"not worth it",
-      "b.prestneed":"<span id=\"pr-need\">Pressing it means climbing again, but <b class=\"val\" id=\"pr-m\">—</b> faster. So the prestige repays itself if less than <b class=\"val\" id=\"pr-needv\">—</b> has passed since this climb began. α explodes near the end, so almost the whole climb is its tail — which makes pressing early almost always worth it.</span><span id=\"pr-last\">A prestige would speed up nothing right now.</span><span id=\"pr-wait2\"> Holding out for <b class=\"val\" id=\"pr-w-m\">—</b> (ten times the α) is <b class=\"val\" id=\"pr-w-verdict\">—</b>: the wait costs <b class=\"val\" id=\"pr-w-dt\">—</b> and saves <b class=\"val\" id=\"pr-w-save\">—</b> on redoing the climb.</span>",
+      "pv.wrap":"—",
+      "pv.yes":"<b>Press the prestige now.</b> It gives {m}, putting the rank in hand in {now} instead of {never}. Waiting gains nothing: the bonus grows slower than the time it costs.",
+      "pv.wait":"<b>Hold off, it is too early.</b> Right now the prestige gives {m} and would reach the rank in {now}. Hold out until α is {k} times larger and it gives {m2} and {wait}.",
+      "pv.never":"<b>Do not press it this climb.</b> The speed-up is only {m}: pressing lands the rank in {now}, just finishing lands it in {never}.",
+      "pv.unknown":"To say whether to press or wait I need to know when this climb started. Press “Ranked up” or “Prestiged” the moment you do it in the game and I will take it from there.",
+      "pv.no":"A prestige would speed up nothing right now.",
       "b.prestnote":"An α→β prestige raises the α rate <b class=\"val\" id=\"pr-speed\">—</b><span id=\"pr-wait\">, or <b class=\"val\" id=\"pr-rankspeed\">—</b> if you hold out until the rank requirement</span>.",
       "b.locked":"Tier 0 — the β Generator is not unlocked yet. β does not accumulate and gives no α bonus, so there is nothing to buy on this side. Tier 1 grants the first β Generator level for free, and only then does β start flowing.",
       "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
@@ -566,7 +579,7 @@
       "n.tetra.t":"The Tetrator reads ^^1.01 but does not behave like ^1.01: the measured addition to the exponent is 0.038 at level 1. Enter the addition itself — unlike a multiplier, it barely depends on the scale of the numbers. Tetrator not bought — leave 0.",
       "n.singn.t":"The “ONE HUNDRED” achievement: the bases of all particle Generators and Multipliers are multiplied by 1 + Singularity / 100. Enter the Singularity count itself, not the multiplier: 100 gives ×2.",
       "n.relichint":"Both fields multiply the base of both Generators. The singularity multiplier is unlocked by node 146; read the number in <b>Singularity → Effects → Singularity mults</b>. No relic or node — leave it at 1. Tier 2 bonus: <b class=\"val\" id=\"check-stupen2\">—</b>.",
-      "btn.tierup":"Tiered up ↻",
+      "btn.tierup":"Tiered up ↻", "btn.prest":"Prestiged ↻",
       "n.tierhint":"Bought with α ranks; it wipes the rank, α, β and all six branches. Refine Tree nodes, price lists and the tier itself are kept. Ranks left to the tier: <b class=\"val\" id=\"check-togo\">—</b>.",
       "n.hint":"Node 140 is entered as a level, like in the game: 0/9 gives ×1, 1/9 → ×2, 3/9 → ×4, 9/9 → ×10. The multiplier is computed and shown beside the field. Nodes 139 and 141 are single-level — just tick them once bought. Cross-check: the “rank 5 bonus” in the Alpha block must match the rank 5 bonus in the game. The 0.2 exponent yields “α Generator ×<span id=\"hint-bonus\">—</span>” at your current β; refinement node 147 improves it — then raise the exponent until it matches.",
       "pr.a":"α price lists", "pr.b":"β price lists", "pr.tag":"enter once — remembered for good",
@@ -706,7 +719,7 @@
 
   /* ============ состояние ============ */
   var DEF = {
-    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, rank18k: 0.005, alphaReal: 0, betaReal: 0, depth: 500, beam: 300, tuned: 2,
+    rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, rank18k: 0.005, alphaReal: 0, betaReal: 0, climbStart: 0, depth: 500, beam: 300, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, node148: 0, stupen: 0, betaExp: 0.2, beta: 0,
     stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, prestAfter: 0, node149: 1, singCount: 0, n140lvl: 0,
     rankCosts: {},
@@ -1016,59 +1029,39 @@
     if (!(r0 > 0)) return 1;
     return rateAlpha(lv, S.beta * (after / now)) / r0;
   }
-  // Престиж и ранг стоят одного и того же: оба обнуляют α со всеми её
-  // улучшениями. А прибавка престижа растёт вместе с α. Значит нажимать
-  // его посреди подъёма — чистый проигрыш, и главный вопрос не «сколько
-  // даст сейчас», а «сколько даст, если дотерпеть до требования ранга».
-  // Коэффициент кубического корня меняется после каждого престижа и сам
-  // не выводится, зато его можно достать из показания игры: введённая
-  // «База β после» вместе с нынешней α его и задаёт.
-  // Порог окупаемости престижа. Он стоит ровно одного лишнего подъёма:
-  // обнуляет α со всеми её улучшениями, как и взятие ранга, но ранга не
-  // даёт. Зато все последующие подъёмы идут в m раз быстрее. При N
-  // оставшихся рангах «нажать» выгодно, когда N·T/m < (N−1)·T, то есть
-  // когда m > N/(N−1). База связана с ускорением как m = (B2/B)^P, где
-  // P — показатель, с которым β входит в α. Отсюда порог на саму базу.
-  // Оценка осторожная с двух сторон: поздние ранги требуют больше α, то
-  // есть сэкономленные подъёмы самые длинные, а быстрая α вдобавок
-  // раньше открывает улучшения, и подъём сокращается сильнее, чем в m.
-  // Сколько времени в этом подъёме можно потратить, чтобы престиж всё
-  // равно окупился. Пусть до ранга осталось R, уже потрачено t, а
-  // престиж ускоряет α в m раз. Нажав, проходишь весь подъём заново,
-  // но быстрее: (t + R)/m. Это выгодно, пока (t + R)/m < R, то есть
-  // пока t < R·(m − 1).
-  // Сначала я считал иначе — будто престиж всегда стоит целого подъёма,
-  // и выходило, что на последнем ранге перед ступенью он бесполезен.
-  // Это неверно: нажатый в начале подъёма, он стоит только тех минут,
-  // что ты успел потратить, а α под конец растёт взрывом, так что почти
-  // весь подъём — это его хвост.
-  // Жать сейчас или подождать. Ждать до большего ускорения стоит, если
-  // потраченное на ожидание меньше, чем оно сэкономит на пересдаче
-  // подъёма. Время, уже потраченное в этом подъёме, в разнице
-  // сокращается, поэтому знать его не нужно — достаточно времени до
-  // ранга и времени до следующей отметки по α.
-  // Считаем на вдесятеро большей α: престиж растёт как α^0.207, то есть
-  // десятикратный рост запаса поднимает прибавку всего в 1.6 раза.
-  function prestWait(rankTime){
-    var a = Math.max(0, S.alpha), after = S.prestAfter, base = prestB();
-    if (!(a > 0) || !(after > base) || !(rankTime > 0)) return null;
-    var c = (after - base) / Math.pow(a, PREST_P);
-    var a2 = a * 10, after2 = base + c * Math.pow(a2, PREST_P);
-    var m1 = prestSpeed(after), m2 = prestSpeed(after2);
-    if (!(m2 > m1)) return null;
-    var keep = S.rankCost;
-    S.rankCost = a2;
-    var dt = analyzeOnce(HORIZON, ADVICE_WIDTH, true).best.time;
-    S.rankCost = keep;
-    if (!isFinite(dt)) return null;
-    // Сберегает ожидание ровно столько, насколько короче станет
-    // пересдача подъёма; стоит оно самого ожидания.
-    return { m2: m2, dt: dt, gain: rankTime * (1 / m1 - 1 / m2) };
-  }
-  function prestNeed(){
+  // Три варианта меряются одной меркой — когда ранг окажется в руках.
+  // Подъём идёт since, до ранга осталось R, весь подъём T = since + R.
+  //   не жать        -> R
+  //   нажать сейчас  -> since + T/m
+  //   подождать      -> since + dt + T/m2
+  // Раньше сравнивались только первые два, и ответ был «выгодно» задолго
+  // до оптимума: нажать лучше, чем не нажать, но хуже, чем потерпеть.
+  // Теперь перебираются и отсрочки, так что ответ один и окончательный.
+  function prestPlan(rankTime){
     var m = prestSpeed();
-    if (!(m > 1)) return null;
-    return { m: m, mult: m - 1 };
+    var since = S.climbStart > 0 ? (Date.now() - S.climbStart) / 1000 : null;
+    if (!(m > 1) || since == null || !(rankTime > 0)) return { m0: m, since: since };
+    var T = since + rankTime;
+    var best = { key: "pv.never", at: rankTime };
+    var now = since + T / m;
+    if (now < best.at) best = { key: "pv.yes", at: now, m: m };
+    var a0 = Math.max(0, S.alpha), after = S.prestAfter, base = prestB();
+    if (a0 > 0 && after > base){
+      var c = (after - base) / Math.pow(a0, PREST_P), keep = S.rankCost;
+      [10, 100, 1000].forEach(function(k){
+        var a2 = a0 * k;
+        if (a2 > keep) return;
+        S.rankCost = a2;
+        var dt = analyzeOnce(HORIZON, ADVICE_WIDTH, true).best.time;
+        S.rankCost = keep;
+        if (!isFinite(dt)) return;
+        var m2 = prestSpeed(base + c * Math.pow(a2, PREST_P));
+        var tot = since + dt + T / m2;
+        if (tot < best.at - 1e-9) best = { key: "pv.wait", at: tot, m: m2, dt: dt, k: k };
+      });
+    }
+    best.m0 = m; best.since = since; best.now = now; best.never = rankTime;
+    return best;
   }
   // Показатель, с которым прибавка престижа растёт по α, сам меняется:
   // до 4e21 была прямая пропорция, дальше кубический корень, а по двум
@@ -1534,21 +1527,17 @@
     var a = advise();
     el("ro-eta").textContent = etaText(a.best);
     // Порогу нужно время до ранга, поэтому он считается после плана.
-    var need = prestNeed();
-    el("pr-need").hidden = need == null;
-    el("pr-last").hidden = need != null;
-    if (need != null){
-      el("pr-needv").textContent = fmtTime(a.best.time * need.mult);
-      el("pr-m").textContent = "×" + fmt(need.m);
-    }
-    var wait = (need == null) ? null : prestWait(a.best.time);
-    el("pr-wait2").hidden = wait == null;
-    if (wait != null){
-      el("pr-w-m").textContent = "×" + fmt(wait.m2);
-      el("pr-w-dt").textContent = fmtTime(wait.dt);
-      el("pr-w-save").textContent = fmtTime(wait.gain);
-      el("pr-w-verdict").textContent = t(wait.gain > wait.dt ? "b.waityes" : "b.waitno");
-    }
+    var pp = prestPlan(a.best.time);
+    var pkey = !(pp.m0 > 1) ? "pv.no" : pp.since == null ? "pv.unknown" : pp.key;
+    el("pr-box").className = "note " + (pkey === "pv.yes" ? "good" : pkey === "pv.wait" ? "warn" : "");
+    el("pr-verdict").innerHTML = t(pkey, {
+      m: "×" + fmt(pp.m0 || 1),
+      m2: "×" + fmt(pp.m || 1),
+      k: pp.k || 10,
+      now: fmtTime(pp.now || 0),
+      wait: fmtTime(pp.at || 0),
+      never: fmtTime(pp.never || a.best.time)
+    });
     renderAdvice(a, rA);
     renderCompare(a);
 
@@ -1964,8 +1953,19 @@
     function sideTracks(c){ return TRACKS.filter(function(t){ return cur(t) === c; }); }
     function resetAlphaSide(){ resetSide(sideTracks("a"), "alpha"); }
     function resetBetaSide(){ resetSide(sideTracks("b"), "beta"); }
+    // Подъём начинается заново и после ранга, и после престижа. Отметку
+    // времени ставят обе кнопки: без неё нельзя сказать, выгодно ли жать
+    // престиж, — решает не размер ускорения, а сколько уже ушло.
+    el("btn-prest").addEventListener("click", function(){
+      S.prestB = prestAfter();
+      S.prestAfter = 0;
+      resetAlphaSide();
+      S.climbStart = Date.now();
+      refreshFields(); save(); render();
+    });
     el("btn-rankup").addEventListener("click", function(){
       S.rank = S.rank + 1;
+      S.climbStart = Date.now();
       resetAlphaSide();
       syncRankCost();
       refreshFields(); save(); render();
@@ -1980,6 +1980,7 @@
     el("btn-stupen").addEventListener("click", function(){
       S.stupen = Math.round(S.stupen) + 1;
       S.rank = S.rankStart;
+      S.climbStart = Date.now();
       resetAlphaSide();
       resetBetaSide();
       S.stupenRank = tierRank(S.stupen);
