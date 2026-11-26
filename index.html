@@ -106,6 +106,11 @@
   .vmark.now{color:var(--ink);background:linear-gradient(150deg,#9af0fb,var(--alpha));border-color:#2b6d7d}
   .vmark.stop{color:var(--ink);background:linear-gradient(150deg,#ffa897,var(--bad));border-color:#a8574a}
   .vtitle{font-family:var(--disp);font-size:21px;font-weight:700;line-height:1.2;text-wrap:balance}
+  /* жёлтым помечаем цену, достроенную по шагу роста, а не введённую */
+  .price.est{color:var(--warn)}
+  .verdict.beta{border-color:#2f6d53;background:linear-gradient(165deg,#13402f44 0%, var(--panel) 46%)}
+  .vkind{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .verdict.beta .vkind{color:#6fae91}
   .vwhy{color:var(--dim);font-size:13.5px;margin-top:5px}
   .vwhy em{font-style:normal;color:var(--alpha);font-family:var(--mono);font-variant-numeric:tabular-nums}
   .vstats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line-soft)}
@@ -115,17 +120,6 @@
   .vstats b{display:block;font-family:var(--mono);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
   @media (max-width:430px){ .vstats{grid-template-columns:1fr 1fr} .vstats div:nth-child(3){border-left:0;border-top:1px solid var(--line-soft)} }
 
-  ol.plan{list-style:none;margin:0;padding:4px 0 0}
-  ol.plan li{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:baseline;padding:9px 0;border-top:1px dashed var(--line-soft)}
-  ol.plan li:first-child{border-top:0}
-  .tcode{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-  .step{font-size:14px}
-  .step .lvl{font-family:var(--mono);color:var(--alpha)}
-  .step .lvl.b{color:var(--beta)}
-  .price{font-family:var(--mono);font-size:12.5px;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap}
-  .price.est{color:var(--warn)}
-  .finish{display:flex;gap:10px;align-items:baseline;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
-  .finish .big{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--beta);font-variant-numeric:tabular-nums}
 
   table{width:100%;border-collapse:collapse;font-size:13.5px}
   .scroll{overflow-x:auto}
@@ -231,31 +225,35 @@
 
   <div class="cols">
     <div class="stack">
-      <section class="verdict" id="verdict">
+      <section class="verdict" id="verdict-a">
         <div class="lead">
-          <div class="vmark" id="v-mark">?</div>
+          <div class="vmark" id="va-mark">?</div>
           <div>
-            <div class="vtitle" id="v-title">—</div>
-            <div class="vwhy" id="v-why"></div>
+            <div class="vkind" data-i18n="adv.a">За альфу</div>
+            <div class="vtitle" id="va-title">—</div>
+            <div class="vwhy" id="va-why"></div>
           </div>
         </div>
         <div class="vstats">
-          <div><span data-i18n="v.naive">Если копить в лоб</span><b id="v-naive">—</b></div>
-          <div><span data-i18n="v.best">По плану</span><b id="v-best">—</b></div>
-          <div><span data-i18n="v.save">Экономия</span><b id="v-save">—</b></div>
+          <div><span data-i18n="adv.cost">Цена</span><b id="va-cost">—</b></div>
+          <div><span data-i18n="adv.pay">Отобьётся</span><b id="va-pay">—</b></div>
+          <div><span data-i18n="adv.gain">Быстрее, чем копить</span><b id="va-gain">—</b></div>
         </div>
       </section>
 
-      <section class="panel">
-        <h2><span data-i18n="plan.h">План до ранга</span> <span class="tag" id="plan-tag"></span>
-          <span class="tag" id="plan-state"></span>
-          <button class="more" id="plan-redo" data-i18n="btn.redo">Пересчитать</button></h2>
-        <div class="pad">
-          <ol class="plan" id="plan"></ol>
-          <div class="finish">
-            <span style="color:var(--muted);font-size:13px" data-i18n="plan.total">Ранг в руках через</span>
-            <span class="big" id="plan-total">—</span>
+      <section class="verdict beta" id="verdict-b">
+        <div class="lead">
+          <div class="vmark" id="vb-mark">?</div>
+          <div>
+            <div class="vkind" data-i18n="adv.b">За бетту</div>
+            <div class="vtitle" id="vb-title">—</div>
+            <div class="vwhy" id="vb-why"></div>
           </div>
+        </div>
+        <div class="vstats">
+          <div><span data-i18n="adv.cost">Цена</span><b id="vb-cost">—</b></div>
+          <div><span data-i18n="adv.pay">Отобьётся</span><b id="vb-pay">—</b></div>
+          <div><span data-i18n="adv.gain">Быстрее, чем копить</span><b id="vb-gain">—</b></div>
         </div>
       </section>
 
@@ -274,7 +272,7 @@
               <tbody></tbody>
             </table>
           </div>
-          <div class="hint" data-i18n="cmp.hint">Каждая строка — «взять это прямо сейчас, а дальше идти по плану». «Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.</div>
+          <div class="hint" data-i18n-html="cmp.hint"></div>
         </div>
       </section>
     </div>
@@ -385,10 +383,6 @@
               <label><span class="lab" data-i18n="m.r5">Бонус ранга 5: коэф.</span><input type="text" id="m-rank5k" inputmode="decimal"></label>
               <label><span class="lab" data-i18n="m.r12">Бонус ранга 12: коэф.</span><input type="text" id="m-rank12k" inputmode="decimal"></label>
             </div>
-            <div class="grid2" style="margin-top:12px">
-              <label data-i18n-title="m.depth.t" title="Потолок длины плана, до 500. Поиск всё равно кончается, когда ранг взят, так что высокий потолок почти ничего не стоит; если план в него упёрся, он поднимается сам."><span class="lab" data-i18n="m.depth">Покупок в плане</span><input type="text" id="m-depth" inputmode="numeric"></label>
-              <label data-i18n-title="m.beam.t" title="Сколько вариантов поиск держит в уме, до 400. Чем шире, тем лучше план и тем дольше счёт: черновой план виден сразу, точный досчитывается в фоне."><span class="lab" data-i18n="m.beam">Ширина луча</span><input type="text" id="m-beam" inputmode="numeric"></label>
-            </div>
             <div id="track-params"></div>
             <div class="hint" data-i18n-html="m.hint"></div>
           </div>
@@ -436,12 +430,11 @@
       "h.title":"Навигатор ранга",
       "h.sub":"Что купить следующим — за α или за β — чтобы ранг пришёл раньше",
       "chip.arate":"α / сек", "chip.brate":"β / сек", "chip.bonus":"бонус β→α", "chip.eta":"до ранга",
-      "v.naive":"Если копить в лоб", "v.best":"По плану", "v.save":"Экономия",
-      "plan.h":"План до ранга", "plan.total":"Ранг в руках через",
-      "plan.refining":"уточняю…", "plan.rough":"черновой", "btn.redo":"Пересчитать",
+      "adv.a":"За альфу", "adv.b":"За бетту",
+      "adv.cost":"Цена", "adv.pay":"Отобьётся", "adv.gain":"Быстрее, чем копить",
       "cmp.h":"Сравнение первого хода", "cmp.move":"Первый ход", "cmp.cost":"Цена",
       "cmp.pay":"Отобьётся", "cmp.eta":"До ранга",
-      "cmp.hint":"Каждая строка — «взять это прямо сейчас, а дальше идти по плану». «Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.",
+      "cmp.hint":"Каждая строка — «взять это прямо сейчас, а дальше десять покупок так, как выйдет быстрее всего». Знак <b>≤</b> у времени значит, что десяти покупок до ранга не хватило: настоящий срок меньше показанного, потому что покупки на этом не кончатся. Сравнивать строки между собой при этом можно — мерка у всех одна. «Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.",
       "a.h":"Альфа — сейчас в игре", "a.rank":"Ранг", "a.alpha":"α сейчас", "a.req":"Нужно α на ранг",
       "a.req.t":"Цены рангов 2–17 подставляются сами. Своё значение перебивает таблицу и запоминается.",
       "n.tierreq.t":"Ступени просят ранг 10, 13, 16, 19 — поле заполняется по номеру ступени.",
@@ -464,9 +457,7 @@
       "pr.a":"Прайс-листы α", "pr.b":"Прайс-листы β", "pr.tag":"вводишь один раз — помнит навсегда",
       "pr.hint":"Купил улучшение в игре — жми <b style=\"color:var(--alpha)\">«Купил ✓»</b>: уровень поднимется, цена спишется с нужной валюты, а если на неё ещё надо было копить — заодно прокрутится время, и β подрастут на то, что накопилось за ожидание. <b>−</b> возвращает ровно то состояние, что было до нажатия. Жёлтым — цена, достроенная по шагу роста; впишешь настоящую — станет белой.",
       "m.h":"Модель: коэффициенты и шаги", "m.base":"База за ранг", "m.r5":"Бонус ранга 5: коэф.",
-      "m.r12":"Бонус ранга 12: коэф.", "m.depth":"Покупок в плане", "m.beam":"Ширина луча",
-      "m.depth.t":"Потолок длины плана, до 500. Поиск всё равно кончается, когда ранг взят, так что высокий потолок почти ничего не стоит; если план в него упёрся, он поднимается сам.",
-      "m.beam.t":"Сколько вариантов поиск держит в уме, до 400. Чем шире, тем лучше план и тем дольше счёт: черновой план виден сразу, точный досчитывается в фоне.",
+      "m.r12":"Бонус ранга 12: коэф.",
       "m.hint":"Эффект уровня: <code>1 + шаг × (ур − сдвиг)</code>. Генераторы — сдвиг 1 (ур. 1 даёт ×1), множители и усилители — сдвиг 0. У множителя α шаг дополнительно умножается на узел 140. Рост цены работает только там, где настоящая цена ещё не введена.",
       "t.h":"Тетратор — добавим позже",
       "t.hint":"Тетрация стоит 1.00e25 — до неё разговор не про этот ранг. Как подберёшься, скажи, что даёт первый уровень, и добавлю седьмой веткой.",
@@ -479,15 +470,16 @@
       "v.now.w":"На счету <em>{a} α</em> при требовании <em>{r} α</em>.",
       "v.zero.t":"Скорость α равна нулю",
       "v.zero.w":"Проверь уровни и коэффициенты модели — при таких значениях α не капает вовсе.",
-      "v.save.t":"Ничего не покупай — копи на ранг",
-      "v.save.w":"Любая покупка отобьётся позже, чем придёт ранг. Остаток: <em>{a} α</em>.",
-      "v.buy.t":"Бери {n} до ур. {l}",
-      "v.wait":"Накопится через <em>{t}</em>, ", "v.enough":"Хватает уже сейчас, ",
-      "v.price":"цена <em>{c} {s}</em>", "v.est":" (прикидка)",
-      "v.saves":". Экономит <em>{t}</em> против «копить в лоб»", "v.more":", дальше по плану ещё {n}",
-      "plan.none":"Просто копим до <b>{a} α</b>.", "plan.wait":"· ждём {t}", "plan.now":"· сразу",
-      "plan.rank":"Ранг {r}", "plan.onhand":"— на счету {a} α", "plan.rate":"· скорость {v} α/с",
-      "plan.nobuys":"без покупок", "plan.range":"ур. {a}–{b}",
+      "v.wait.t":"Пока ничего не бери",
+      "v.wait.w":"Ни одна покупка в этой ветке не ускоряет ранг — <em>{t}</em> до него и так меньше.",
+      "v.none.t":"Нечего покупать",
+      "v.none.w":"Цены этой ветки ещё не введены — заполни прайс-лист, и совет появится.",
+      "v.buy.t":"Бери {n} → ур. {l}",
+      "v.ready":"Хватает уже сейчас. ", "v.hold":"Накопится через <em>{t}</em>. ",
+      "v.est":"Цена — прикидка по шагу роста. ",
+      "v.ahead":"Опережает «просто копить» на <em>{t}</em>.",
+      "v.aheadp":"Приближает ранг на <em>{p}</em> против «просто копить».",
+      "v.tie":" Остальное в этой ветке — столько же или хуже.",
       "cmp.save":"Копить, ничего не брать", "cmp.best":"лучший", "cmp.to":"→ ур. {l}",
       "sync.local":"локальное сохранение", "sync.cloud":"синхронизируется между устройствами",
       "sync.browser":"сохранено в этом браузере",
@@ -501,12 +493,11 @@
       "h.title":"Rank Navigator",
       "h.sub":"What to buy next — with α or β — so the rank arrives sooner",
       "chip.arate":"α / sec", "chip.brate":"β / sec", "chip.bonus":"β→α bonus", "chip.eta":"to rank",
-      "v.naive":"Saving up plainly", "v.best":"Following the plan", "v.save":"Saved",
-      "plan.h":"Plan to the rank", "plan.total":"Rank in hand after",
-      "plan.refining":"refining…", "plan.rough":"rough", "btn.redo":"Recalculate",
+      "adv.a":"With alpha", "adv.b":"With beta",
+      "adv.cost":"Cost", "adv.pay":"Pays off", "adv.gain":"Faster than saving",
       "cmp.h":"First move compared", "cmp.move":"First move", "cmp.cost":"Cost",
       "cmp.pay":"Pays off", "cmp.eta":"To rank",
-      "cmp.hint":"Each row means “take this right now, then follow the plan”. “Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly.",
+      "cmp.hint":"Each row means “take this right now, then ten more purchases in whatever order comes out fastest”. A <b>≤</b> before a time means ten purchases were not enough to reach the rank: the real wait is shorter, because the buying does not stop there. Rows are still comparable with each other — they all use the same yardstick. “Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly.",
       "a.h":"Alpha — current in game", "a.rank":"Rank", "a.alpha":"α now", "a.req":"α required for rank",
       "a.req.t":"Rank costs 2–17 are filled in automatically. Your own value overrides the table and is remembered.",
       "n.tierreq.t":"Tiers require rank 10, 13, 16, 19 — this field follows the tier number.",
@@ -529,9 +520,7 @@
       "pr.a":"α price lists", "pr.b":"β price lists", "pr.tag":"enter once — remembered for good",
       "pr.hint":"Bought an upgrade in the game — press <b style=\"color:var(--alpha)\">“Bought ✓”</b>: the level goes up, the cost is deducted from the right currency, and if you still had to save for it, time is wound forward too, so β grows by whatever accumulated during the wait. <b>−</b> restores exactly the state before the press. Amber means a cost extrapolated from the growth step; type the real one and it turns white.",
       "m.h":"Model: coefficients and steps", "m.base":"Base per rank", "m.r5":"Rank 5 bonus: coef.",
-      "m.r12":"Rank 12 bonus: coef.", "m.depth":"Buys in a plan", "m.beam":"Beam width",
-      "m.depth.t":"Cap on plan length, up to 500. The search stops once the rank is reached, so a high cap costs almost nothing; if a plan hits the cap, it is raised automatically.",
-      "m.beam.t":"How many variants the search keeps in mind, up to 400. Wider means a better plan and a longer wait: the rough plan shows at once, the exact one finishes in the background.",
+      "m.r12":"Rank 12 bonus: coef.",
       "m.hint":"Level effect: <code>1 + step × (lv − offset)</code>. Generators use offset 1 (Lv 1 gives ×1), Multipliers and Empowerers use 0. The α Multiplier step is additionally multiplied by node 140. Cost growth is used only where a real price has not been entered yet.",
       "t.h":"Tetrator — to be added later",
       "t.hint":"Tetration costs 1.00e25 — far beyond this rank. Once you get close, tell me what the first level gives and I will add it as a seventh branch.",
@@ -544,15 +533,16 @@
       "v.now.w":"You hold <em>{a} α</em> against a requirement of <em>{r} α</em>.",
       "v.zero.t":"The α rate is zero",
       "v.zero.w":"Check the levels and model coefficients — at these values α does not accumulate at all.",
-      "v.save.t":"Buy nothing — save for the rank",
-      "v.save.w":"Every purchase pays off later than the rank arrives. Remaining: <em>{a} α</em>.",
-      "v.buy.t":"Buy {n} up to Lv {l}",
-      "v.wait":"It accumulates in <em>{t}</em>, ", "v.enough":"You can afford it already, ",
-      "v.price":"cost <em>{c} {s}</em>", "v.est":" (estimate)",
-      "v.saves":". Saves <em>{t}</em> against plain saving", "v.more":", with {n} more ahead in the plan",
-      "plan.none":"Just save up to <b>{a} α</b>.", "plan.wait":"· wait {t}", "plan.now":"· right away",
-      "plan.rank":"Rank {r}", "plan.onhand":"— {a} α on hand", "plan.rate":"· rate {v} α/s",
-      "plan.nobuys":"no buys", "plan.range":"Lv {a}–{b}",
+      "v.wait.t":"Hold off for now",
+      "v.wait.w":"No purchase in this branch brings the rank closer — <em>{t}</em> is already less.",
+      "v.none.t":"Nothing to buy",
+      "v.none.w":"This branch has no prices yet — fill in its price list and the advice appears.",
+      "v.buy.t":"Buy {n} → Lv {l}",
+      "v.ready":"You can afford it already. ", "v.hold":"It accumulates in <em>{t}</em>. ",
+      "v.est":"The cost is extrapolated from the growth step. ",
+      "v.ahead":"Beats plain saving by <em>{t}</em>.",
+      "v.aheadp":"Brings the rank <em>{p}</em> closer than plain saving.",
+      "v.tie":" Everything else in this branch is the same or worse.",
       "cmp.save":"Save, buy nothing", "cmp.best":"best", "cmp.to":"→ Lv {l}",
       "sync.local":"saved in this browser", "sync.cloud":"synced across devices",
       "sync.browser":"saved in this browser",
@@ -584,13 +574,6 @@
     if (m10 === 1 && m100 !== 11) f = "ка";
     else if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) f = "ки";
     return n + " покуп" + f;
-  }
-  function nSteps(n){
-    if (LANG === "en") return n + (n === 1 ? " step" : " steps");
-    var m10 = n % 10, m100 = n % 100, f = "ов";
-    if (m10 === 1 && m100 !== 11) f = "";
-    else if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) f = "а";
-    return n + " шаг" + f;
   }
   function nRanks(n){
     if (LANG === "en") return n + (n === 1 ? " rank" : " ranks");
@@ -782,12 +765,6 @@
     if (h < 48) return h + t("u.h") + " " + mm + t("u.m");
     return Math.floor(h / 24) + t("u.d") + " " + (h % 24) + t("u.h");
   }
-  function clock(s){
-    if (!isFinite(s)) return "—";
-    var t = Math.round(s), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), ss = t % 60;
-    var p = function(n){ return n < 10 ? "0" + n : "" + n; };
-    return (h ? h + ":" : "") + p(m) + ":" + p(ss);
-  }
   function plural(n, one, few, many){
     var m10 = n % 10, m100 = n % 100;
     if (m10 === 1 && m100 !== 11) return one;
@@ -931,7 +908,17 @@
   }
 
   /* ============ симуляция ============ */
-  function origin(){ return { A: S.alpha, B: S.beta, lv: curLv(), t: 0 }; }
+  // Фоновое уточнение считает долго, а покупки за это время продолжаются.
+  // Если брать текущее состояние, половина ветвей посчитана до покупки,
+  // половина после, и сравнивать их между собой уже нельзя. Поэтому
+  // уточнение работает от снимка, снятого на старте: план от покупок не
+  // «передумывает», а время оставшихся шагов всё равно пересчитывается
+  // от сегодняшнего состояния.
+  var SNAP = null;
+  function origin(){
+    if (SNAP) return { A: SNAP.A, B: SNAP.B, lv: SNAP.lv, t: 0 };
+    return { A: S.alpha, B: S.beta, lv: curLv(), t: 0 };
+  }
   function tailTime(st){
     if (st.A >= S.rankCost) return 0;
     var k = kp(st.lv);
@@ -967,6 +954,12 @@
   // и оставляем лучшие. Набор уровней однозначно задаёт потраченное, так
   // что одинаковые наборы схлопываем, оставляя тот, что пришёл раньше.
   var MAX_DEPTH = 500, MAX_WIDTH = 400;
+  // Перебор перестановок стоит куб длины плана. Дальше 12 позиций назад
+  // полезных перемещений не встречалось, а цена растёт быстро.
+  var BACK = 12;
+  // Длинный план перебором не перетряхнуть: 225 покупок — почти минута.
+  // Для него работает hoist, он укладывается в миллисекунды.
+  var POLISH_MAX = 40;
   function clampDepth(d){ d = Math.round(d || 0); return Math.max(1, Math.min(MAX_DEPTH, d || 1)); }
   function clampWidth(w){ w = Math.round(w || 0); return w > 0 ? Math.max(4, Math.min(MAX_WIDTH, w)) : 80; }
 
@@ -1056,7 +1049,7 @@
     while (improved && passes < rounds){
       improved = false; passes++;
       for (var i = floor + 1; i < cur.path.length && !improved; i++){
-        for (var j = i - 1; j >= floor; j--){
+        for (var j = i - 1; j >= floor && i - j <= BACK; j--){
           if (cur.path[j].track === cur.path[i].track) break;
           var p = cur.path.slice();
           p.splice(j, 0, p.splice(i, 1)[0]);
@@ -1079,7 +1072,7 @@
     while (moved && passes < 4){
       moved = false; passes++;
       for (var i = floor + 1; i < cur.path.length && !moved; i++){
-        for (var j = i - 1; j >= floor; j--){
+        for (var j = i - 1; j >= floor && i - j <= BACK; j--){
           if (cur.path[j].track === cur.path[i].track) break;
           var p = cur.path.slice();
           p.splice(j, 0, p.splice(i, 1)[0]);
@@ -1094,32 +1087,141 @@
     return cur;
   }
 
+  // Лучевой поиск оценивает состояния по «сколько до ранга, если больше
+  // ничего не покупать», и поэтому охотно ставит первой дорогую покупку
+  // за β: она сильно двигает оценку. В плане это выглядит как «ждём три
+  // часа на усилитель β», хотя всё это время α копится и генератор можно
+  // было качать с первой минуты.
+  // Перебор перестановок это исправляет, но стоит кубическое время: на
+  // плане из двух сотен покупок — почти минута. Тот же результат даёт
+  // один проход: идём по плану и в каждый момент берём всё, что уже по
+  // карману, а время двигаем только когда купить нечего. Набор покупок
+  // и порядок внутри ветки не меняются — переставляется лишь очередь
+  // между ветками, поэтому хуже стать не может: берём, только если
+  // вышло быстрее.
+  // keepFirst держит первый ход на месте: ветка обещает «если взять это
+  // прямо сейчас», и перестановка не должна подменять обещание — иначе
+  // карточка совета называет одну покупку, а считает другую.
+  function hoist(best, keepFirst){
+    if (!best || best.path.length < 2) return best;
+    var head = keepFirst ? best.path.slice(0, 1) : [];
+    var tail = keepFirst ? best.path.slice(1) : best.path;
+    var q = {}, n = 0;
+    TRACKS.forEach(function(tk){ q[tk] = []; });
+    tail.forEach(function(st){ q[st.track].push(st.level); n++; });
+    var st = origin(), seq = [], guard = n + 4;
+    for (var h = 0; h < head.length; h++){
+      var hc = costOf(head[h].track, head[h].level);
+      if (hc.v == null) return best;
+      var hs = buyStep(st, head[h].track, hc.v);
+      if (!hs) return best;
+      st = { A: hs.A, B: hs.B, lv: withLevel(st.lv, head[h].track, head[h].level), t: hs.t };
+      seq.push({ track: head[h].track, level: head[h].level, cost: hc.v,
+                 est: hc.est, at: hs.t, wait: hs.wait });
+    }
+    while (n > 0 && guard-- > 0){
+      var pickTk = null, pickC = null, pickRel = Infinity;
+      // Сначала всё, что уже по карману, и дешёвое относительно запаса —
+      // чтобы одной покупкой не отнять деньги у нескольких других.
+      TRACKS.forEach(function(tk){
+        if (!q[tk].length) return;
+        var c = costOf(tk, q[tk][0]);
+        if (c.v == null) return;
+        var money = cur(tk) === "a" ? st.A : st.B;
+        if (!(money >= c.v)) return;
+        var rel = money > 0 ? c.v / money : 0;
+        if (rel < pickRel){ pickRel = rel; pickTk = tk; pickC = c; }
+      });
+      if (pickTk == null){
+        // Купить нечего — двигаем время до ближайшей покупки плана.
+        var bw = Infinity;
+        TRACKS.forEach(function(tk){
+          if (!q[tk].length) return;
+          var c = costOf(tk, q[tk][0]);
+          if (c.v == null) return;
+          var s = buyStep(st, tk, c.v);
+          if (!s || !isFinite(s.wait) || !(s.wait < bw)) return;
+          bw = s.wait; pickTk = tk; pickC = c;
+        });
+        if (pickTk == null) return best;
+      }
+      var L = q[pickTk].shift();
+      var s2 = buyStep(st, pickTk, pickC.v);
+      if (!s2) return best;
+      st = { A: s2.A, B: s2.B, lv: withLevel(st.lv, pickTk, L), t: s2.t };
+      seq.push({ track: pickTk, level: L, cost: pickC.v, est: pickC.est,
+                 at: s2.t, wait: s2.wait });
+      n--;
+    }
+    if (n > 0) return best;
+    var r = { time: st.t + tailTime(st), path: seq, end: st };
+    return r.time < best.time - 1e-9 ? r : best;
+  }
+
+  function refine(r, withPolish){
+    if (!r) return r;
+    r = hoist(r, true);
+    if (withPolish && r.path.length <= POLISH_MAX) r = pullForward(polish(r, 12, true), true);
+    return r;
+  }
+
   function analyzeOnce(depth, width, withPolish){
     var st0 = origin();
     var out = { plain: { time: tailTime(st0), path: [], end: st0 }, depth: depth, width: width };
     out.best = out.plain;
     TRACKS.forEach(function(track){
-      var r = rooted(track, depth, width);
-      if (r && withPolish) r = pullForward(polish(r, 12, true), true);
+      var r = refine(rooted(track, depth, width), withPolish);
       out[track] = r;
       if (r && r.time < out.best.time - 1e-9) out.best = r;
     });
     return out;
   }
-  // Если план упёрся в потолок глубины, значит его обрезали на полуслове.
-  // Поднимаем потолок и считаем заново, пока упираться не перестанет.
-  function analyze(opts){
-    opts = opts || {};
-    var width = clampWidth(opts.width != null ? opts.width : S.beam);
-    var depth = clampDepth(opts.depth != null ? opts.depth : S.depth);
-    var withPolish = opts.polish !== false;
-    var a = analyzeOnce(depth, width, withPolish);
-    while (a.best.path.length >= depth && depth < MAX_DEPTH){
-      depth = Math.min(MAX_DEPTH, depth * 2);
-      a = analyzeOnce(depth, width, withPolish);
-    }
-    a.hitCap = a.best.path.length >= depth;
+  // Полный план до ранга себя не оправдал. На свежем ранге до него две
+  // с лишним сотни покупок: поиск упирался в потолок, считался полминуты
+  // и всё равно пересчитывался после каждой покупки, так что совет
+  // постоянно менялся. Вопрос, который нужен на самом деле, короче:
+  // «что взять прямо сейчас — за α и за β». На него отвечает горизонт в
+  // десять покупок с закреплённым первым ходом: этого хватает, чтобы
+  // учесть «дешёвая покупка хороша тем, что открывает следующие», и
+  // считается это за десятки миллисекунд при любом состоянии.
+  var HORIZON = 10;
+  // Шире ответ не меняется: проверено от 20 до 400 на двух состояниях.
+  var ADVICE_WIDTH = 60;
+  var A_TRACKS = TRACKS.filter(function(tk){ return cur(tk) === "a"; });
+  var B_TRACKS = TRACKS.filter(function(tk){ return cur(tk) !== "a"; });
+
+  // Лучшее в группе: по времени до ранга, а при равенстве — что дешевле.
+  function bestOf(a, list){
+    var b = null;
+    list.forEach(function(tk){
+      if (!a[tk]) return;
+      if (!b){ b = tk; return; }
+      var d = a[tk].time - a[b].time;
+      if (d < -1e-9) b = tk;
+      else if (d <= 1e-9 && a[tk].path[0].cost < a[b].path[0].cost) b = tk;
+    });
+    return b;
+  }
+  function advise(){
+    var a = analyzeOnce(HORIZON, ADVICE_WIDTH, true);
+    a.aPick = bestOf(a, A_TRACKS);
+    a.bPick = bestOf(a, B_TRACKS);
     return a;
+  }
+  // Время ветки = «купить эти покупки и дальше только копить». Если
+  // горизонт израсходован целиком, покупки на этом не кончатся, и
+  // настоящий ранг придёт раньше показанного. Значит число — верхняя
+  // граница, и так его и подписываем, а не выдаём за точный срок.
+  function capped(r){ return !!r && r.path.length >= HORIZON && r.time > 0; }
+  function etaText(r){ return (capped(r) ? "≤ " : "") + fmtTime(r.time); }
+  // Выигрыш в секундах осмысленен, только когда и сам срок настоящий.
+  // Пока горизонт обрезан, оба срока — «никогда», и разница между ними
+  // в днях ничего не говорит. Доля же читается при любом масштабе.
+  function gainPct(plainT, time){
+    if (!isFinite(plainT) || plainT <= 0) return null;
+    var p = (plainT - time) / plainT * 100;
+    if (!isFinite(p) || p <= 0) return null;
+    return (p >= 99.95 ? p.toFixed(3) : p >= 10 ? p.toFixed(1) : p.toFixed(2)) + "%";
   }
 
   // Момент, когда накопленная α с покупкой обгонит вариант без неё.
@@ -1144,114 +1246,6 @@
       if (buy(mid) >= base(mid)) hi = mid; else lo = mid;
     }
     return hi;
-  }
-
-  /* ============ план: считаем редко, показываем всегда ============ */
-  // Пересчёт на каждую покупку заставляет план «передумывать»: луч
-  // не находит один и тот же оптимум из разных точек. Поэтому план
-  // считается один раз и дальше только пересчитывает время оставшихся
-  // шагов — цены и скорость к тому моменту уже другие.
-  var PLAN = null;   // { sig, raw, bestTrack, quick }
-  var REF = null;    // фоновое уточнение широким лучом
-  var planGen = 0;   // счётчик ручных пересчётов
-
-  function planSig(){
-    return [planGen, Math.round(S.rank), S.rankCost, Math.round(S.stupen)].join("|");
-  }
-  function levelKey(){ return TRACKS.map(function(tk){ return S[tk].level; }).join(","); }
-  // Уже купленные шаги из плана выпадают, остальные проигрываются заново.
-  function restOf(res){
-    return res.path.filter(function(st){ return st.level > S[st.track].level; });
-  }
-  function reuse(){
-    if (!PLAN || PLAN.sig !== planSig()) return null;
-    var st0 = origin();
-    var out = { plain: { time: tailTime(st0), path: [], end: st0 }, quick: PLAN.quick, reused: true };
-    var ok = true;
-    TRACKS.forEach(function(tk){
-      if (!ok) return;
-      if (!PLAN.raw[tk]){ out[tk] = null; return; }
-      var r = replay(restOf(PLAN.raw[tk]));
-      if (!r){ ok = false; return; }
-      out[tk] = r;
-    });
-    if (!ok) return null;
-    var b = PLAN.bestTrack ? out[PLAN.bestTrack] : out.plain;
-    if (!b) return null;
-    if (PLAN.bestTrack && !b.path.length) return null;   // план пройден до конца
-    out.best = b;
-    return out;
-  }
-  function bestTrackOf(a){
-    var bt = null;
-    TRACKS.forEach(function(tk){ if (a[tk] && a[tk] === a.best) bt = tk; });
-    return bt;
-  }
-  var QUICK_WIDTH = 20;   // ширина черновика: он виден сразу, пока считается точный
-  function recompute(){
-    var sig = planSig();
-    var q = analyze({ width: QUICK_WIDTH, polish: false });
-    PLAN = { sig: sig, raw: q, bestTrack: bestTrackOf(q), quick: true };
-    startRefine(sig);
-    return q;
-  }
-  // setTimeout(…, 0) на вложенных вызовах зажимается до 4 мс, и на
-  // долгом поиске это набегает в заметную долю. MessageChannel будит
-  // следующий кусок сразу.
-  var tick = (function(){
-    if (typeof MessageChannel !== "function") return function(fn){ return setTimeout(fn, 0); };
-    var ch = new MessageChannel(), queue = [];
-    ch.port1.onmessage = function(){ var fn = queue.shift(); if (fn) fn(); };
-    return function(fn){ queue.push(fn); ch.port2.postMessage(0); return null; };
-  })();
-  function stopRefine(){
-    if (REF) REF.dead = true;
-    REF = null;
-  }
-  // Широкий луч находит заметно лучший план, но считается секундами.
-  // Гоняем его кусками по 16 мс: страница остаётся живой, а план
-  // через пару секунд сам заменяется на лучший.
-  function startRefine(sig){
-    stopRefine();
-    var depth = clampDepth(S.depth), width = clampWidth(S.beam);
-    if (width <= QUICK_WIDTH) return;
-    var queue = TRACKS.slice(), res = {}, J = null, cur = null, left = 0;
-    var job = REF = { sig: sig, lv: levelKey(), dead: false };
-    function nextRoot(){
-      while (queue.length){
-        cur = queue.shift();
-        J = rootStart(cur, width);
-        left = depth - 1;
-        if (J) return true;
-        res[cur] = null;
-      }
-      return false;
-    }
-    function finish(){
-      REF = null;
-      var best = null, bt = null;
-      TRACKS.forEach(function(tk){
-        if (res[tk] && (!best || res[tk].time < best.time - 1e-9)){ best = res[tk]; bt = tk; }
-      });
-      var st0 = origin();
-      res.plain = { time: tailTime(st0), path: [], end: st0 };
-      if (best && best.time < res.plain.time - 1e-9){ res.best = best; }
-      else { res.best = res.plain; bt = null; }
-      PLAN = { sig: sig, raw: res, bestTrack: bt, quick: false };
-      render();
-    }
-    function slice(){
-      if (REF !== job || job.dead) return;   // состояние сменилось — работа не нужна
-      var t0 = Date.now();
-      while (Date.now() - t0 < 24){
-        if (left > 0 && beamStep(J)){ left--; continue; }
-        res[cur] = pullForward(polish(J.best, 12, true), true) || J.best;
-        if (!nextRoot()){ finish(); return; }
-      }
-      tick(slice);
-    }
-    if (!nextRoot()){ REF = null; return; }
-    tick(slice);
   }
 
   /* ============ отрисовка ============ */
@@ -1283,14 +1277,9 @@
     var togo = Math.max(0, Math.round(S.stupenRank) - Math.round(S.rank));
     el("check-togo").textContent = togo > 0 ? nRanks(togo) : t("x.ready");
 
-    // Купили что-то, пока шло уточнение, — начинаем его заново,
-    // иначе половина веток посчитана из старого состояния.
-    if (REF && REF.lv !== levelKey()) startRefine(REF.sig);
-    var a = reuse() || recompute();
-    el("plan-state").textContent = REF ? t("plan.refining") : (a.quick ? t("plan.rough") : "");
-    el("ro-eta").textContent = fmtTime(a.best.time);
-    renderVerdict(a, rA);
-    renderPlan(a.best);
+    var a = advise();
+    el("ro-eta").textContent = etaText(a.best);
+    renderAdvice(a, rA);
     renderCompare(a);
 
     TRACKS.forEach(function(track){
@@ -1302,124 +1291,104 @@
     });
   }
 
-  function renderVerdict(a, rA){
-    var mark = el("v-mark"), title = el("v-title"), why = el("v-why"), best = a.best;
+  // Два совета вместо плана: лучшее за α и лучшее за β. Ветки не делят
+  // одни деньги, поэтому «что брать за α» и «что брать за β» — это два
+  // независимых вопроса, и отвечать на них надо отдельно. Время каждой
+  // строки — «взять это сейчас, дальше десять покупок как выйдет лучше».
+  function renderAdvice(a, rA){
+    card("a", el("verdict-a"), "va-", a, a.aPick, rA);
+    card("b", el("verdict-b"), "vb-", a, a.bPick, rA);
+  }
+  // Есть ли в ветке соперник с тем же временем — тогда выбор не принципиален.
+  function tied(a, pick){
+    var list = cur(pick) === "a" ? A_TRACKS : B_TRACKS, same = false;
+    list.forEach(function(tk){
+      if (tk === pick || !a[tk]) return;
+      if (Math.abs(a[tk].time - a[pick].time) < 1e-9) same = true;
+    });
+    return same;
+  }
+  function card(side, box, pfx, a, pick, rA){
+    var mark = el(pfx + "mark"), title = el(pfx + "title"), why = el(pfx + "why");
+    var accent = side === "a" ? "#2b6d7d" : "#3f9c72";
     mark.className = "vmark";
-    el("v-naive").textContent = fmtTime(a.plain.time);
-    el("v-best").textContent = fmtTime(best.time);
-    var saved = a.plain.time - best.time;
-    el("v-save").textContent = (isFinite(saved) && saved > 0.05) ? "−" + fmtTime(saved) : "0" + t("u.s");
+    el(pfx + "cost").textContent = "—";
+    el(pfx + "pay").textContent = "—";
+    el(pfx + "gain").textContent = "—";
+    box.style.borderColor = "";
 
     if (S.alpha >= S.rankCost){
       mark.classList.add("now"); mark.textContent = "↑";
       title.textContent = t("v.now.t");
       why.innerHTML = t("v.now.w", { a: fmt(S.alpha), r: fmt(S.rankCost) });
-      el("verdict").style.borderColor = "#2b6d7d";
+      box.style.borderColor = "#2b6d7d";
       return;
     }
     if (!(rA > 0)){
       mark.classList.add("stop"); mark.textContent = "!";
       title.textContent = t("v.zero.t");
       why.textContent = t("v.zero.w");
-      el("verdict").style.borderColor = "#a8574a";
+      box.style.borderColor = "#a8574a";
       return;
     }
-    if (!best.path.length){
+    if (!pick){
+      mark.textContent = "?";
+      title.textContent = t("v.none.t");
+      why.textContent = t("v.none.w");
+      return;
+    }
+    var r = a[pick], f = r.path[0], sym = cur(pick) === "a" ? "α" : "β";
+    var gain = a.plain.time - r.time;
+    el(pfx + "cost").textContent = fmt(f.cost) + " " + sym + (f.est ? "*" : "");
+    var be = breakEven(pick);
+    el(pfx + "pay").textContent = be == null ? "—" : fmtTime(be);
+
+    // Покупка, которая не приближает ранг, — не совет, а вред.
+    if (!(gain > 0.05)){
       mark.classList.add("save"); mark.textContent = "∅";
-      title.textContent = t("v.save.t");
-      why.innerHTML = t("v.save.w", { a: fmt(S.rankCost - S.alpha) });
-      el("verdict").style.borderColor = "#a97c27";
+      title.textContent = t("v.wait.t");
+      why.innerHTML = t("v.wait.w", { t: fmtTime(a.plain.time) });
+      el(pfx + "gain").textContent = "0" + t("u.s");
+      box.style.borderColor = "#a97c27";
       return;
     }
-    var f = best.path[0], sym = cur(f.track) === "a" ? "α" : "β";
     mark.classList.add("buy"); mark.textContent = "✓";
-    title.textContent = t("v.buy.t", { n: fullName(f.track), l: f.level });
+    title.textContent = t("v.buy.t", { n: fullName(pick), l: f.level });
+    // Абсолютное «до ранга» на горизонте десяти покупок врать не будет
+    // только в самом конце ранга: дальше покупок нет. В начале же оно
+    // чудовищно велико, потому что считает «купил десять и больше
+    // никогда ничего». Поэтому в карточке говорим относительную вещь —
+    // насколько эта покупка опережает «просто копить». Она верна всегда.
+    var pct = capped(r) ? gainPct(a.plain.time, r.time) : null;
     why.innerHTML =
-      (f.wait > 0.5 ? t("v.wait", { t: fmtTime(f.wait) }) : t("v.enough")) +
-      t("v.price", { c: fmt(f.cost), s: sym }) + (f.est ? t("v.est") : "") +
-      t("v.saves", { t: fmtTime(saved) }) +
-      (best.path.length > 1 ? t("v.more", { n: nBuys(best.path.length - 1) }) : "") + ".";
-    el("verdict").style.borderColor = cur(f.track) === "a" ? "#2b6d7d" : "#3f9c72";
+      (f.wait > 0.5 ? t("v.hold", { t: fmtTime(f.wait) }) : t("v.ready")) +
+      (f.est ? t("v.est") : "") +
+      (pct ? t("v.aheadp", { p: pct }) : t("v.ahead", { t: fmtTime(gain) })) +
+      (tied(a, pick) ? t("v.tie") : "");
+    el(pfx + "gain").textContent = pct ? "−" + pct : "−" + fmtTime(gain);
+    box.style.borderColor = accent;
   }
 
-  // Подряд идущие покупки одной ветки — это всегда соседние уровни,
-  // поэтому показываем их одной строкой: диапазон, суммарная цена и
-  // время, когда вся пачка будет куплена.
-  function groupPlan(path){
-    var out = [];
-    for (var i = 0; i < path.length; i++){
-      var g = { track: path[i].track, from: path[i].level, to: path[i].level,
-                cost: path[i].cost, est: path[i].est, wait: path[i].wait,
-                at: path[i].at, n: 1 };
-      while (i + 1 < path.length && path[i + 1].track === g.track){
-        i++;
-        g.to = path[i].level;
-        g.cost += path[i].cost;
-        g.est = g.est || path[i].est;
-        g.at = path[i].at;
-        g.n++;
-      }
-      out.push(g);
-    }
-    return out;
-  }
-
-  function renderPlan(best){
-    var ol = el("plan"); ol.innerHTML = "";
-    var groups = best.path.length ? groupPlan(best.path).length : 0;
-    el("plan-tag").textContent = best.path.length
-      ? nBuys(best.path.length) + (groups < best.path.length ? " · " + nSteps(groups) : "")
-      : t("plan.nobuys");
-    if (!best.path.length){
-      ol.innerHTML = '<li><span class="tcode">' + clock(0) + '</span><span class="step">' + t("plan.none", { a: fmt(S.rankCost) }) + '</span><span class="price"></span></li>';
-    }
-    groupPlan(best.path).forEach(function(g){
-      var isB = cur(g.track) === "b";
-      var lvl = g.n > 1 ? t("plan.range", { a: g.from, b: g.to }) : t("col.lv") + " " + g.to;
-      var li = document.createElement("li");
-      li.innerHTML =
-        '<span class="tcode">' + clock(g.at) + '</span>' +
-        '<span class="step"><b>' + fullName(g.track) + '</b> → <span class="lvl' + (isB ? " b" : "") + '">' + lvl + '</span>' +
-        (g.wait > 0.5 ? ' <span style="color:var(--muted);font-size:12.5px">' + t("plan.wait", { t: fmtTime(g.wait) }) + '</span>'
-                      : ' <span style="color:var(--beta);font-size:12.5px">' + t("plan.now") + '</span>') +
-        '</span>' +
-        '<span class="price' + (g.est ? " est" : "") + '">' + fmt(g.cost) + ' ' + (isB ? "β" : "α") + (g.est ? "*" : "") + '</span>';
-      ol.appendChild(li);
-    });
-    var fin = document.createElement("li");
-    fin.innerHTML = '<span class="tcode">' + clock(best.time) + '</span>' +
-      '<span class="step"><b style="color:var(--alpha)">' + t("plan.rank", { r: S.rank + 1 }) + '</b> ' + t("plan.onhand", { a: fmt(S.rankCost) }) +
-      ' <span style="color:var(--muted);font-size:12.5px">' + t("plan.rate", { v: fmt(rateAlpha(best.end.lv, best.end.B)) }) + '</span></span>' +
-      '<span class="price"></span>';
-    ol.appendChild(fin);
-    el("plan-total").textContent = fmtTime(best.time);
-  }
-
-  // Строка сравнения: берём остаток плана и ставим эту покупку первой.
-  // Раньше тут показывалось время замороженной ветки, у которой первый
-  // ход мог быть уже куплен, — и три разные строки показывали одно и
-  // то же число. Теперь каждая строка считает ровно то, что обещает.
-  function firstMoveRow(track, rest){
-    var L = S[track].level + 1;
-    if (costOf(track, L).v == null) return null;
-    var seq = [{ track: track, level: L }];
-    rest.forEach(function(st){ if (!(st.track === track && st.level === L)) seq.push(st); });
-    return replay(seq);
-  }
+  // Каждая строка — это ровно одна из ветвей, которые уже посчитал
+  // advise(): «эта покупка первой, дальше десять шагов как лучше».
+  // Поэтому таблица и карточки советов не могут разойтись в числах.
   function renderCompare(a){
     var tb = document.querySelector("#compare tbody"); tb.innerHTML = "";
-    var rest = a.best.path;
     var rows = [{ label: t("cmp.save"), res: a.plain, cost: null, be: null, sym: "" }];
     TRACKS.forEach(function(track){
       var L = S[track].level + 1;
       rows.push({
         label: fullName(track) + " " + t("cmp.to", { l: L }),
-        res: firstMoveRow(track, rest),
+        res: a[track],
         cost: costOf(track, L),
         be: breakEven(track),
         sym: cur(track) === "a" ? " α" : " β"
       });
     });
+    // Если хоть одна ветка упёрлась в горизонт, абсолютные сроки по всей
+    // таблице — это «купил десять и больше никогда». Тогда и разницу
+    // показываем долей, иначе колонка Δ заполняется днями, которых нет.
+    var pctMode = rows.some(function(r){ return capped(r.res); });
     var bestTime = rows.reduce(function(m, r){ return (r.res && r.res.time < m) ? r.res.time : m; }, Infinity);
     rows.forEach(function(r){
       // Имена t и tr заняты переводом — здесь используем свои.
@@ -1432,8 +1401,12 @@
             ? '<span class="' + (r.cost.est ? "price est" : "") + '">' + fmt(r.cost.v) + r.sym + (r.cost.est ? "*" : "") + "</span>"
             : "—") + "</td>" +
         '<td class="num">' + (r.be == null ? "—" : fmtTime(r.be)) + "</td>" +
-        '<td class="num">' + fmtTime(secs) + "</td>" +
-        '<td class="num"><span class="delta ' + (d < 1e-9 ? "zero" : "neg") + '">' + (d < 1e-9 ? t("cmp.best") : "+" + fmtTime(d)) + "</span></td>";
+        '<td class="num">' + (r.res ? etaText(r.res) : fmtTime(secs)) + "</td>" +
+        '<td class="num"><span class="delta ' + (d < 1e-9 ? "zero" : "neg") + '">' +
+          (d < 1e-9 ? t("cmp.best")
+                    : "+" + (pctMode && bestTime > 0 && isFinite(d)
+                             ? (d / bestTime * 100).toFixed(2) + "%"
+                             : fmtTime(d))) + "</span></td>";
       tb.appendChild(row);
     });
   }
@@ -1637,8 +1610,6 @@
     bindField("m-base",     function(){ return S.basePerRank; }, function(v){ S.basePerRank = v; });
     bindField("m-rank5k",   function(){ return S.rank5k; },    function(v){ S.rank5k = v; });
     bindField("m-rank12k",  function(){ return S.rank12k; },   function(v){ S.rank12k = v; });
-    bindField("m-depth",    function(){ return S.depth; },     function(v){ S.depth = clampDepth(v); planGen++; });
-    bindField("m-beam",     function(){ return S.beam; },      function(v){ S.beam = clampWidth(v); planGen++; });
 
     TRACKS.forEach(function(track){
       bindField("f-" + track,         function(){ return S[track].level; }, function(v){ S[track].level = Math.max(startOf(track), Math.round(v)); });
@@ -1732,9 +1703,6 @@
     });
     // Ступень покупается за ранги α и сносит вообще всё: ранг падает
     // на старт, обе частицы обнуляются, все шесть веток на старт.
-    el("plan-redo").addEventListener("click", function(){
-      planGen++; PLAN = null; stopRefine(); render();
-    });
     el("lang-ru").addEventListener("click", function(){ setLang("ru"); });
     el("lang-en").addEventListener("click", function(){ setLang("en"); });
 
