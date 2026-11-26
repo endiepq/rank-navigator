@@ -523,7 +523,7 @@
       "v.skip.b":"В плане ближайших покупок нет ни одной за β — ранг приходит через <em>{t}</em> и без них. β тратятся отдельно от α, так что дело не в деньгах: покупка просто не ускоряет ранг.",
       "v.later":"Это {n}-я покупка плана, через <em>{t}</em> — сначала идёт то, что в карточке рядом.",
       "v.nowword":"сразу",
-      "v.buy.t":"Бери {n} → ур. {l}",
+      "v.buy.t":"Бери {n} → ур. {l}", "v.buy.run":"Бери {n} → ур. {l}…{m}, {k} ур. подряд",
       "v.ready":"Хватает уже сейчас. ", "v.hold":"Накопится через <em>{t}</em>. ",
       "v.est":"Цена — прикидка по шагу роста. ",
       "v.tie":" Остальное в этой ветке — столько же или хуже.",
@@ -614,7 +614,7 @@
       "v.skip.b":"The plan ahead holds no β purchase — the rank arrives in <em>{t}</em> without one. β is spent separately from α, so this is not about affording it: the purchase simply does not bring the rank closer.",
       "v.later":"This is purchase {n} of the plan, in <em>{t}</em> — the card next to this one comes first.",
       "v.nowword":"right away",
-      "v.buy.t":"Buy {n} → Lv {l}",
+      "v.buy.t":"Buy {n} → Lv {l}", "v.buy.run":"Buy {n} → Lv {l}…{m}, {k} levels in a row",
       "v.ready":"You can afford it already. ", "v.hold":"It accumulates in <em>{t}</em>. ",
       "v.est":"The cost is extrapolated from the growth step. ",
       "v.tie":" Everything else in this branch is the same or worse.",
@@ -1177,7 +1177,9 @@
         var a2 = a0 * k;
         if (a2 > keep) return;
         S.rankCost = a2;
-        var dt = analyzeOnce(HORIZON, ADVICE_WIDTH, true).best.time;
+        // Прикидке престижа нужен порядок величины, а не лучший план:
+        // гонять три полных поиска по две секунды — непозволительно.
+        var dt = analyzeOnce(10, 60, true).best.time;
         S.rankCost = keep;
         if (!isFinite(dt)) return;
         var m2 = prestSpeed(base + c * Math.pow(a2, PREST_P));
@@ -1625,7 +1627,10 @@
         // Один уровень до порога — это обычная строка ветки, повторять её
         // пакетом незачем. Пакет длиннее горизонта смысла тоже не имеет:
         // сравнивать его будет не с чем.
-        if (th.need < 2 || th.need > HORIZON) return;
+        // Пакет длиннее двух десятков уровней — уже не «взять разом», а
+        // отдельный этап игры: сотня уровней до ×10 стоит больше
+        // самого ранга, и строка про неё только засоряет таблицу.
+        if (th.need < 2 || th.need > Math.min(HORIZON, 24)) return;
         var cost = packCost(track, th.upto);
         if (cost == null) return;
         var r = refine(runPlan(track, th.upto, depth, width), withPolish, th.need);
@@ -1645,8 +1650,49 @@
   // учесть «дешёвая покупка хороша тем, что открывает следующие», и
   // считается это за десятки миллисекунд при любом состоянии.
   var HORIZON = 10;
+  // Сколько покупок лежит под рукой прямо сейчас, если не копить ни
+  // секунды. Берём каждый раз самую дешёвую — так их набирается
+  // больше всего, а нам нужна именно верхняя оценка «сколько всего
+  // валяется бесплатного».
+  function reachNow(){
+    var st = origin(), lv = {}, n = 0, A = st.A, B = st.B;
+    TRACKS.forEach(function(tk){ lv[tk] = st.lv[tk]; });
+    for (var guard = 0; guard < MAX_DEPTH; guard++){
+      var pick = null, pc = 0;
+      TRACKS.forEach(function(tk){
+        var c = costOf(tk, lv[tk] + 1);
+        if (c.v == null) return;
+        if (!((cur(tk) === "a" ? A : B) >= c.v)) return;
+        if (pick == null || c.v < pc){ pick = tk; pc = c.v; }
+      });
+      if (pick == null) break;
+      if (cur(pick) === "a") A -= pc; else B -= pc;
+      lv[pick]++; n++;
+    }
+    return n;
+  }
   // Шире ответ не меняется: проверено от 20 до 400 на двух состояниях.
   var ADVICE_WIDTH = 60;
+  // Десять шагов хватало, пока покупок под рукой было столько же. К
+  // двадцать первому рангу генератор стоит на семь порядков меньше
+  // запаса, и таких покупок набирается сотня: горизонт до них просто
+  // не доходил, и совет вырождался в «подожди сорок минут и возьми
+  // усилитель» — при том что сорок генераторов лежат рядом и по
+  // сравнению бесплатны. Разница не косметическая: на том состоянии
+  // горизонт 10 обещал ранг через 10 762 минуты, а горизонт 120 — через
+  // 789, и первым ходом вместо усилителя становился генератор.
+  // Горизонт берём вдвое больше доступного: пока покупаешь, доход
+  // растёт, и доступного становится больше.
+  // Бюджет — глубина × ширина. Замеры на том же состоянии: 100×40 —
+  // 2.8 с, 120×35 — 2.5 с, 160×30 — 2.9 с. Держим три тысячи, это
+  // около двух секунд, с запасом до правила «дольше десяти — менять
+  // тактику».
+  var SEARCH_BUDGET = 3000, HORIZON_MAX = 200;
+  function tuneSearch(){
+    var n = reachNow();
+    HORIZON = Math.max(10, Math.min(HORIZON_MAX, 2 * n + 20));
+    ADVICE_WIDTH = Math.max(12, Math.min(60, Math.round(SEARCH_BUDGET / HORIZON)));
+  }
 
   // Сначала карточки брали лучшую ветку своей стороны и сравнивали её с
   // «не покупать вообще ничего». Это сравнение обманывает: ветка «купить
@@ -1664,6 +1710,7 @@
     return null;
   }
   function advise(){
+    tuneSearch();
     var a = analyzeOnce(HORIZON, ADVICE_WIDTH, true, true);
     a.aStep = firstOf(a.best.path, "a");
     a.bStep = firstOf(a.best.path, "b");
@@ -1819,12 +1866,15 @@
       return;
     }
     var sym = cur(step.track) === "a" ? "α" : "β";
-    el(pfx + "cost").textContent = fmt(step.cost) + " " + sym + (step.est ? "*" : "");
+    var run = runAt(a.best.path, step);
+    el(pfx + "cost").textContent = fmt(run.cost) + " " + sym + (run.est ? "*" : "");
     el(pfx + "pay").textContent = thrText(step.track);
     el(pfx + "gain").textContent = step.at > 0.5 ? fmtTime(step.at) : t("v.nowword");
 
     mark.classList.add("buy"); mark.textContent = "✓";
-    title.textContent = t("v.buy.t", { n: fullName(step.track), l: step.level });
+    title.textContent = run.n > 1
+      ? t("v.buy.run", { n: fullName(step.track), l: step.level, m: run.upto, k: run.n })
+      : t("v.buy.t", { n: fullName(step.track), l: step.level });
     var idx = planIndex(a.best.path, step);
     why.innerHTML =
       (idx > 0
@@ -1832,6 +1882,21 @@
          : (step.wait > 0.5 ? t("v.hold", { t: fmtTime(step.wait) }) : t("v.ready"))) +
       (step.est ? t("v.est") : "");
     box.style.borderColor = accent;
+  }
+  // Сколько уровней этой же ветки план берёт подряд, начиная с этой
+  // покупки. Без этого карточка говорила «возьми генератор 221», а план
+  // на самом деле брал двадцать пять штук подряд за одну двухсотую
+  // запаса — и совет читался куда скромнее, чем был.
+  function runAt(path, step){
+    var i = path.indexOf(step);
+    if (i < 0) return { n: 1, upto: step.level, cost: step.cost, est: step.est };
+    var n = 0, sum = 0, est = false;
+    while (i + n < path.length && path[i + n].track === step.track){
+      sum += path[i + n].cost;
+      est = est || path[i + n].est;
+      n++;
+    }
+    return { n: n, upto: path[i + n - 1].level, cost: sum, est: est };
   }
   // Сколько покупок стоит в плане перед этой.
   function planIndex(path, step){
