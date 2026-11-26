@@ -466,8 +466,8 @@
       "b.prestg.t":"«База γ» из второго окна престижа, β→γ. Он сбрасывает и α, и β. Пока γ закрыта, это число ни на что в расчёте не влияет — поле просто помнит его, чтобы не искать заново, когда γ откроется.",
       "b.presta":"База β после (из игры)",
       "b.presta.t":"«База β после» из окна престижа — переписывай сюда прямо из игры. Вывести её расчётом нельзя: до α порядка 1e20 прибавка строго пропорциональна α, а дальше игра зажимает рост, и на 4.9e24 пропорция промахивается в 113 раз. Число растёт вместе с α, так что обновляй его, когда собираешься решать.",
-      "b.prestyes":"уже выгодно", "b.prestno":"ещё рано",
-      "b.prestneed":"<span id=\"pr-need\">Нажав, ты проходишь подъём заново, но в <b class=\"val\" id=\"pr-m\">—</b> быстрее. Значит престиж окупится, если с начала этого подъёма прошло меньше <b class=\"val\" id=\"pr-needv\">—</b>. Под конец α растёт взрывом, поэтому почти весь подъём — это его хвост, и в начале нажимать почти всегда выгодно.</span><span id=\"pr-last\">Престиж сейчас ничего не ускорит.</span>",
+      "b.waityes":"стоит", "b.waitno":"не стоит",
+      "b.prestneed":"<span id=\"pr-need\">Нажав, ты проходишь подъём заново, но в <b class=\"val\" id=\"pr-m\">—</b> быстрее. Значит престиж окупится, если с начала этого подъёма прошло меньше <b class=\"val\" id=\"pr-needv\">—</b>. Под конец α растёт взрывом, поэтому почти весь подъём — это его хвост, и в начале нажимать почти всегда выгодно.</span><span id=\"pr-last\">Престиж сейчас ничего не ускорит.</span><span id=\"pr-wait2\"> Ждать до <b class=\"val\" id=\"pr-w-m\">—</b> (вдесятеро больше α) — <b class=\"val\" id=\"pr-w-verdict\">—</b>: ожидание займёт <b class=\"val\" id=\"pr-w-dt\">—</b>, а на пересдаче подъёма сбережёт <b class=\"val\" id=\"pr-w-save\">—</b>.</span>",
       "b.prestnote":"Престиж α→β: скорость α вырастет в <b class=\"val\" id=\"pr-speed\">—</b><span id=\"pr-wait\">, а если дотерпеть до требования ранга — в <b class=\"val\" id=\"pr-rankspeed\">—</b></span>.",
       "b.locked":"Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего. Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.",
       "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
@@ -542,8 +542,8 @@
       "b.prestg.t":"The “γ base” from the second prestige window, β→γ. That one resets both α and β. While γ is locked this number changes nothing in the calculation — the field just remembers it, so you need not look it up again once γ opens.",
       "b.presta":"β base after (from the game)",
       "b.presta.t":"The “β base after” from the prestige window — copy it straight from the game. It cannot be derived: up to α around 1e20 the gain is strictly proportional to α, but above that the game damps it, and at 4.9e24 the proportion is off by a factor of 113. The number grows with α, so refresh it when you are about to decide.",
-      "b.prestyes":"already worth it", "b.prestno":"not yet",
-      "b.prestneed":"<span id=\"pr-need\">Pressing it means climbing again, but <b class=\"val\" id=\"pr-m\">—</b> faster. So the prestige repays itself if less than <b class=\"val\" id=\"pr-needv\">—</b> has passed since this climb began. α explodes near the end, so almost the whole climb is its tail — which makes pressing early almost always worth it.</span><span id=\"pr-last\">A prestige would speed up nothing right now.</span>",
+      "b.waityes":"worth it", "b.waitno":"not worth it",
+      "b.prestneed":"<span id=\"pr-need\">Pressing it means climbing again, but <b class=\"val\" id=\"pr-m\">—</b> faster. So the prestige repays itself if less than <b class=\"val\" id=\"pr-needv\">—</b> has passed since this climb began. α explodes near the end, so almost the whole climb is its tail — which makes pressing early almost always worth it.</span><span id=\"pr-last\">A prestige would speed up nothing right now.</span><span id=\"pr-wait2\"> Holding out for <b class=\"val\" id=\"pr-w-m\">—</b> (ten times the α) is <b class=\"val\" id=\"pr-w-verdict\">—</b>: the wait costs <b class=\"val\" id=\"pr-w-dt\">—</b> and saves <b class=\"val\" id=\"pr-w-save\">—</b> on redoing the climb.</span>",
       "b.prestnote":"An α→β prestige raises the α rate <b class=\"val\" id=\"pr-speed\">—</b><span id=\"pr-wait\">, or <b class=\"val\" id=\"pr-rankspeed\">—</b> if you hold out until the rank requirement</span>.",
       "b.locked":"Tier 0 — the β Generator is not unlocked yet. β does not accumulate and gives no α bonus, so there is nothing to buy on this side. Tier 1 grants the first β Generator level for free, and only then does β start flowing.",
       "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
@@ -1020,6 +1020,29 @@
   // Это неверно: нажатый в начале подъёма, он стоит только тех минут,
   // что ты успел потратить, а α под конец растёт взрывом, так что почти
   // весь подъём — это его хвост.
+  // Жать сейчас или подождать. Ждать до большего ускорения стоит, если
+  // потраченное на ожидание меньше, чем оно сэкономит на пересдаче
+  // подъёма. Время, уже потраченное в этом подъёме, в разнице
+  // сокращается, поэтому знать его не нужно — достаточно времени до
+  // ранга и времени до следующей отметки по α.
+  // Считаем на вдесятеро большей α: престиж растёт как α^0.207, то есть
+  // десятикратный рост запаса поднимает прибавку всего в 1.6 раза.
+  function prestWait(rankTime){
+    var a = Math.max(0, S.alpha), after = S.prestAfter, base = prestB();
+    if (!(a > 0) || !(after > base) || !(rankTime > 0)) return null;
+    var c = (after - base) / Math.pow(a, PREST_P);
+    var a2 = a * 10, after2 = base + c * Math.pow(a2, PREST_P);
+    var m1 = prestSpeed(after), m2 = prestSpeed(after2);
+    if (!(m2 > m1)) return null;
+    var keep = S.rankCost;
+    S.rankCost = a2;
+    var dt = analyzeOnce(HORIZON, ADVICE_WIDTH, true).best.time;
+    S.rankCost = keep;
+    if (!isFinite(dt)) return null;
+    // Сберегает ожидание ровно столько, насколько короче станет
+    // пересдача подъёма; стоит оно самого ожидания.
+    return { m2: m2, dt: dt, gain: rankTime * (1 / m1 - 1 / m2) };
+  }
   function prestNeed(){
     var m = prestSpeed();
     if (!(m > 1)) return null;
@@ -1485,6 +1508,14 @@
     if (need != null){
       el("pr-needv").textContent = fmtTime(a.best.time * need.mult);
       el("pr-m").textContent = "×" + fmt(need.m);
+    }
+    var wait = (need == null) ? null : prestWait(a.best.time);
+    el("pr-wait2").hidden = wait == null;
+    if (wait != null){
+      el("pr-w-m").textContent = "×" + fmt(wait.m2);
+      el("pr-w-dt").textContent = fmtTime(wait.dt);
+      el("pr-w-save").textContent = fmtTime(wait.gain);
+      el("pr-w-verdict").textContent = t(wait.gain > wait.dt ? "b.waityes" : "b.waitno");
     }
     renderAdvice(a, rA);
     renderCompare(a);
