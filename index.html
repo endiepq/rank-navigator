@@ -375,7 +375,7 @@
           <div class="grid4" style="margin-top:12px">
             <label><span class="lab" data-i18n="n.relic">Реликвия: база ген. α и β ×</span><input type="text" id="f-relic" inputmode="decimal"></label>
             <label><span class="lab" data-i18n="n.sing">Множитель сингулярности ×</span><input type="text" id="f-singmult" inputmode="decimal"></label>
-            <label data-i18n-title="n.statue.t" title="«Преследующая статуя» делит показатель степени требования ранга: 10^E превращается в 10^(E/d). Вводи делитель так, как он написан в игре, — на шестом уровне 1.02, на седьмом 1.023. Игра округляет его до трёх знаков, а показатель эту ошибку увеличивает, поэтому делитель выверяется сам: впиши настоящее требование ранга в поле «Нужно α на ранг», и число здесь уточнится по нему. Таблица цен хранится без статуи, так что при 1 ничего не меняется."><span class="lab"><span data-i18n="n.statue">Статуя: делит показатель ранга на</span> <b class="val" id="check-statue">—</b></span><input type="text" id="f-statue" inputmode="decimal"></label>
+            <label data-i18n-title="n.statue.t" title="«Преследующая статуя» делит показатель степени требования ранга: 10^E превращается в 10^(E/d). Вводи делитель так, как он написан в игре, — на шестом уровне 1.02, на седьмом 1.023. Игра округляет его до трёх знаков, и показатель эту ошибку увеличивает, так что цены дальних рангов могут разойтись с игрой на пару процентов. Таблица цен хранится без статуи, поэтому при 1 ничего не меняется."><span class="lab"><span data-i18n="n.statue">Статуя: делит показатель ранга на</span> <b class="val" id="check-statue">—</b></span><input type="text" id="f-statue" inputmode="decimal"></label>
             <label data-i18n-title="n.singn.t" title="Достижение «СТО»: базы всех генераторов и множителей частиц умножаются на 1 + Сингулярность / 100. Вводи саму сингулярность, не множитель: при 100 выходит ×2."><span class="lab" data-i18n="n.singn">Сингулярность (шт.)</span><input type="text" id="f-singn" inputmode="decimal"></label>
             <div style="grid-column:span 2;display:flex;align-items:flex-end;padding-bottom:9px">
               <span class="hint" style="margin:0" data-i18n-html="n.relichint"></span>
@@ -531,7 +531,7 @@
       "x.off":"не активен", "x.off12":"не активен (нужен ранг 12)", "x.off2":"не активен (нужна ступень 2)",
       "x.multbase":"база множ. ×{v}", "x.ready":"можно брать",
       "n.statue":"Статуя: делит показатель ранга на",
-      "n.statue.t":"«Преследующая статуя» делит показатель степени требования ранга: 10^E превращается в 10^(E/d). Вводи делитель так, как он написан в игре, — на шестом уровне 1.02, на седьмом 1.023. Игра округляет его до трёх знаков, а показатель эту ошибку увеличивает, поэтому делитель выверяется сам: впиши настоящее требование ранга в поле «Нужно α на ранг», и число здесь уточнится по нему. Таблица цен хранится без статуи, так что при 1 ничего не меняется.",
+      "n.statue.t":"«Преследующая статуя» делит показатель степени требования ранга: 10^E превращается в 10^(E/d). Вводи делитель так, как он написан в игре, — на шестом уровне 1.02, на седьмом 1.023. Игра округляет его до трёх знаков, и показатель эту ошибку увеличивает, так что цены дальних рангов могут разойтись с игрой на пару процентов. Таблица цен хранится без статуи, поэтому при 1 ничего не меняется.",
       "x.statue":"ранг {a} → {b}",
       "n.150":"Узел 150: уровень из 11 →",
       "n.150.t":"Узел 150 умножает базу множителя β. Вводится уровнем из 11, как и 140-й. Растёт прибавкой: 1 + 0.5 × уровень, то есть ×1.5 на первом уровне, ×2 на втором и ×6.5 на одиннадцатом. Сверено с игрой на двух уровнях.",
@@ -620,7 +620,7 @@
       "x.off":"not active", "x.off12":"not active (needs rank 12)", "x.off2":"not active (needs tier 2)",
       "x.multbase":"multiplier base ×{v}", "x.ready":"available now",
       "n.statue":"Statue: divides the rank exponent by",
-      "n.statue.t":"The Stalking Statue divides the exponent of the rank requirement: 10^E becomes 10^(E/d). Enter the divisor as the game writes it — 1.02 at level 6, 1.023 at level 7. The game rounds it to three decimals and the exponent amplifies that error, so the divisor calibrates itself: type the real rank requirement into “α needed for rank” and the number here is refined from it. The rank-cost table is stored without the statue, so 1 changes nothing.",
+      "n.statue.t":"The Stalking Statue divides the exponent of the rank requirement: 10^E becomes 10^(E/d). Enter the divisor as the game writes it — 1.02 at level 6, 1.023 at level 7. The game rounds it to three decimals and the exponent amplifies that, so distant rank costs may differ from the game by a couple of percent. The rank-cost table is stored without the statue, so 1 changes nothing.",
       "x.statue":"rank {a} → {b}",
       "n.150":"Node 150: level out of 11 →",
       "n.150.t":"Node 150 multiplies the β Multiplier base. Entered as a level out of 11, like node 140. It grows by addition: 1 + 0.5 × level, so ×1.5 at level 1, ×2 at level 2 and ×6.5 at level 11. Checked against the game at two levels.",
@@ -786,20 +786,12 @@
   // на 22-м это уже десятикратное удешевление, а на 13-м было бы
   // всего в полтора раза.
   function statueDiv(){ return S.statue > 1 ? S.statue : 1; }
-  // Игра пишет делитель округлённым до трёх знаков, а показатель эту
-  // ошибку увеличивает: 1.02 вместо настоящих 1.0197 уводит цену 22-го
-  // ранга на три процента. Зато настоящее требование ранга человек
-  // видит целиком, и одно такое число задаёт делитель точнее, чем три
-  // знака на экране. Поэтому, когда требование вписано руками, делитель
-  // выводится из него — но только если статуя вообще есть и результат
-  // похож на правду.
-  function calibStatue(){
-    if (!(S.statue > 1)) return;
-    var raw = RANK_COSTS[String(Math.round(S.rank) + 1)];
-    if (!(raw > 1) || !(S.rankCost > 1)) return;
-    var d = (Math.log(raw) / Math.LN10) / (Math.log(S.rankCost) / Math.LN10);
-    if (d > 1 && d < 1.2) S.statue = d;
-  }
+  // Была попытка выводить делитель из вписанной цены ранга: 1.023 на
+  // экране оказывались 1.02314, и замер сходился точно. Убрано по
+  // делу — цена ранга в игре тоже показана округлённой, так что
+  // точность мнимая, а поле переставало показывать то, что написано в
+  // игре, и исправить его руками было нельзя. Пара процентов на дальних
+  // рангах — честная цена за то, что в поле стоит число из игры.
   function applyStatue(v){
     var d = statueDiv();
     if (d <= 1 || !(v > 0)) return v;
@@ -939,6 +931,13 @@
         if (RANK_COSTS[k] != null) delete S.rankCosts[k];
       });
       S.tuned = 14;
+    }
+    // Снятая выверка могла оставить в поле делитель вроде 1.02314.
+    // Округляем до трёх знаков — ровно до того вида, в каком он
+    // написан в игре, чтобы поле снова совпадало с экраном.
+    if (!(S.tuned >= 15)){
+      if (S.statue > 1) S.statue = Math.round(S.statue * 1000) / 1000;
+      S.tuned = 15;
     }
     if (S.n140lvl == null){
       S.n140lvl = (S.node140 != null) ? Math.max(0, Math.min(9, Math.round(S.node140) - 1)) : 3;
@@ -1974,7 +1973,7 @@
   function wire(){
     bindField("f-rank",     function(){ return S.rank; },      function(v){ S.rank = Math.max(1, Math.round(v)); syncRankCost(); refreshFields(); });
     bindField("f-alpha",    function(){ return S.alpha; },     function(v){ S.alpha = Math.max(0, v); });
-    bindField("f-rankcost", function(){ return S.rankCost; },  function(v){ S.rankCost = Math.max(0, v); S.rankCosts[S.rank + 1] = S.rankCost; calibStatue(); });
+    bindField("f-rankcost", function(){ return S.rankCost; },  function(v){ S.rankCost = Math.max(0, v); S.rankCosts[S.rank + 1] = S.rankCost; });
     bindField("f-beta",     function(){ return S.beta; },      function(v){ S.beta = Math.max(0, v); });
     bindCheck("f-n139", 2,  function(){ return S.node139; },   function(v){ S.node139 = v; });
     bindCheck("f-n141", 3,  function(){ return S.node141; },   function(v){ S.node141 = v; });
