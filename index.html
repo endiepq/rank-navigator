@@ -238,7 +238,7 @@
         </div>
         <div class="vstats">
           <div><span data-i18n="adv.cost">Цена</span><b id="va-cost">—</b></div>
-          <div><span data-i18n="adv.pay">Отобьётся</span><b id="va-pay">—</b></div>
+          <div><span data-i18n="adv.pay">До порога</span><b id="va-pay">—</b></div>
           <div><span data-i18n="adv.when">Когда по плану</span><b id="va-gain">—</b></div>
         </div>
       </section>
@@ -254,7 +254,7 @@
         </div>
         <div class="vstats">
           <div><span data-i18n="adv.cost">Цена</span><b id="vb-cost">—</b></div>
-          <div><span data-i18n="adv.pay">Отобьётся</span><b id="vb-pay">—</b></div>
+          <div><span data-i18n="adv.pay">До порога</span><b id="vb-pay">—</b></div>
           <div><span data-i18n="adv.when">Когда по плану</span><b id="vb-gain">—</b></div>
         </div>
       </section>
@@ -267,7 +267,7 @@
               <thead><tr>
                 <th data-i18n="cmp.move">Первый ход</th>
                 <th class="num" data-i18n="cmp.cost">Цена</th>
-                <th class="num" data-i18n="cmp.pay">Отобьётся</th>
+                <th class="num" data-i18n="cmp.pay">До порога</th>
                 <th class="num" data-i18n="cmp.eta">До ранга</th>
                 <th class="num">Δ</th>
               </tr></thead>
@@ -455,9 +455,11 @@
       "h.sub":"Что купить следующим — за α или за β — чтобы ранг пришёл раньше",
       "chip.arate":"α / сек", "chip.brate":"β / сек", "chip.bonus":"бонус β→α", "chip.eta":"до ранга",
       "adv.a":"За альфу", "adv.b":"За бетту",
-      "adv.cost":"Цена", "adv.pay":"Отобьётся", "adv.when":"Когда по плану",
+      "adv.cost":"Цена", "adv.pay":"До порога", "adv.when":"Когда по плану",
       "cmp.h":"Сравнение первого хода", "cmp.move":"Первый ход", "cmp.cost":"Цена",
-      "cmp.pay":"Отобьётся", "cmp.eta":"До ранга",
+      "cmp.pay":"До порога", "cmp.eta":"До ранга",
+      "cmp.pack":"пакетом {k}", "cmp.packn":"{n} ур. разом",
+      "x.thr":"{n} ур. → {k}", "x.thrnow":"этот ур. → {k}",
       "cmp.hint":"Каждая строка — «взять это прямо сейчас, а дальше десять покупок так, как выйдет быстрее всего». Знак <b>≤</b> у времени значит, что десяти покупок до ранга не хватило: настоящий срок меньше показанного, потому что покупки на этом не кончатся. Сравнивать строки между собой при этом можно — мерка у всех одна. «Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую. Эта колонка смотрит на покупку в одиночку, и она вполне может спорить с советом: узлы 142 и 145 дают базе ×1.25 за каждые 10 уровней генератора и ×10 за каждые 100, поэтому бывает, что один уровень брать убыточно, два и три тоже, а четвёртый перешагивает порог и окупает всю пачку разом. План такое видит, поштучная окупаемость — нет.",
       "a.h":"Альфа — сейчас в игре", "a.rank":"Ранг", "a.alpha":"α сейчас", "a.req":"Нужно α на ранг",
       "a.req.t":"Цены рангов 2–17 подставляются сами. Своё значение перебивает таблицу и запоминается.",
@@ -544,9 +546,11 @@
       "h.sub":"What to buy next — with α or β — so the rank arrives sooner",
       "chip.arate":"α / sec", "chip.brate":"β / sec", "chip.bonus":"β→α bonus", "chip.eta":"to rank",
       "adv.a":"With alpha", "adv.b":"With beta",
-      "adv.cost":"Cost", "adv.pay":"Pays off", "adv.when":"When in the plan",
+      "adv.cost":"Cost", "adv.pay":"To threshold", "adv.when":"When in the plan",
       "cmp.h":"First move compared", "cmp.move":"First move", "cmp.cost":"Cost",
-      "cmp.pay":"Pays off", "cmp.eta":"To rank",
+      "cmp.pay":"To threshold", "cmp.eta":"To rank",
+      "cmp.pack":"as a pack {k}", "cmp.packn":"{n} lv. at once",
+      "x.thr":"{n} lv. → {k}", "x.thrnow":"this lv. → {k}",
       "cmp.hint":"Each row means “take this right now, then ten more purchases in whatever order comes out fastest”. A <b>≤</b> before a time means ten purchases were not enough to reach the rank: the real wait is shorter, because the buying does not stop there. Rows are still comparable with each other — they all use the same yardstick. “Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly. That column looks at a purchase on its own, and it may well disagree with the advice: nodes 142 and 145 give the base ×1.25 per 10 Generator levels and ×10 per 100, so one level can be a loss, two and three as well, while the fourth crosses a threshold and repays the whole batch at once. The plan sees that; a per-level payback cannot.",
       "a.h":"Alpha — current in game", "a.rank":"Rank", "a.alpha":"α now", "a.req":"α required for rank",
       "a.req.t":"Rank costs 2–17 are filled in automatically. Your own value overrides the table and is remembered.",
@@ -1402,9 +1406,13 @@
   // уровни там идут подряд.
   // keepFirst оставляет первый ход на месте: строка сравнения обещает
   // «если купить это первым», и перестановка не должна её опровергать.
+  // keepFirst — сколько первых шагов закреплено. Раньше это было «да/нет»,
+  // то есть один шаг; пакету до порога нужно закрепить весь пакет, иначе
+  // перестановки растащат его и строка перестанет значить обещанное.
+  function keepCount(k){ return k === true ? 1 : Math.max(0, Math.round(k || 0)); }
   function polish(best, rounds, keepFirst){
     if (!best || best.path.length < 2) return best;
-    var floor = keepFirst ? 1 : 0;
+    var floor = keepCount(keepFirst);
     var cur = best, improved = true, passes = 0;
     while (improved && passes < rounds){
       improved = false; passes++;
@@ -1427,7 +1435,7 @@
   // вперёд, если итог от этого не ухудшается.
   function pullForward(best, keepFirst){
     if (!best || best.path.length < 2) return best;
-    var floor = keepFirst ? 1 : 0;
+    var floor = keepCount(keepFirst);
     var cur = best, moved = true, passes = 0;
     while (moved && passes < 4){
       moved = false; passes++;
@@ -1464,8 +1472,9 @@
   // карточка совета называет одну покупку, а считает другую.
   function hoist(best, keepFirst){
     if (!best || best.path.length < 2) return best;
-    var head = keepFirst ? best.path.slice(0, 1) : [];
-    var tail = keepFirst ? best.path.slice(1) : best.path;
+    var kept = keepCount(keepFirst);
+    var head = best.path.slice(0, kept);
+    var tail = best.path.slice(kept);
     var q = {}, n = 0;
     TRACKS.forEach(function(tk){ q[tk] = []; });
     tail.forEach(function(st){ q[st.track].push(st.level); n++; });
@@ -1518,14 +1527,90 @@
     return r.time < best.time - 1e-9 ? r : best;
   }
 
-  function refine(r, withPolish){
+  function refine(r, withPolish, keep){
     if (!r) return r;
-    r = hoist(r, true);
-    if (withPolish && r.path.length <= POLISH_MAX) r = pullForward(polish(r, 12, true), true);
+    keep = keepCount(keep == null ? 1 : keep);
+    r = hoist(r, keep);
+    if (withPolish && r.path.length <= POLISH_MAX) r = pullForward(polish(r, 12, keep), keep);
     return r;
   }
 
-  function analyzeOnce(depth, width, withPolish){
+  // Узлы дают скачок не за каждый уровень, а за каждые N: генератору
+  // ×1.25 за десяток и ×10 за сотню, множителю ×2 за семь, усилителю
+  // +0.001 за двадцать. Поэтому уровень, стоящий перед порогом, сам по
+  // себе выглядит слабым, а четыре уровня подряд — сильными: ровно на
+  // этом однажды и споткнулся поиск, где первые три уровня генератора
+  // проигрывали по минуте, а четвёртый выигрывал восемь.
+  // Отдельная покупка такого не покажет, поэтому к обычным веткам
+  // добавляются «пакеты» — ветки, у которых закреплён не один первый
+  // ход, а сразу все уровни до ближайшего порога.
+  var THRESHOLDS = {
+    gen:    [{ per: 100, node: "node145" }, { per: 10, node: "node142" }],
+    bgen:   [{ per: 100, node: "node145" }, { per: 10, node: "node142" }],
+    mult:   [{ per: 7,   node: "node143" }],
+    bmult:  [{ per: 7,   node: "node143" }],
+    boost:  [{ per: 20,  node: "node148" }],
+    bboost: [{ per: 20,  node: "node148" }]
+  };
+  function thFactor(node){
+    if (node === "node142") return S.node142 > 1 ? { mul: S.node142 * rank18k() } : null;
+    if (node === "node145") return S.node145 > 1 ? { mul: S.node145 } : null;
+    if (node === "node143") return S.node143 > 1 ? { mul: S.node143 } : null;
+    if (node === "node148") return S.node148 > 0 ? { add: S.node148 } : null;
+    return null;
+  }
+  // Ближайшие пороги ветки, от самого близкого. Сотый уровень генератора
+  // — это и ×10 за сотню, и ×1.25 за десяток сразу; такие совпадения
+  // сливаются в один порог с перемноженным скачком, иначе в таблице
+  // стояли бы две неотличимые строки про одну и ту же покупку.
+  function thresholdsOf(track){
+    var lv = S[track].level, by = {}, out = [];
+    (THRESHOLDS[track] || []).forEach(function(th){
+      var k = thFactor(th.node);
+      if (!k) return;
+      var upto = (Math.floor(Math.max(0, lv) / th.per) + 1) * th.per;
+      var cur = by[upto];
+      if (!cur){ cur = by[upto] = { upto: upto, need: upto - lv, mul: 1, add: 0 }; out.push(cur); }
+      if (k.mul) cur.mul = cur.mul * k.mul;
+      if (k.add) cur.add = cur.add + k.add;
+    });
+    out.forEach(function(th){
+      th.text = th.mul > 1 ? "\u00d7" + fmt(th.mul) : "+" + fmt(th.add);
+    });
+    out.sort(function(a, b){ return a.need - b.need; });
+    return out;
+  }
+  // Задел поиска, у которого закреплён не один ход, а целый пакет
+  // уровней одной ветки подряд.
+  function rootRun(first, upto, width){
+    var st = origin(), head = [];
+    for (var L = st.lv[first] + 1; L <= upto; L++){
+      var c = costOf(first, L);
+      if (c.v == null) return null;
+      var s = buyStep(st, first, c.v);
+      if (!s) return null;
+      head.push({ track: first, level: L, cost: c.v, est: c.est, at: s.t, wait: s.wait });
+      st = { A: s.A, B: s.B, lv: withLevel(st.lv, first, L), t: s.t };
+    }
+    return head.length ? beamInit(st, head, width) : null;
+  }
+  function runPlan(first, upto, depth, width){
+    var J = rootRun(first, upto, width);
+    if (!J) return null;
+    var left = clampDepth(depth) - (upto - origin().lv[first]);
+    for (var d = left; d > 0 && beamStep(J); d--){}
+    return J.best;
+  }
+  function packCost(track, upto){
+    var sum = 0;
+    for (var L = S[track].level + 1; L <= upto; L++){
+      var c = costOf(track, L);
+      if (c.v == null) return null;
+      sum += c.v;
+    }
+    return sum;
+  }
+  function analyzeOnce(depth, width, withPolish, withPacks){
     var st0 = origin();
     var out = { plain: { time: tailTime(st0), path: [], end: st0 }, depth: depth, width: width };
     out.best = out.plain;
@@ -1533,6 +1618,21 @@
       var r = refine(rooted(track, depth, width), withPolish);
       out[track] = r;
       if (r && r.time < out.best.time - 1e-9) out.best = r;
+    });
+    out.packs = [];
+    if (withPacks) TRACKS.forEach(function(track){
+      thresholdsOf(track).forEach(function(th){
+        // Один уровень до порога — это обычная строка ветки, повторять её
+        // пакетом незачем. Пакет длиннее горизонта смысла тоже не имеет:
+        // сравнивать его будет не с чем.
+        if (th.need < 2 || th.need > HORIZON) return;
+        var cost = packCost(track, th.upto);
+        if (cost == null) return;
+        var r = refine(runPlan(track, th.upto, depth, width), withPolish, th.need);
+        if (!r) return;
+        out.packs.push({ track: track, upto: th.upto, need: th.need, text: th.text, res: r, cost: cost });
+        if (r.time < out.best.time - 1e-9) out.best = r;
+      });
     });
     return out;
   }
@@ -1564,7 +1664,7 @@
     return null;
   }
   function advise(){
-    var a = analyzeOnce(HORIZON, ADVICE_WIDTH, true);
+    var a = analyzeOnce(HORIZON, ADVICE_WIDTH, true, true);
     a.aStep = firstOf(a.best.path, "a");
     a.bStep = firstOf(a.best.path, "b");
     return a;
@@ -1576,29 +1676,21 @@
   function capped(r){ return !!r && r.path.length >= HORIZON && r.time > 0; }
   function etaText(r){ return (capped(r) ? "≤ " : "") + fmtTime(r.time); }
 
-  // Момент, когда накопленная α с покупкой обгонит вариант без неё.
-  function breakEven(track){
-    var st0 = origin(), L = st0.lv[track] + 1, c = costOf(track, L);
-    if (c.v == null) return null;
-    var k0 = kp(st0.lv), rb0 = rateBeta(st0.lv);
-    function base(t){ return st0.A + alphaGained(k0.K, st0.B + 1, rb0, k0.P, t); }
-    var s = buyStep(st0, track, c.v);
-    if (!s) return Infinity;
-    var lv2 = withLevel(st0.lv, track, L), k2 = kp(lv2), rb2 = rateBeta(lv2);
-    function buy(t){
-      if (t <= s.wait) return st0.A + alphaGained(k0.K, st0.B + 1, rb0, k0.P, t);
-      return s.A + alphaGained(k2.K, s.B + 1, rb2, k2.P, t - s.wait);
-    }
-    var hi = Math.max(60, s.wait * 2 + 60), guard = 0;
-    while (hi < 1e12 && buy(hi) < base(hi) && guard++ < 60) hi *= 2;
-    if (!isFinite(buy(hi)) || !isFinite(base(hi)) || buy(hi) < base(hi)) return Infinity;
-    var lo = s.wait;
-    for (var i = 0; i < 60; i++){
-      var mid = (lo + hi) / 2;
-      if (buy(mid) >= base(mid)) hi = mid; else lo = mid;
-    }
-    return hi;
+  // Что написать в колонке «До порога»: сколько уровней осталось до
+  // ближайшего скачка и каков он. Это заменило окупаемость, которая у
+  // любой дешёвой покупки выходила почти нулевой и потому ничего не
+  // различала: три генератора подряд с «окупаемостью 0 с» могли быть
+  // и лучшим ходом, и худшим.
+  function thrText(track){
+    var th = thresholdsOf(track)[0];
+    if (!th) return "\u2014";
+    return t(th.need <= 1 ? "x.thrnow" : "x.thr", { n: th.need, k: th.text });
   }
+  // Здесь жила breakEven — «через сколько покупка отобьётся». Она
+  // стояла в карточках и в таблице и обманывала: у любой покупки,
+  // дешёвой против запаса, окупаемость выходит почти нулевой, так что
+  // три генератора с «0 с» могли быть и лучшим ходом, и худшим.
+  // Вместо неё — «до порога»: сколько уровней до скачка и каков он.
 
   /* ============ отрисовка ============ */
   function el(id){ return document.getElementById(id); }
@@ -1728,11 +1820,7 @@
     }
     var sym = cur(step.track) === "a" ? "α" : "β";
     el(pfx + "cost").textContent = fmt(step.cost) + " " + sym + (step.est ? "*" : "");
-    var be = breakEven(step.track);
-    // Окупаемость считается только для покупки, доступной прямо сейчас:
-    // для шага из середины плана уровень ещё не тот.
-    el(pfx + "pay").textContent =
-      (step.level === S[step.track].level + 1 && be != null) ? fmtTime(be) : "—";
+    el(pfx + "pay").textContent = thrText(step.track);
     el(pfx + "gain").textContent = step.at > 0.5 ? fmtTime(step.at) : t("v.nowword");
 
     mark.classList.add("buy"); mark.textContent = "✓";
@@ -1756,15 +1844,27 @@
   // Поэтому таблица и карточки советов не могут разойтись в числах.
   function renderCompare(a){
     var tb = document.querySelector("#compare tbody"); tb.innerHTML = "";
-    var rows = [{ label: t("cmp.save"), res: a.plain, cost: null, be: null, sym: "" }];
+    var rows = [{ label: t("cmp.save"), res: a.plain, cost: null, thr: null, sym: "" }];
     TRACKS.forEach(function(track){
       var L = S[track].level + 1;
       rows.push({
         label: fullName(track) + " " + t("cmp.to", { l: L }),
         res: a[track],
         cost: costOf(track, L),
-        be: breakEven(track),
+        thr: thrText(track),
         sym: cur(track) === "a" ? " α" : " β"
+      });
+    });
+    // Пакеты идут следом: «взять все уровни до порога разом». Из-за
+    // скачка такая строка нередко обгоняет и свою же ветку по одному
+    // уровню, и всё остальное.
+    (a.packs || []).forEach(function(p){
+      rows.push({
+        label: fullName(p.track) + " " + t("cmp.to", { l: p.upto }) + " " + t("cmp.pack", { k: p.text }),
+        res: p.res,
+        cost: { v: p.cost, est: false },
+        thr: t("cmp.packn", { n: p.need }),
+        sym: cur(p.track) === "a" ? " α" : " β"
       });
     });
     // Если хоть одна ветка упёрлась в горизонт, абсолютные сроки по всей
@@ -1782,7 +1882,7 @@
         '<td class="num">' + (r.cost && r.cost.v != null
             ? '<span class="' + (r.cost.est ? "price est" : "") + '">' + fmt(r.cost.v) + r.sym + (r.cost.est ? "*" : "") + "</span>"
             : "—") + "</td>" +
-        '<td class="num">' + (r.be == null ? "—" : fmtTime(r.be)) + "</td>" +
+        '<td class="num">' + (r.thr || "—") + "</td>" +
         '<td class="num">' + (r.res ? etaText(r.res) : fmtTime(secs)) + "</td>" +
         '<td class="num"><span class="delta ' + (d < 1e-9 ? "zero" : "neg") + '">' +
           (d < 1e-9 ? t("cmp.best")
