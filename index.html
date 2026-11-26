@@ -312,7 +312,7 @@
             <label><span class="lab" data-i18n="lv.boost">Ур. усилителя</span><input type="text" id="f-bboost" inputmode="decimal"></label>
             <label data-i18n-title="b.prest.t" title="«База β» из окна «Престиж частиц» α→β — то, что там показано как «База β сейчас ×…». Вводи без знака умножения: 4.01. Умножает производство β целиком, до возведения в степень усилителя β."><span class="lab" data-i18n="b.prest">База β от престижа ×</span><input type="text" id="f-prestb" inputmode="decimal"></label>
             <label data-i18n-title="b.prestg.t" title="«База γ» из второго окна престижа, β→γ. Пока γ закрыта, это число ни на что в расчёте не влияет — поле просто помнит его, чтобы не искать заново, когда γ откроется."><span class="lab" data-i18n="b.prestg">База γ от престижа ×</span><input type="text" id="f-prestg" inputmode="decimal"></label>
-            <label data-i18n-title="b.prestk.t" title="Насколько вырастет база β за каждую единицу α. Прибавка строго пропорциональна α: проверено на трёх замерах подряд (5.52e18 → +0.03, 1.67e19 → +0.09, 1.08e20 → +0.56). Если игра начнёт расходиться с полем «База β после», впиши сюда своё значение."><span class="lab" data-i18n="b.prestk">Престиж: прибавка за α</span><input type="text" id="f-prestk" inputmode="decimal"></label>
+            <label data-i18n-title="b.presta.t" title="«База β после» из окна престижа — переписывай сюда прямо из игры. Вывести её расчётом нельзя: до α порядка 1e20 прибавка строго пропорциональна α, а дальше игра зажимает рост, и на 4.9e24 пропорция промахивается в 113 раз. Число растёт вместе с α, так что обновляй его, когда собираешься решать."><span class="lab" data-i18n="b.presta">База β после (из игры)</span><input type="text" id="f-presta" inputmode="decimal"></label>
           </div>
           <div class="note" id="beta-locked" hidden>
             <span class="k">!</span>
@@ -455,9 +455,9 @@
       "b.prest.t":"«База β» из окна «Престиж частиц» α→β — то, что там показано как «База β сейчас ×…». Вводи без знака умножения: 4.01. Умножает производство β целиком, до возведения в степень усилителя β.",
       "b.prestg":"База γ от престижа ×",
       "b.prestg.t":"«База γ» из второго окна престижа, β→γ. Он сбрасывает и α, и β. Пока γ закрыта, это число ни на что в расчёте не влияет — поле просто помнит его, чтобы не искать заново, когда γ откроется.",
-      "b.prestk":"Престиж: прибавка за α",
-      "b.prestk.t":"Насколько вырастет база β за каждую единицу α. Прибавка строго пропорциональна α: проверено на трёх замерах подряд (5.52e18 → +0.03, 1.67e19 → +0.09, 1.08e20 → +0.56). Если игра начнёт расходиться с расчётом «База β станет», впиши сюда своё значение.",
-      "b.prestnote":"Престиж α→β прямо сейчас: база β <b class=\"val\" id=\"pr-now\">—</b> станет <b class=\"val\" id=\"pr-after\">—</b>, а скорость α вырастет в <b class=\"val\" id=\"pr-speed\">—</b>. Он сбрасывает α и все её улучшения — ровно то же, что делает взятие ранга, так что выбирать приходится между ними. Прибавка растёт прямо пропорционально α, поэтому чем позже нажать, тем больше дадут: на полном требовании ранга (<b class=\"val\" id=\"pr-maxa\">—</b>) тот же престиж поднял бы скорость в <b class=\"val\" id=\"pr-max\">—</b>.",
+      "b.presta":"База β после (из игры)",
+      "b.presta.t":"«База β после» из окна престижа — переписывай сюда прямо из игры. Вывести её расчётом нельзя: до α порядка 1e20 прибавка строго пропорциональна α, а дальше игра зажимает рост, и на 4.9e24 пропорция промахивается в 113 раз. Число растёт вместе с α, так что обновляй его, когда собираешься решать.",
+      "b.prestnote":"Престиж α→β: база β <b class=\"val\" id=\"pr-now\">—</b> станет <b class=\"val\" id=\"pr-after\">—</b>, и скорость α вырастет в <b class=\"val\" id=\"pr-speed\">—</b>. Он сбрасывает α и все её улучшения — ровно то же, что делает взятие ранга, так что выбирать приходится между ними. Чем позже нажать, тем больше даст, но насколько именно — расчётом не вывести: до α около 1e20 прибавка шла строго пропорционально α, а выше игра её зажимает. Поэтому «базу β после» бери прямо с экрана игры.",
       "b.locked":"Ступень 0 — генератор β ещё не открыт. β не копятся и бонуса к α не дают, так что покупать на этой стороне нечего. Первая ступень выдаёт первый уровень генератора β бесплатно, и только с неё β начинают идти.",
       "b.note":"Свой ранг у β не копится — β ценны только тем, что усиливают α через <code>(β+1)^показатель</code>. Поэтому покупка за β одновременно и помогает (растёт β/сек), и мешает (запас β падает, бонус проседает). Это учтено. Скорость β = <b class=\"val b\" id=\"check-brate\">—</b>, бонус ранга 12 = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Узлы дерева и ступень", "n.140":"Узел 140: уровень из 9 →", "n.bought":"Куплённые узлы",
@@ -525,9 +525,9 @@
       "b.prest.t":"The “β base” from the α→β Particle Prestige window — what it shows as “β base now ×…”. Enter it without the multiplication sign: 4.01. It multiplies β production as a whole, before the β Empowerer exponent is applied.",
       "b.prestg":"γ base from prestige ×",
       "b.prestg.t":"The “γ base” from the second prestige window, β→γ. That one resets both α and β. While γ is locked this number changes nothing in the calculation — the field just remembers it, so you need not look it up again once γ opens.",
-      "b.prestk":"Prestige: gain per α",
-      "b.prestk.t":"How much the β base grows per unit of α. The gain is strictly proportional to α: checked against three readings in a row (5.52e18 → +0.03, 1.67e19 → +0.09, 1.08e20 → +0.56). If the game starts to disagree with the computed “β base becomes”, type your own value here.",
-      "b.prestnote":"An α→β prestige right now: the β base <b class=\"val\" id=\"pr-now\">—</b> becomes <b class=\"val\" id=\"pr-after\">—</b>, and the α rate grows <b class=\"val\" id=\"pr-speed\">—</b>. It resets α and every α upgrade — exactly what taking a rank does, so the two compete. The gain is proportional to α, so the later you press it the more it gives: at the full rank requirement (<b class=\"val\" id=\"pr-maxa\">—</b>) the same prestige would raise the rate <b class=\"val\" id=\"pr-max\">—</b>.",
+      "b.presta":"β base after (from the game)",
+      "b.presta.t":"The “β base after” from the prestige window — copy it straight from the game. It cannot be derived: up to α around 1e20 the gain is strictly proportional to α, but above that the game damps it, and at 4.9e24 the proportion is off by a factor of 113. The number grows with α, so refresh it when you are about to decide.",
+      "b.prestnote":"An α→β prestige: the β base <b class=\"val\" id=\"pr-now\">—</b> becomes <b class=\"val\" id=\"pr-after\">—</b>, and the α rate grows <b class=\"val\" id=\"pr-speed\">—</b>. It resets α and every α upgrade — exactly what taking a rank does, so the two compete. The later you press it the more it gives, but by how much cannot be derived: up to α around 1e20 the gain tracked α exactly, above that the game damps it. So take the “β base after” straight off the game screen.",
       "b.locked":"Tier 0 — the β Generator is not unlocked yet. β does not accumulate and gives no α bonus, so there is nothing to buy on this side. Tier 1 grants the first β Generator level for free, and only then does β start flowing.",
       "b.note":"β has no rank of its own — it matters only because it boosts α through <code>(β+1)^exponent</code>. So spending β both helps (β/sec grows) and hurts (the β stock drops and the bonus dips). Both sides are weighed. β rate = <b class=\"val b\" id=\"check-brate\">—</b>, rank 12 bonus = <b class=\"val b\" id=\"check-bonus12\">—</b>.",
       "n.h":"Refine Tree nodes and tier", "n.140":"Node 140: level out of 9 →", "n.bought":"Nodes purchased",
@@ -672,7 +672,7 @@
   var DEF = {
     rank: 1, alpha: 0, rankCost: 20, basePerRank: 0.01, rank5k: 0.1, rank12k: 0.25, depth: 500, beam: 300, tuned: 2,
     node139: 1, node140: 1, node141: 1, node142: 1, node143: 1, node145: 1, node148: 0, stupen: 0, betaExp: 0.2, beta: 0,
-    stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, prestK: 5.19e-21, node149: 1, n140lvl: 0,
+    stupenRank: 13, rankStart: 1, relicGen: 1, singMult: 1, prestB: 1, prestG: 1, prestAfter: 0, node149: 1, n140lvl: 0,
     rankCosts: {},
     gen:    { level: 1, start: 1, free: 1, step: 1,    ratio: 1.5,
               costs: { "2":1, "5":3.38, "7":7.59, "12":57.67, "16":292, "20":1478, "35":647160, "45":37318497 }, eff: {} },
@@ -871,20 +871,24 @@
     return k.K * Math.pow(Math.max(0, beta) + 1, k.P);
   }
   function prestB(){ return S.prestB > 0 ? S.prestB : 1; }
-  // Престиж α→β добавляет к базе β ровно пропорционально накопленной α.
-  // Закон выведен по трём замерам из игры при базе 4.01: α 5.52e18 даёт
-  // +0.03, 1.67e19 даёт +0.09, 1.08e20 даёт +0.56. Показатель степени по
-  // всем парам 0.98–0.99, то есть единица в пределах округления.
+  // «База β после» берётся из игры, а не выводится. Сначала казалось,
+  // что прибавка строго пропорциональна α: три замера подряд при базе
+  // 4.01 легли на прямую (5.52e18 → +0.03, 1.67e19 → +0.09, 1.08e20 →
+  // +0.56, показатель 0.98–0.99). Но на 4.9e24 игра показала 229 вместо
+  // 25 435 — пропорция промахнулась в 113 раз. Значит между 1e20 и 1e24
+  // рост зажимается, а чем именно — по четырём точкам не понять: единый
+  // степенной закон с показателем 0.559 ложится на две верхние точки и
+  // мимо двух нижних. Пока закон не известен, честнее не выдумывать его,
+  // а переписывать число с экрана.
   function prestAfter(){
-    var k = S.prestK > 0 ? S.prestK : 0;
-    return prestB() + k * Math.max(0, S.alpha);
+    var v = S.prestAfter;
+    return v > prestB() ? v : prestB();
   }
   // Во сколько вырастет скорость α, если нажать престиж при запасе α.
   // База множит производство β, значит со временем во столько же раз
   // вырастет и сама β, а она входит в α через (β+1)^показатель.
-  function prestSpeed(alphaAt){
-    var now = prestB();
-    var after = now + (S.prestK > 0 ? S.prestK : 0) * Math.max(0, alphaAt);
+  function prestSpeed(){
+    var now = prestB(), after = prestAfter();
     if (!(after > now)) return 1;
     var lv = curLv(), r0 = rateAlpha(lv, S.beta);
     if (!(r0 > 0)) return 1;
@@ -1318,9 +1322,7 @@
     // Престиж: что он даёт сейчас и что дал бы на полном требовании ранга.
     el("pr-now").textContent = "×" + fmt(prestB());
     el("pr-after").textContent = "×" + fmt(prestAfter());
-    el("pr-speed").textContent = "×" + fmt(prestSpeed(S.alpha));
-    el("pr-maxa").textContent = fmt(S.rankCost) + " α";
-    el("pr-max").textContent = "×" + fmt(prestSpeed(S.rankCost));
+    el("pr-speed").textContent = "×" + fmt(prestSpeed());
     el("check-n140").textContent = t("x.multbase", { v: node140() });
     el("check-stupen2").textContent = Math.round(S.stupen) >= 2
       ? t("x.gen", { g: fmt(stupen2Gen()), m: fmt(stupen2Mult(lv.mult)), l: lv.mult })
@@ -1661,7 +1663,7 @@
     bindField("f-singmult",   function(){ return S.singMult; },   function(v){ S.singMult = v > 0 ? v : 1; });
     bindField("f-prestb",     function(){ return S.prestB; },     function(v){ S.prestB = v > 0 ? v : 1; });
     bindField("f-prestg",     function(){ return S.prestG; },     function(v){ S.prestG = v > 0 ? v : 1; });
-    bindField("f-prestk",     function(){ return S.prestK; },     function(v){ S.prestK = v >= 0 ? v : 0; });
+    bindField("f-presta",     function(){ return S.prestAfter; }, function(v){ S.prestAfter = v >= 0 ? v : 0; });
     bindField("m-base",     function(){ return S.basePerRank; }, function(v){ S.basePerRank = v; });
     bindField("m-rank5k",   function(){ return S.rank5k; },    function(v){ S.rank5k = v; });
     bindField("m-rank12k",  function(){ return S.rank12k; },   function(v){ S.rank12k = v; });
