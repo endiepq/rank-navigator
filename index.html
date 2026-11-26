@@ -438,7 +438,7 @@
       "adv.cost":"Цена", "adv.pay":"Отобьётся", "adv.when":"Когда по плану",
       "cmp.h":"Сравнение первого хода", "cmp.move":"Первый ход", "cmp.cost":"Цена",
       "cmp.pay":"Отобьётся", "cmp.eta":"До ранга",
-      "cmp.hint":"Каждая строка — «взять это прямо сейчас, а дальше десять покупок так, как выйдет быстрее всего». Знак <b>≤</b> у времени значит, что десяти покупок до ранга не хватило: настоящий срок меньше показанного, потому что покупки на этом не кончатся. Сравнивать строки между собой при этом можно — мерка у всех одна. «Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую.",
+      "cmp.hint":"Каждая строка — «взять это прямо сейчас, а дальше десять покупок так, как выйдет быстрее всего». Знак <b>≤</b> у времени значит, что десяти покупок до ранга не хватило: настоящий срок меньше показанного, потому что покупки на этом не кончатся. Сравнивать строки между собой при этом можно — мерка у всех одна. «Отобьётся» — момент, когда накопленная α с этой покупкой обгонит вариант «не покупать вовсе». Для β-веток это считается через их влияние на бонус к α, а не напрямую. Эта колонка смотрит на покупку в одиночку, и она вполне может спорить с советом: узлы 142 и 145 дают базе ×1.25 за каждые 10 уровней генератора и ×10 за каждые 100, поэтому бывает, что один уровень брать убыточно, два и три тоже, а четвёртый перешагивает порог и окупает всю пачку разом. План такое видит, поштучная окупаемость — нет.",
       "a.h":"Альфа — сейчас в игре", "a.rank":"Ранг", "a.alpha":"α сейчас", "a.req":"Нужно α на ранг",
       "a.req.t":"Цены рангов 2–17 подставляются сами. Своё значение перебивает таблицу и запоминается.",
       "n.tierreq.t":"Ступени просят ранг 10, 13, 16, 19 — поле заполняется по номеру ступени.",
@@ -508,7 +508,7 @@
       "adv.cost":"Cost", "adv.pay":"Pays off", "adv.when":"When in the plan",
       "cmp.h":"First move compared", "cmp.move":"First move", "cmp.cost":"Cost",
       "cmp.pay":"Pays off", "cmp.eta":"To rank",
-      "cmp.hint":"Each row means “take this right now, then ten more purchases in whatever order comes out fastest”. A <b>≤</b> before a time means ten purchases were not enough to reach the rank: the real wait is shorter, because the buying does not stop there. Rows are still comparable with each other — they all use the same yardstick. “Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly.",
+      "cmp.hint":"Each row means “take this right now, then ten more purchases in whatever order comes out fastest”. A <b>≤</b> before a time means ten purchases were not enough to reach the rank: the real wait is shorter, because the buying does not stop there. Rows are still comparable with each other — they all use the same yardstick. “Pays off” is the moment accumulated α with this purchase overtakes buying nothing at all. For β branches it is measured through their effect on the α bonus, not directly. That column looks at a purchase on its own, and it may well disagree with the advice: nodes 142 and 145 give the base ×1.25 per 10 Generator levels and ×10 per 100, so one level can be a loss, two and three as well, while the fourth crosses a threshold and repays the whole batch at once. The plan sees that; a per-level payback cannot.",
       "a.h":"Alpha — current in game", "a.rank":"Rank", "a.alpha":"α now", "a.req":"α required for rank",
       "a.req.t":"Rank costs 2–17 are filled in automatically. Your own value overrides the table and is remembered.",
       "n.tierreq.t":"Tiers require rank 10, 13, 16, 19 — this field follows the tier number.",
@@ -698,7 +698,7 @@
   var RANK_COSTS = {
     "2": 1, "3": 10, "4": 50, "5": 160, "6": 500, "7": 1000, "8": 2000,
     "9": 13289, "10": 267543, "11": 7797571, "12": 638133197,
-    "13": 1.91e11, "14": 1.73e14, "15": 4.45e17, "16": 3.75e21, "17": 9.07e25, "18": 5.70e30
+    "13": 1.91e11, "14": 1.73e14, "15": 4.45e17, "16": 3.75e21, "17": 9.07e25, "18": 5.70e30, "19": 9.24e35
   };
   // Ступени просят ранг 10, 13, 16, 19 — шаг три ранга.
   function tierRank(stupen){ return 10 + 3 * Math.max(0, Math.round(stupen)); }
@@ -1807,8 +1807,12 @@
       tracks.forEach(function(t){ S[t].level = startOf(t); });
       S[key] = 0;
     }
-    function resetAlphaSide(){ resetSide(["gen", "mult", "boost"], "alpha"); }
-    function resetBetaSide(){ resetSide(["bgen", "bmult", "bboost"], "beta"); }
+    // Список веток берём из TRACKS, а не вписываем руками: вписанный
+    // список уже один раз отстал от жизни — тетратор пережил сброс
+    // ранга, потому что его в этих трёх именах не было.
+    function sideTracks(c){ return TRACKS.filter(function(t){ return cur(t) === c; }); }
+    function resetAlphaSide(){ resetSide(sideTracks("a"), "alpha"); }
+    function resetBetaSide(){ resetSide(sideTracks("b"), "beta"); }
     el("btn-rankup").addEventListener("click", function(){
       S.rank = S.rank + 1;
       resetAlphaSide();
